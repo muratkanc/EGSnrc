@@ -21,7 +21,12 @@ HEN_HOUSE/pegs4/pegs4_*.f
 HEN_HOUSE/pieces/linux/egs_gui_*
 HEN_HOUSE/pieces/linux/egs_inprz_*
 HEN_HOUSE/pieces/linux/egs_view_*
-
+HEN_HOUSE/gui/egs_configure/.moc
+HEN_HOUSE/gui/egs_configure/.obj
+HEN_HOUSE/gui/egs_gui/.moc
+HEN_HOUSE/gui/egs_gui/.obj
+HEN_HOUSE/gui/egs_inprz/.moc
+HEN_HOUSE/gui/egs_inprz/.obj
 
 ### ignore generated documentation
 doc/*.pdf
