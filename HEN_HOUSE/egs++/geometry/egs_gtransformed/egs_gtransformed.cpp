@@ -54,6 +54,16 @@ void EGS_TransformedGeometry::setRelativeRho(EGS_Input *) {
                "geometry\n");
 }
 
+void EGS_TransformedGeometry::setBScaling(int start, int end, EGS_Float rho) {
+    setBScaling(0);
+}
+
+void EGS_TransformedGeometry::setBScaling(EGS_Input *) {
+    egsWarning("EGS_TransformedGeometry::setBScaling(): don't use this "
+               "method. Use the \n setBScaling() methods of the underlying "
+               "geometry\n");
+}
+
 extern "C" {
 
     EGS_GTRANSFORMED_EXPORT EGS_BaseGeometry *createGeometry(EGS_Input *input) {

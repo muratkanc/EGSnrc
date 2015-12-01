@@ -43,22 +43,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_CDGEOMETRY_DLL
-        #define EGS_CDGEOMETRY_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_CDGEOMETRY_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_CDGEOMETRY_LOCAL
+#ifdef BUILD_CDGEOMETRY_DLL
+#define EGS_CDGEOMETRY_EXPORT __declspec(dllexport)
+#else
+#define EGS_CDGEOMETRY_EXPORT __declspec(dllimport)
+#endif
+#define EGS_CDGEOMETRY_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_CDGEOMETRY_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_CDGEOMETRY_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_CDGEOMETRY_EXPORT
-        #define EGS_CDGEOMETRY_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_CDGEOMETRY_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_CDGEOMETRY_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_CDGEOMETRY_EXPORT
+#define EGS_CDGEOMETRY_LOCAL
+#endif
 
 #endif
 
@@ -210,6 +210,7 @@ class EGS_CDGEOMETRY_EXPORT EGS_CDGeometry : public EGS_BaseGeometry {
 
 public:
 
+
     EGS_CDGeometry(EGS_BaseGeometry *G1, EGS_BaseGeometry **G,
                    const string &Name = "", int indexing=0) : EGS_BaseGeometry(Name) {
         nmax = 0;
@@ -238,6 +239,7 @@ public:
             setUpIndexing();
         }
         setHasRhoScaling();
+        setHasBScaling();
     };
 
     EGS_CDGeometry(EGS_BaseGeometry *G1, const vector<EGS_BaseGeometry *> &G,
@@ -273,6 +275,7 @@ public:
             setUpIndexing();
         }
         setHasRhoScaling();
+        setHasBScaling();
     };
 
 
@@ -770,6 +773,17 @@ do_checks:
                bg->getRelativeRho(ibase);
     };
 
+    void  setBScaling(int start, int end, EGS_Float rho);
+    void  setBScaling(EGS_Input *);
+    EGS_Float getBScaling(int ireg) const {
+        if (ireg < 0 || ireg >= nbase*nmax) {
+            return 1;
+        }
+        int ibase = ireg/nmax;
+        return g[ibase] ? g[ibase]->getBScaling(ireg-ibase*nmax) :
+               bg->getBScaling(ibase);
+    };
+
     virtual void getLabelRegions(const string &str, vector<int> &regs);
 
 protected:
@@ -811,14 +825,30 @@ private:
 
     void setHasRhoScaling() {
         has_rho_scaling = false;
-        if (bg->hasRhoScaling()) {
+        if( bg->hasRhoScaling() ) {
             has_rho_scaling = true;
             return;
         }
-        for (int j=0; j<nbase; j++) {
-            if (g[j]) {
-                if (g[j]->hasRhoScaling()) {
+        for(int j=0; j<nbase; j++) {
+            if( g[j] ) {
+                if(g[j]->hasRhoScaling()) {
                     has_rho_scaling = true;
+                    return;
+                }
+            }
+        }
+    };
+
+    void setHasBScaling() {
+        has_B_scaling = false;
+        if( bg->hasBScaling() ) {
+            has_B_scaling = true;
+            return;
+        }
+        for(int j=0; j<nbase; j++) {
+            if( g[j] ) {
+                if(g[j]->hasBScaling()) {
+                    has_B_scaling = true;
                     return;
                 }
             }

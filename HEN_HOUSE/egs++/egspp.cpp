@@ -43,9 +43,9 @@
 using namespace std;
 
 #ifdef WIN32
-    const char fs = 92;
+const char fs = 92;
 #else
-    const char fs = '/';
+const char fs = '/';
 #endif
 
 typedef EGS_Application *(*createAppFunction)(int argc, char **argv);

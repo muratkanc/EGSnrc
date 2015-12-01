@@ -42,21 +42,23 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 using std::string;
 using std::vector;
 
+class EGS_Application; // forward declaration
 class EGS_Input;
 struct EGS_GeometryIntersections;
 
 #ifdef BPROPERTY64
-    typedef EGS_I64 EGS_BPType;
+typedef EGS_I64 EGS_BPType;
 #elif defined BPROPERTY32
-    typedef unsigned int EGS_BPType;
+typedef unsigned int EGS_BPType;
 #elif defined BPROPERTY16
-    typedef unsigned short EGS_BPType;
+typedef unsigned short EGS_BPType;
 #else
-    typedef unsigned char EGS_BPType;
+typedef unsigned char EGS_BPType;
 #endif
 
 /*! \brief Base geometry class. Every geometry class must be derived from
@@ -421,6 +423,90 @@ public:
      */
     virtual void setRelativeRho(EGS_Input *);
 
+    /*FT HB
+
+    */
+    EGS_Float getMediumRho(int ind) const;
+
+    void setApplication(EGS_Application *app);
+
+    /*******************************
+    *    START Magnetic Field Scaling
+    * *****************************/
+    /*! \brief Does this geometry object have a B field scaling feature?
+
+     */
+    //inline bool hasBScaling() const;
+    inline bool hasBScaling() const {
+        if (has_Ref_rho && has_B_scaling) {
+            std::cout << "EGS_BaseGeometry Has rho and B scaling!\n";
+        }
+        else if (has_Ref_rho && ! has_B_scaling) {
+            std::cout << "EGS_BaseGeometry Has rho scaling!\n";
+        }
+        else if (!has_Ref_rho && has_B_scaling) {
+            std::cout << "EGS_BaseGeometry Has B scaling!\n";
+        }
+        else {
+            std::cout << "EGS_BaseGeometry Has no scaling!\n";
+        }
+        return (has_B_scaling || has_Ref_rho);
+
+    };
+
+    /*! \brief Get the B field scaling factor in region \a ireg
+     *
+     */
+    //virtual EGS_Float getBScaling(int ireg) const;
+    /**********************************************************/
+    /*! \brief Get the B field scaling factor in region \a ireg
+     *
+     *   Scaling of the B filed can be accomplished by:
+     *
+     *   - defining a reference density
+     *   - Defining scaling factors for certain regions
+     *   - Both
+     *
+     *  One could have one return statement but then one will
+     *  need to set bfactor for all regions even when scaling
+     *  according to mass density.
+     **********************************************************/
+    virtual EGS_Float getBScaling(int ireg) const {
+        if (has_Ref_rho && has_B_scaling) {
+            return bfactor && ireg >= 0 && ireg < nreg ? getMediumRho(ireg)/rhoRef*bfactor[ireg] : 1.0;
+        }
+        else if (has_Ref_rho && ! has_B_scaling) {
+            return ireg >= 0 && ireg < nreg ? getMediumRho(ireg)/rhoRef : 1.0;
+        }
+        else if (!has_Ref_rho && has_B_scaling) {
+            return bfactor && ireg >= 0 && ireg < nreg ? bfactor[ireg] : 1.0;
+        }
+        else {
+            return 1.0;
+        }
+    }
+
+    /*! \brief Set the B field scaling factor in regions.
+
+     Sets the B field scaling factor to \a bf in all regions between
+     start and end (inclusive).
+     */
+    virtual void setBScaling(int start, int end, EGS_Float bf);
+
+    /*! \brief Set the B field scaling factor from an user input.
+
+     Looks for input
+     \verbatim
+     set B scaling = start end bfact
+     \endverbatim
+     and sets the B field scaling factor to bfact in all regions between
+     start and end (inclusive).
+     */
+    virtual void setBScaling(EGS_Input *);
+    /*******************************
+    *   END Magnetic Field Scaling
+    ******************************/
+
     /*! \brief Get the name of this geometry
 
       Every geometry must have a name and this method can be used to retrieve
@@ -685,6 +771,21 @@ protected:
 
      */
     EGS_Float *rhor;
+
+    /*! \brief Does this geometry has B field scaling factor?
+
+     */
+    bool has_B_scaling, has_Ref_rho;
+
+    /*! \brief Array with B field scaling factors.
+
+     */
+    EGS_Float *bfactor;
+
+    /*! \brief Reference density for B field scaling.
+
+     */
+    EGS_Float rhoRef;
 
     /*! \brief Number of references to this geometry.
 

@@ -43,9 +43,9 @@
 #include <cctype>
 
 #ifdef WIN32
-    const char __egs_fs = 92;
+const char __egs_fs = 92;
 #else
-    const char __egs_fs = '/';
+const char __egs_fs = '/';
 #endif
 
 /*
@@ -226,10 +226,10 @@ string egsStripPath(const string &aname) {
 }
 
 #ifdef WIN32
-    #include <process.h>
+#include <process.h>
 #else
-    #include <sys/types.h>
-    #include <unistd.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 string egsHostName() {

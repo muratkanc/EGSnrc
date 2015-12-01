@@ -79,6 +79,16 @@ void EGS_SmartEnvelope::setRelativeRho(EGS_Input *) {
                " this geometry\n");
 }
 
+void EGS_SmartEnvelope::setBScaling(int start, int end, EGS_Float bf) {
+    setBScaling(0);
+}
+
+void EGS_SmartEnvelope::setBScaling(EGS_Input *) {
+    egsWarning("EGS_SmartEnvelope::setsetBScaling(): don't use this method."
+               " Use the\n setsetBScaling methods of the geometry objects that make up"
+               " this geometry\n");
+}
+
 struct EGS_SMART_ENVELOPE_LOCAL SmartEnvelopeAux {
     EGS_BaseGeometry *g;
     int              ireg;
@@ -163,6 +173,15 @@ EGS_SmartEnvelope::EGS_SmartEnvelope(EGS_BaseGeometry *G,
         for (int j=0; j<n_in; j++) {
             if (geometries[j]->hasRhoScaling()) {
                 has_rho_scaling = true;
+                break;
+            }
+        }
+    }
+    has_B_scaling = g->hasBScaling();
+    if( !has_B_scaling ) {
+        for(int j=0; j<n_in; j++) {
+            if( geometries[j]->hasBScaling() ) {
+                has_B_scaling = true;
                 break;
             }
         }

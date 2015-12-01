@@ -38,11 +38,11 @@
 #include "egs_input.h"
 
 #ifdef NO_SSTREAM
-    #include <strstream>
-    #define S_STREAM std::istrstream
+#include <strstream>
+#define S_STREAM std::istrstream
 #else
-    #include <sstream>
-    #define S_STREAM std::istringstream
+#include <sstream>
+#define S_STREAM std::istringstream
 #endif
 
 string EGS_CDGeometry::type = "EGS_CDGeometry";
@@ -61,6 +61,18 @@ void EGS_CDGeometry::setRelativeRho(int start, int end, EGS_Float rho) {
 void EGS_CDGeometry::setRelativeRho(EGS_Input *) {
     egsWarning("EGS_CDGeometry::setRelativeRho(): don't use this method\n"
                "  Use the setRelativeRho() methods of the geometry objects that make"
+               " up this geometry\n");
+}
+
+void EGS_CDGeometry::setBScaling(int start, int end, EGS_Float bf) {
+    egsWarning("EGS_CDGeometry::setBScaling(): don't use this method\n"
+               "  Use the setBScaling() methods of the geometry objects that make"
+               " up this geometry\n");
+}
+
+void EGS_CDGeometry::setBScaling(EGS_Input *) {
+    egsWarning("EGS_CDGeometry::setBScaling(): don't use this method\n"
+               "  Use the setBScaling() methods of the geometry objects that make"
                " up this geometry\n");
 }
 

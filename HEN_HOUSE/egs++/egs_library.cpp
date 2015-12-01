@@ -39,21 +39,21 @@
 
 #ifdef WIN32
 
-    #include <windows.h>
+#include <windows.h>
 
-    #define DLL_HANDLE HMODULE
-    #define LOAD_LIBRARY(fname) LoadLibrary(fname)
-    #define FREE_LIBRARY(lib)   FreeLibrary(lib);
-    #define RESOLVE_SYMBOL(lib,symb) (void *) GetProcAddress(lib,symb)
+#define DLL_HANDLE HMODULE
+#define LOAD_LIBRARY(fname) LoadLibrary(fname)
+#define FREE_LIBRARY(lib)   FreeLibrary(lib);
+#define RESOLVE_SYMBOL(lib,symb) (void *) GetProcAddress(lib,symb)
 
 #else
 
-    #include <dlfcn.h>
+#include <dlfcn.h>
 
-    #define DLL_HANDLE void*
-    #define LOAD_LIBRARY(fname) dlopen(fname,RTLD_LAZY)
-    #define FREE_LIBRARY(lib)   !dlclose(lib)
-    #define RESOLVE_SYMBOL(lib,symb) dlsym(lib,symb)
+#define DLL_HANDLE void*
+#define LOAD_LIBRARY(fname) dlopen(fname,RTLD_LAZY)
+#define FREE_LIBRARY(lib)   !dlclose(lib)
+#define RESOLVE_SYMBOL(lib,symb) dlsym(lib,symb)
 
 #endif
 
@@ -82,17 +82,17 @@ public:
 };
 
 #ifdef WIN32
-    #ifdef CYGWIN
-        char EGS_PrivateLibrary::fs = '/';
-    #else
-        char EGS_PrivateLibrary::fs = '\\';
-    #endif
-    const char *EGS_PrivateLibrary::lib_prefix = "";
-    const char *EGS_PrivateLibrary::lib_suffix = ".dll";
+#ifdef CYGWIN
+char EGS_PrivateLibrary::fs = '/';
 #else
-    char EGS_PrivateLibrary::fs = '/';
-    const char *EGS_PrivateLibrary::lib_prefix = "lib";
-    const char *EGS_PrivateLibrary::lib_suffix = ".so";
+char EGS_PrivateLibrary::fs = '\\';
+#endif
+const char *EGS_PrivateLibrary::lib_prefix = "";
+const char *EGS_PrivateLibrary::lib_suffix = ".dll";
+#else
+char EGS_PrivateLibrary::fs = '/';
+const char *EGS_PrivateLibrary::lib_prefix = "lib";
+const char *EGS_PrivateLibrary::lib_suffix = ".so";
 #endif
 
 

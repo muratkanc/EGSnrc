@@ -39,11 +39,11 @@
 #include "egs_functions.h"
 
 #ifdef NO_SSTREAM
-    #include <strstream>
-    #define S_STREAM std::istrstream
+#include <strstream>
+#define S_STREAM std::istrstream
 #else
-    #include <sstream>
-    #define S_STREAM std::istringstream
+#include <sstream>
+#define S_STREAM std::istringstream
 #endif
 
 #include <algorithm>
@@ -554,7 +554,7 @@ bool EGS_InputPrivate::compareKeys(const string &s1, const string &s2) {
 }
 
 #ifdef INPUT_DEBUG
-    #include <iostream>
+#include <iostream>
 #endif
 
 int EGS_InputPrivate::replace(const string &replace_what,

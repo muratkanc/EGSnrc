@@ -66,9 +66,9 @@ void _null_terminate(char *s, int len) {
 }
 
 #ifdef WIN32
-    const char fs = 92;
+const char fs = 92;
 #else
-    const char fs = '/';
+const char fs = '/';
 #endif
 
 const char *EGS_SimpleApplication::egsHome() const {

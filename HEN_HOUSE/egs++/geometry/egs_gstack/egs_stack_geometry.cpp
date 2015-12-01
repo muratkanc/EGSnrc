@@ -60,10 +60,17 @@ EGS_StackGeometry::EGS_StackGeometry(const vector<EGS_BaseGeometry *> &geoms,
             has_rho_scaling = g[j]->hasRhoScaling();
         }
     }
+    has_B_scaling = false;
+    for(int j=0; j<ng; j++) {
+        g[j] = geoms[j];
+        g[j]->ref();
+        int n = g[j]->regions();
+        if( n > nmax ) nmax = n;
+        if( !has_B_scaling ) has_B_scaling = g[j]->hasBScaling();
+    }
     nreg = ng*nmax;
     is_convex = false;
 }
-
 
 EGS_StackGeometry::~EGS_StackGeometry() {
     for (int j=0; j<ng; j++)
@@ -94,6 +101,16 @@ void EGS_StackGeometry::setRelativeRho(int start, int end, EGS_Float rho) {
 void EGS_StackGeometry::setRelativeRho(EGS_Input *) {
     egsWarning("EGS_StackGeometry::setRelativeRho(): don't use this method.\n"
                " Use the setRelativeRho methods of the geometry objects that make up"
+               " this geometry\n");
+}
+
+void EGS_StackGeometry::setBScaling(int start, int end, EGS_Float rho) {
+    setBScaling(0);
+}
+
+void EGS_StackGeometry::setBScaling(EGS_Input *) {
+    egsWarning("EGS_StackGeometry::setBScaling(): don't use this method.\n"
+               " Use the setBScaling methods of the geometry objects that make up"
                " this geometry\n");
 }
 

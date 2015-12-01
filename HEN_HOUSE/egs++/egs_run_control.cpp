@@ -235,38 +235,38 @@ bool EGS_RunControl::finishBatch() {
 
 #ifdef WIN32
 
-    #include <io.h>
-    #include <stdio.h>
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <sys/locking.h>
+#include <io.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/locking.h>
 
-    #define OPEN_FILE _open
-    #define CLOSE_FILE _close
-    #define CREATE_FLAGS _O_CREAT | _O_EXCL | _O_RDWR, _S_IREAD | _S_IWRITE
-    #define OPEN_FLAGS _O_RDWR,_S_IREAD | _S_IWRITE
-    #define WAIT_FOR_FILE _sleep(1000)
-    #define WRITE_FILE _write
-    #define READ_FILE _read
+#define OPEN_FILE _open
+#define CLOSE_FILE _close
+#define CREATE_FLAGS _O_CREAT | _O_EXCL | _O_RDWR, _S_IREAD | _S_IWRITE
+#define OPEN_FLAGS _O_RDWR,_S_IREAD | _S_IWRITE
+#define WAIT_FOR_FILE _sleep(1000)
+#define WRITE_FILE _write
+#define READ_FILE _read
 
 #else
 
-    #include <unistd.h>
-    #include <fcntl.h>
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <errno.h>
-    #include <string.h>
-    #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
 
-    #define OPEN_FILE open
-    #define CLOSE_FILE close
-    #define CREATE_FLAGS O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR
-    #define OPEN_FLAGS O_RDWR
-    #define WAIT_FOR_FILE sleep(1)
-    #define WRITE_FILE write
-    #define READ_FILE read
+#define OPEN_FILE open
+#define CLOSE_FILE close
+#define CREATE_FLAGS O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR
+#define OPEN_FLAGS O_RDWR
+#define WAIT_FOR_FILE sleep(1)
+#define WRITE_FILE write
+#define READ_FILE read
 
 #endif
 
@@ -473,13 +473,13 @@ bool EGS_JCFControl::openControlFile() {
 }
 
 #ifdef NO_SSTREAM
-    #include <strstream>
-    #define MY_OSTREAM std::ostrstream
-    #define MY_ISTREAM std::istrstream
+#include <strstream>
+#define MY_OSTREAM std::ostrstream
+#define MY_ISTREAM std::istrstream
 #else
-    #include <sstream>
-    #define MY_OSTREAM std::ostringstream
-    #define MY_ISTREAM std::istringstream
+#include <sstream>
+#define MY_OSTREAM std::ostringstream
+#define MY_ISTREAM std::istringstream
 #endif
 
 bool EGS_JCFControl::writeControlString() {

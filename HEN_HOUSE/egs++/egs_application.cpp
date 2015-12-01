@@ -58,17 +58,17 @@
 using namespace std;
 
 #ifdef WIN32
-    const char fs = 92;
-    #define F_OK 0
-    #define W_OK 2
-    #define R_OK 4
-    #include <io.h>
-    #define EGS_ACCESS ::_access
+const char fs = 92;
+#define F_OK 0
+#define W_OK 2
+#define R_OK 4
+#include <io.h>
+#define EGS_ACCESS ::_access
 #else
-    const char fs = '/';
-    #include <unistd.h>
-    #define EGS_ACCESS ::access
-    #include <sys/statvfs.h>
+const char fs = '/';
+#include <unistd.h>
+#define EGS_ACCESS ::access
+#include <sys/statvfs.h>
 #endif
 
 static char __egs_app_msg1[] = "EGS_Application::EGS_Application(int,char**):";
@@ -339,9 +339,9 @@ EGS_Application::EGS_Application(int argc, char **argv) : input(0), geometry(0),
             first_parallel = ::strtol(ifirst.c_str(),0,10);
             if(first_parallel < 0) {
                 egsWarning("%s\n  invalid -f argument %d\n",__egs_app_msg1,
-                       n_parallel);
-                 n_parallel = 0;
-                 i_parallel = 0;
+                           n_parallel);
+                n_parallel = 0;
+                i_parallel = 0;
             }
         }
         if (n_parallel < 0) {
@@ -598,6 +598,7 @@ int EGS_Application::initGeometry() {
         return 1;
     }
     geometry->ref();
+    geometry->setApplication(this);
     return 0;
 }
 

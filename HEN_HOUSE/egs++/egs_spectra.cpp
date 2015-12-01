@@ -44,11 +44,11 @@
 #include "egs_math.h"
 #include <fstream>
 #ifndef NO_SSTREAM
-    #include <sstream>
-    #define S_STREAM std::istringstream
+#include <sstream>
+#define S_STREAM std::istringstream
 #else
-    #include <strstream>
-    #define S_STREAM std::istrstream
+#include <strstream>
+#define S_STREAM std::istrstream
 #endif
 
 using namespace std;

@@ -42,22 +42,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_GTRANSFORMED_DLL
-        #define EGS_GTRANSFORMED_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_GTRANSFORMED_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_GTRANSFORMED_LOCAL
+#ifdef BUILD_GTRANSFORMED_DLL
+#define EGS_GTRANSFORMED_EXPORT __declspec(dllexport)
+#else
+#define EGS_GTRANSFORMED_EXPORT __declspec(dllimport)
+#endif
+#define EGS_GTRANSFORMED_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_GTRANSFORMED_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_GTRANSFORMED_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_GTRANSFORMED_EXPORT
-        #define EGS_GTRANSFORMED_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_GTRANSFORMED_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_GTRANSFORMED_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_GTRANSFORMED_EXPORT
+#define EGS_GTRANSFORMED_LOCAL
+#endif
 
 #endif
 
@@ -119,6 +119,7 @@ public:
         nreg = g->regions();
         is_convex = g->isConvex();
         has_rho_scaling = g->hasRhoScaling();
+        has_B_scaling = g->hasBScaling();
     };
 
     ~EGS_TransformedGeometry() {
@@ -223,7 +224,18 @@ public:
 
     void setRelativeRho(EGS_Input *);
 
+    <<<<<<< HEAD
     virtual void getLabelRegions(const string &str, vector<int> &regs);
+    =======
+    EGS_Float getBScaling(int ireg) const {
+        return g->getBScaling(ireg);
+    }
+    void setBScaling(int start, int end, EGS_Float bf);
+
+    void setBScaling(EGS_Input *);
+
+    virtual void getLabelRegions (const string &str, vector<int> &regs);
+    >>>>>>> B field scaling and Fano source implementation
 
 protected:
 

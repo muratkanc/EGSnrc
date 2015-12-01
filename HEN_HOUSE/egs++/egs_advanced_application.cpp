@@ -705,6 +705,9 @@ int EGS_AdvancedApplication::helpInit(EGS_Input *transportp, bool do_hatch) {
         the_emf->BxIN=bfield_v[0];
         the_emf->ByIN=bfield_v[1];
         the_emf->BzIN=bfield_v[2];
+        the_emf->Bx=bfield_v[0];
+        the_emf->By=bfield_v[1];
+        the_emf->Bz=bfield_v[2];
     }
     if (efield.size()==3 || bfield.size()==3) {
         estepem.info(nc);
@@ -775,11 +778,11 @@ void EGS_AdvancedApplication::setEIIData(EGS_I32 len) {
 }
 
 #ifdef GDEBUG
-    #define MAX_STEP 100000
-    EGS_Vector steps_x[MAX_STEP], steps_u[MAX_STEP];
-    int steps_ireg[MAX_STEP], steps_inew[MAX_STEP];
-    EGS_Float steps_ustepi[MAX_STEP], steps_ustepf[MAX_STEP];
-    int steps_n = 0;
+#define MAX_STEP 100000
+EGS_Vector steps_x[MAX_STEP], steps_u[MAX_STEP];
+int steps_ireg[MAX_STEP], steps_inew[MAX_STEP];
+EGS_Float steps_ustepi[MAX_STEP], steps_ustepf[MAX_STEP];
+int steps_n = 0;
 #endif
 
 int EGS_AdvancedApplication::shower() {
@@ -1026,6 +1029,16 @@ void EGS_AdvancedApplication::startNewParticle() {
         the_useful->rhor = 1;
         the_useful->rhor_new = 1;
     }
+    if( geometry->hasBScaling() ) {
+        int ireg = the_stack->ir[the_stack->np-1] - 2;
+        EGS_Float bf = geometry->getBScaling(ireg);
+        the_emf->Bx = bf*the_emf->BxIN;
+        the_emf->By = bf*the_emf->ByIN;
+        the_emf->Bz = bf*the_emf->BzIN;
+        the_emf->Bx_new = the_emf->Bx;
+        the_emf->By_new = the_emf->By;
+        the_emf->Bz_new = the_emf->Bz;
+    }
 }
 
 void EGS_AdvancedApplication::enterNewRegion() {
@@ -1038,6 +1051,15 @@ void EGS_AdvancedApplication::enterNewRegion() {
     }
     else {
         the_useful->rhor_new = 1;
+    }
+    if( geometry->hasBScaling() ) {
+        int ireg = the_epcont->irnew-2;
+        if( ireg >= 0 ) {
+            EGS_Float bf = geometry->getBScaling(ireg);
+            the_emf->Bx_new = bf*the_emf->BxIN;
+            the_emf->By_new = bf*the_emf->ByIN;
+            the_emf->Bz_new = bf*the_emf->BzIN;
+        }
     }
 }
 

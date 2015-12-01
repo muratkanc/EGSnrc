@@ -39,22 +39,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_STACKG_DLL
-        #define EGS_STACKG_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_STACKG_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_STACKG_LOCAL
+#ifdef BUILD_STACKG_DLL
+#define EGS_STACKG_EXPORT __declspec(dllexport)
+#else
+#define EGS_STACKG_EXPORT __declspec(dllimport)
+#endif
+#define EGS_STACKG_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_STACKG_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_STACKG_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_STACKG_EXPORT
-        #define EGS_STACKG_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_STACKG_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_STACKG_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_STACKG_EXPORT
+#define EGS_STACKG_LOCAL
+#endif
 
 #endif
 
@@ -253,7 +253,15 @@ public:
     void setRelativeRho(int start, int end, EGS_Float rho);
     void setRelativeRho(EGS_Input *);
 
-    virtual void getLabelRegions(const string &str, vector<int> &regs);
+    EGS_Float getBScaling(int ireg) const {
+        if( ireg < 0 || ireg >= nreg ) return 1;
+        int jg = ireg/nmax;
+        return g[jg]->getBScaling(ireg-jg*nmax);
+    };
+    void setBScaling(int start, int end, EGS_Float bf);
+    void setBScaling(EGS_Input *);
+
+    virtual void getLabelRegions (const string &str, vector<int> &regs);
 
 protected:
 
