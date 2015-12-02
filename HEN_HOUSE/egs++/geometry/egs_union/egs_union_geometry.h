@@ -40,22 +40,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_UNIONG_DLL
-        #define EGS_UNIONG_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_UNIONG_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_UNIONG_LOCAL
+#ifdef BUILD_UNIONG_DLL
+#define EGS_UNIONG_EXPORT __declspec(dllexport)
+#else
+#define EGS_UNIONG_EXPORT __declspec(dllimport)
+#endif
+#define EGS_UNIONG_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_UNIONG_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_UNIONG_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_UNIONG_EXPORT
-        #define EGS_UNIONG_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_UNIONG_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_UNIONG_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_UNIONG_EXPORT
+#define EGS_UNIONG_LOCAL
+#endif
 
 #endif
 
@@ -98,6 +98,7 @@ class EGS_UNIONG_EXPORT EGS_UnionGeometry : public EGS_BaseGeometry {
 
 public:
 
+    <<<<<<< HEAD
     /*! \brief Construct a geometry union from the vector of geometries
     \a geom.
     */
@@ -266,6 +267,14 @@ public:
     };
     void setRelativeRho(int start, int end, EGS_Float rho);
     void setRelativeRho(EGS_Input *);
+
+    void  setBScaling(int start, int end, EGS_Float rho);
+    void  setBScaling(EGS_Input *);
+    EGS_Float getBScaling(int ireg) const {
+        if( ireg < 0 || ireg >= nreg ) return 1;
+        int jg = ireg/nmax;
+        return g[jg]->getBScaling(ireg-jg*nmax);
+    };
 
     virtual void getLabelRegions(const string &str, vector<int> &regs);
 
