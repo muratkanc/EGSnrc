@@ -436,22 +436,20 @@ public:
     /*! \brief Does this geometry object have a B field scaling feature?
 
      */
-    //inline bool hasBScaling() const;
     inline bool hasBScaling() const {
-        if (has_Ref_rho && has_B_scaling) {
-            std::cout << "EGS_BaseGeometry Has rho and B scaling!\n";
-        }
-        else if (has_Ref_rho && ! has_B_scaling) {
-            std::cout << "EGS_BaseGeometry Has rho scaling!\n";
-        }
-        else if (!has_Ref_rho && has_B_scaling) {
-            std::cout << "EGS_BaseGeometry Has B scaling!\n";
-        }
-        else {
-            std::cout << "EGS_BaseGeometry Has no scaling!\n";
-        }
+        /*         if (has_Ref_rho && has_B_scaling){
+        std::cout << "EGS_BaseGeometry Has rho and B scaling!\n";
+                 }
+                 else if (has_Ref_rho && ! has_B_scaling){
+        std::cout << "EGS_BaseGeometry Has rho scaling!\n";
+                 }
+                 else if (!has_Ref_rho && has_B_scaling){
+        std::cout << "EGS_BaseGeometry Has B scaling!\n";
+                 }
+                 else{
+        std::cout << "EGS_BaseGeometry Has no scaling!\n";
+                 }*/
         return (has_B_scaling || has_Ref_rho);
-
     };
 
     /*! \brief Get the B field scaling factor in region \a ireg

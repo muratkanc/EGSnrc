@@ -32,6 +32,7 @@
 /*! \file egs_isotropic_source.cpp
  *  \brief An isotropic source
  *  \IK
+ *  The Fano option allows have uniform particles per unit mass
  */
 
 #include "egs_isotropic_source.h"
@@ -59,6 +60,42 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
             if (!shape) egsWarning("EGS_IsotropicSource: a shape named %s"
                                        " does not exist\n");
         }
+    }
+    EGS_Input *fano = input->takeInputItem("Fano source");
+    if( !fano ) {
+        egsWarning("EGS_IsotropicSource: this is not a Fano source\n");
+        Fano_source = false;
+        max_mass_density = 0.0;
+    }
+    else {
+        int err = fano->getInput("max mass density", max_mass_density);
+        string geom_name;
+        if(err) { 
+            Fano_source = false;
+            max_mass_density = 0.0;
+        }
+        else {
+            err = fano->getInput("geometry",geom_name);
+            if(!err) {
+                geomfano = EGS_BaseGeometry::getGeometry(geom_name);
+                if( !geomfano ) {
+                    egsWarning("EGS_IsotropicSource: no geometry named %s\n",geom_name.c_str());
+                    Fano_source = false;
+                    max_mass_density = 0.0;
+                }
+                else {
+                    Fano_source = true;
+                }
+            }
+            else {
+                Fano_source = false;
+                max_mass_density = 0.0;
+            }
+        }
+        if(Fano_source) {
+            egsWarning("EGS_IsotropicSource: this is a Fano source. The maximum density is set to %f "  
+                        "and the Fano geometry name is %s\n",max_mass_density,geom_name.c_str());
+        }                
     }
     string geom_name;
     int err = input->getInput("geometry",geom_name);

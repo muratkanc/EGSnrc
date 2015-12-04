@@ -838,6 +838,7 @@ void EGS_BaseGeometry::setBScaling(EGS_Input *input) {
         rhoRef = refD;
         has_Ref_rho = true;
     }
+
 }
 
 int EGS_BaseGeometry::computeIntersections(int ireg, int n, const EGS_Vector &X,

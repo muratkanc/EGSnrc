@@ -47,22 +47,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_ISOTROPIC_SOURCE_DLL
-        #define EGS_ISOTROPIC_SOURCE_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_ISOTROPIC_SOURCE_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_ISOTROPIC_SOURCE_LOCAL
+#ifdef BUILD_ISOTROPIC_SOURCE_DLL
+#define EGS_ISOTROPIC_SOURCE_EXPORT __declspec(dllexport)
+#else
+#define EGS_ISOTROPIC_SOURCE_EXPORT __declspec(dllimport)
+#endif
+#define EGS_ISOTROPIC_SOURCE_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_ISOTROPIC_SOURCE_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_ISOTROPIC_SOURCE_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_ISOTROPIC_SOURCE_EXPORT
-        #define EGS_ISOTROPIC_SOURCE_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_ISOTROPIC_SOURCE_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_ISOTROPIC_SOURCE_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_ISOTROPIC_SOURCE_EXPORT
+#define EGS_ISOTROPIC_SOURCE_LOCAL
+#endif
 
 #endif
 
@@ -87,6 +87,10 @@ It is defined using the following input
     charge = -1 or 0 or 1 for electrons or photons or positrons
     min theta = 80  (degree)
     max theta = 100 (degree)
+    :start Fano source:
+        max mass density = 1.2
+        geometry = some_name
+    :stop Fano source:
 :stop source:
 \endverbatim
 It is worth noting that the functionality of source 3 in the RZ series
@@ -142,59 +146,74 @@ public:
     void getPositionDirection(EGS_RandomGenerator *rndm,
                               EGS_Vector &x, EGS_Vector &u, EGS_Float &wt) {
         bool ok = true;
+        bool okfano = true;
+        if(Fano_source) okfano = false;
         do {
-            x = shape->getRandomPoint(rndm);
-            if (geom) {
-                if (gc == IncludeAll) {
-                    ok = geom->isInside(x);
-                }
-                else if (gc == ExcludeAll) {
-                    ok = !geom->isInside(x);
-                }
-                else if (gc == IncludeSelected) {
-                    ok = false;
-                    int ireg = geom->isWhere(x);
-                    for (int j=0; j<nrs; ++j) {
-                        if (ireg == regions[j]) {
-                            ok = true;
-                            break;
+            do {
+                x = shape->getRandomPoint(rndm);
+                if (geom) {
+                    if (gc == IncludeAll) {
+                        ok = geom->isInside(x);
+                    }
+                    else if (gc == ExcludeAll) {
+                        ok = !geom->isInside(x);
+                    }
+                    else if (gc == IncludeSelected) {
+                        ok = false;
+                        int ireg = geom->isWhere(x);
+                        for (int j=0; j<nrs; ++j) {
+                            if (ireg == regions[j]) {
+                                ok = true;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        ok = true;
+                        int ireg = geom->isWhere(x);
+                        for (int j=0; j<nrs; ++j) {
+                            if (ireg == regions[j]) {
+                                ok = false;
+                                break;
+                            }
                         }
                     }
                 }
-                else {
-                    ok = true;
-                    int ireg = geom->isWhere(x);
-                    for (int j=0; j<nrs; ++j) {
-                        if (ireg == regions[j]) {
-                            ok = false;
-                            break;
-                        }
-                    }
-                }
+            } while ( !ok );
+
+            u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
+            EGS_Float sinz = 1-u.z*u.z;
+            if(sinz > 1e-15) {
+                sinz = sqrt(sinz);
+                EGS_Float cphi, sphi;
+                //rndm->getAzimuth(cphi,sphi);
+                // sample phi, slower than rndm->getAzimuth
+                EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
+                cphi = cos(phi);
+                sphi = sin(phi);
+                u.x = sinz*cphi;
+                u.y = sinz*sphi;
             }
-        }
-        while (!ok);
+            else {
+                u.x = 0;
+                u.y = 0;
+            }
+            wt = 1;
 
-        u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
+            if(Fano_source)
+            {
+                int ireg = geomfano->isWhere(x);
+                int imed = geomfano->medium(ireg);
+                //This is where I need to get the mass density from the geometry.
+                EGS_Float rho = geomfano->getMediumRho(imed);
+                if(rho<0)
+                  egsFatal("\nNegative mass density in region %d of the Fano geometry: medium unassigned.\n",ireg);
+                EGS_Float rand = rndm->getUniform();
+                if(rand>rho/max_mass_density) okfano = false;
+                else okfano = true;
+            }
+        } while(!okfano);
 
-        //u.z = 2*rndm->getUniform()-1;
-        EGS_Float sinz = 1-u.z*u.z;
-        if (sinz > 1e-15) {
-            sinz = sqrt(sinz);
-            EGS_Float cphi, sphi;
-            //rndm->getAzimuth(cphi,sphi);
-            // sample phi, slower than rndm->getAzimuth
-            EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
-            cphi = cos(phi);
-            sphi = sin(phi);
-            u.x = sinz*cphi;
-            u.y = sinz*sphi;
-        }
-        else {
-            u.x = 0;
-            u.y = 0;
-        }
-        wt = 1;
     };
 
     EGS_Float getFluence() const {
@@ -224,6 +243,11 @@ protected:
     EGS_Float min_theta, max_theta;
     EGS_Float buf_1, buf_2; //! avoid multi-calculating cos(min_theta) and cos(max_theta)
     EGS_Float min_phi, max_phi;
+
+    bool Fano_source;
+    EGS_Float max_mass_density;
+    EGS_BaseGeometry *geomfano;
+
     int                 nrs;
     GeometryConfinement gc;
 };
