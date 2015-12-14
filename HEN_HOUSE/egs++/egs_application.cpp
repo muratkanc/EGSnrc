@@ -700,6 +700,7 @@ int EGS_Application::initSimulation() {
     }
     initAusgabObjects();
     //describeSimulation();
+
     return 0;
 }
 

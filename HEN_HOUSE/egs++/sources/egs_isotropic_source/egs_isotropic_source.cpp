@@ -61,7 +61,7 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
                                        " does not exist\n");
         }
     }
-    EGS_Input *fano = input->takeInputItem("Fano source");
+/*    EGS_Input *fano = input->takeInputItem("Fano source");
     if( !fano ) {
         egsWarning("EGS_IsotropicSource: this is not a Fano source\n");
         Fano_source = false;
@@ -96,7 +96,7 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
             egsWarning("EGS_IsotropicSource: this is a Fano source. The maximum density is set to %f "  
                         "and the Fano geometry name is %s\n",max_mass_density,geom_name.c_str());
         }                
-    }
+    }*/
     string geom_name;
     int err = input->getInput("geometry",geom_name);
     if (!err) {
@@ -125,8 +125,37 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
                     regions[j] = regs[j];
                 }
             }
+            /*********************************************************************
+             * Check whether this is a Fano source requiring the maximum density
+             *
+             * The assumption is that if this is requested the whole geometry will
+             * be used ...
+             * 
+             *********************************************************************/
+            Fano_source = false; max_mass_density = 0.0;
+            int errF = input->getInput("max mass density", max_mass_density);
+            if( !errF ) {
+                if( gc != IncludeAll )
+                  egsFatal("EGS_IsotropicSource: A Fano source does not require a region selection input.\n"
+                           "Remove it or set it to IncludeAll!\n");
+                else{
+                     Fano_source = true;
+                     egsInformation("EGS_IsotropicSource: this is a Fano source. The maximum density is set to %f "
+                                     "and the Fano geometry name is %s\n",max_mass_density,geom_name.c_str());
+                     EGS_Float my_max_rho = 0;
+                     egsInformation(" med #   rho / g/cm \n");
+                     for (unsigned int im = 0; im < geom->nMedia(); im++){
+                         EGS_Float the_rho = geom->getMediumRho(im);
+                         if ( the_rho > my_max_rho ) my_max_rho = the_rho;
+                         egsInformation("  %d    %f \n",im,the_rho);
+                     }
+                     egsInformation("EGS_IsotropicSource: The maximum density I get is %f \n"
+                                     ,my_max_rho);
+                     }
+            }
         }
     }
+    
     EGS_Float tmp_theta;
     err = input->getInput("min theta", tmp_theta);
     if (!err) {
@@ -151,6 +180,7 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
     buf_1 = cos(min_theta);
     buf_2 = cos(max_theta);
 
+  
     setUp();
 }
 

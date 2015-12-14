@@ -200,18 +200,17 @@ public:
             }
             wt = 1;
 
-            if(Fano_source)
-            {
-                int ireg = geomfano->isWhere(x);
-                int imed = geomfano->medium(ireg);
-                //This is where I need to get the mass density from the geometry.
-                EGS_Float rho = geomfano->getMediumRho(imed);
-                if(rho<0)
-                  egsFatal("\nNegative mass density in region %d of the Fano geometry: medium unassigned.\n",ireg);
-                EGS_Float rand = rndm->getUniform();
-                if(rand>rho/max_mass_density) okfano = false;
-                else okfano = true;
-            }
+          if( Fano_source )
+          {             
+            //This is where I need to get the mass density from the geometry.
+            EGS_Float rho = geom->getMediumRho(geom->medium(geom->isWhere(x)));
+            if( rho < 0 )
+               egsFatal("\nNegative mass density in region %d of the Fano geometry: medium unassigned.\n",
+                        geom->isWhere(x));
+            EGS_Float rand = rndm->getUniform();
+            if( rand*max_mass_density > rho ) okfano = false;
+            else okfano = true;
+          }
         } while(!okfano);
 
     };
