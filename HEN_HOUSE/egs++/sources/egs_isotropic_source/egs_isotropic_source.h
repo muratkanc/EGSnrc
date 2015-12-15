@@ -145,8 +145,7 @@ public:
 
     void getPositionDirection(EGS_RandomGenerator *rndm,
                               EGS_Vector &x, EGS_Vector &u, EGS_Float &wt) {
-        bool ok = true;
-        bool okfano = true;
+        bool ok = true, okfano = true;
         if(Fano_source) okfano = false;
         do {
             do {
@@ -179,39 +178,31 @@ public:
                         }
                     }
                 }
-            } while ( !ok );
 
-            u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
-            EGS_Float sinz = 1-u.z*u.z;
-            if(sinz > 1e-15) {
-                sinz = sqrt(sinz);
-                EGS_Float cphi, sphi;
-                //rndm->getAzimuth(cphi,sphi);
-                // sample phi, slower than rndm->getAzimuth
-                EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
-                cphi = cos(phi);
-                sphi = sin(phi);
-                u.x = sinz*cphi;
-                u.y = sinz*sphi;
-            }
-            else {
-                u.x = 0;
-                u.y = 0;
-            }
-            wt = 1;
-
-          if( Fano_source )
-          {             
-            //This is where I need to get the mass density from the geometry.
-            EGS_Float rho = geom->getMediumRho(geom->medium(geom->isWhere(x)));
-            if( rho < 0 )
-               egsFatal("\nNegative mass density in region %d of the Fano geometry: medium unassigned.\n",
-                        geom->isWhere(x));
-            EGS_Float rand = rndm->getUniform();
-            if( rand*max_mass_density > rho ) okfano = false;
-            else okfano = true;
-          }
+                if( Fano_source && ok )
+                {
+                    if( rndm->getUniform()*max_mass_density > geom->getMediumRho(geom->medium(geom->isWhere(x))) )
+                        okfano = false;
+                    else
+                        okfano = true;
+                }
+            
+          } while ( !ok );
         } while(!okfano);
+
+        u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
+
+        //u.z = 2*rndm->getUniform()-1;
+        EGS_Float sinz = 1-u.z*u.z;
+        if( sinz > 1e-15 ) {
+          sinz = sqrt(sinz); EGS_Float cphi, sphi;
+          //rndm->getAzimuth(cphi,sphi);
+          // sample phi, slower than rndm->getAzimuth
+          EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
+          cphi = cos(phi); sphi = sin(phi);
+          u.x = sinz*cphi; u.y = sinz*sphi;
+        } else { u.x = 0; u.y = 0; }
+        wt = 1;
 
     };
 
