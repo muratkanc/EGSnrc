@@ -2999,12 +2999,25 @@ of $T_c$ and $k_c$. This can easily be understood from
 Fig. \ref{sigmas} which shows the total cross section in graphite
 for two different cutoff energies.
 \begin{figure}[htp]
-\includegraphics[height=9cm,width=9cm]{figures/cs_all}
-\caption[Total discrete interaction cross sections]{\label{sigmas}
-The total cross section for
-discrete interactions in graphite, calculated with
-$T_c = k_c = 1$~keV and $T_c = k_c = 10$~keV
-(scaled by a factor of 100) as a function of kinetic energy.}
+   %\centering
+   \begin{minipage}{.4\textwidth}
+      \centering
+      \includegraphics[height=8cm,width=8cm]{figures/cs_all}
+      \caption[Total discrete interaction cross sections]{\label{sigmas}
+       The total cross section for discrete interactions in graphite, calculated with
+       $T_c = k_c = 1$~keV and $T_c = k_c = 10$~keV (scaled by a factor of 100)
+       as a function of kinetic energy.}
+   \end{minipage}
+   \hfill
+   \begin{minipage}{.4\textwidth}
+      \centering
+      \includegraphics[height=7.5cm,width=7.5cm]{figures/cse_all}
+      \caption[Total cross sections per unit energy loss]{\label{tilde_sigma}
+          The total cross section per unit energy loss, $\tilde{\Sigma}^{\rm (tot)}(E)$,
+          for discrete interactions in graphite and gold, calculated with $T_c = k_c = 1$~keV and
+          $T_c = k_c = 10$~keV (scaled with a factor of 14 for better visibility)
+          as a function of kinetic energy.}
+   \end{minipage}
 \end{figure}
 
 In EGSnrc the distance between discrete interactions is measured
@@ -3048,6 +3061,7 @@ be superimposed upon the field-free transport, and the final direction calculate
 \begin{equation}
 \Delta\vec{u} = \Delta\vec{u}_{ms,ret} + \Delta\vec{u}_{em}
 \end{equation}
+
 where $\Delta\vec{u}_{ms,ret}$ is the angular deflection due to elastic and inelastic scattering which
 can be calculated using EGSnrc's electron transport algorithm, and $\Delta\vec{u}_{em}$ is the angular
 deflection due to the electromagnetic field, which, to first order, can be obtained from
@@ -3056,7 +3070,6 @@ deflection due to the electromagnetic field, which, to first order, can be obtai
 \label{uchange_emf}
     \Delta\vec{u}_{em} = \frac{q \cdot s}{m_0 \gamma v^2_0} \left[\vec{E}_0 - \vec{u}_0(\vec{u}_0\cdot \vec{E}_0) + \vec{v}_0 \times \vec{B}_0\right]
 \end{equation}
-
 
 The final position can be obtained using
 
