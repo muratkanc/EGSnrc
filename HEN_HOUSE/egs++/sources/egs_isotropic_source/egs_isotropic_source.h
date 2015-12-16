@@ -178,7 +178,6 @@ public:
                         }
                     }
                 }
-
                 if( Fano_source && ok )
                 {
                     if( rndm->getUniform()*max_mass_density > geom->getMediumRho(geom->medium(geom->isWhere(x))) )
@@ -192,18 +191,14 @@ public:
 
         u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
 
-        //u.z = 2*rndm->getUniform()-1;
         EGS_Float sinz = 1-u.z*u.z;
         if( sinz > 1e-15 ) {
           sinz = sqrt(sinz); EGS_Float cphi, sphi;
-          //rndm->getAzimuth(cphi,sphi);
-          // sample phi, slower than rndm->getAzimuth
           EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
           cphi = cos(phi); sphi = sin(phi);
           u.x = sinz*cphi; u.y = sinz*sphi;
         } else { u.x = 0; u.y = 0; }
         wt = 1;
-
     };
 
     EGS_Float getFluence() const {
