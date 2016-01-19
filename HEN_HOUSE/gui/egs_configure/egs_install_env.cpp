@@ -31,7 +31,7 @@
 
 #include "egs_install.h"
 
-#define EGS_VIEW_DSO "egsnrc64"
+//#define EGS_VIEW_DSO "linux64"
 
 void QInstallPage::environmentSetUp()
 {
@@ -54,10 +54,19 @@ void QInstallPage::environmentSetUp()
      printProgress("OK \n");
    else
     printProgress("failed \n");
-/*   printProgress((QString)"\n => Copying egs_view and egs++ library to dso area .... \n\n");
-   QString dsoDir = henHouse() + "egs++" + s + "dso";
-   if ( ! copyRecursively( piecesWindows + s + "win2k-cl", dsoDir) )
-        printProgress( QString("\nError copying files!"));*/
+   
+/*   printProgress((QString)"\n => Moving egs_view to dso area .... ");
+   if ( fileExists( egsBinDir + "egs_view.exe" ) ){
+      move_file(egsBinDir + "egs_view.exe", dsoDir + "egs_view.exe");
+      printProgress("OK \n");
+   }
+   else
+      printProgress("failed \n");*/
+   
+   //QString dsoDir = henHouse() + "egs++" + s + "dso";
+   //if ( ! copyRecursively( piecesWindows + s + "win2k-cl", dsoDir) )
+   //     printProgress( QString("\nError copying files!"));
+
 #elif defined(Q_OS_LINUX)
     /* make symbolic link to statically built GUIs  */
     setup_static_guis();
@@ -119,10 +128,12 @@ void QInstallPage::SaveAppSetting()
     updateProgress();
 
     // Update the user path variable with the dso/win2k-cl directory
-    printProgress("\nSetting win2k-cl DSO directory in your path ....");
+    // NOT NEEDED anymore !!! Since egs_view is now built together with
+    // the other GUIs, it is treated in the same manner. Thanks to @mstoeckl!
+    printProgress("\nSetting win-static DSO directory in your path ....");
     update_path( henHouse() + QDir::separator() + "egs++" +
                               QDir::separator() + "dso"   +
-                              QDir::separator() + "win2k-cl");
+                              QDir::separator() + "win-static");
     updateProgress();
 
     // Update the user path variable with the dso/$my_machine directory
@@ -279,7 +290,8 @@ void QInstallPage::createEGSFolders(){
           if( *it != "egs_view" )
             target =  QDir::convertSeparators( egsBinDir  + s + *it + ".exe" );
           else{
-            target =  QDir::convertSeparators( henHouse() + "egs++" + s + "dso" + s + "win2k-cl" + s + *it + ".exe");
+            target =  QDir::convertSeparators( henHouse() + "egs++" + s + "dso" + s + "win-static" + s + *it + ".exe");
+            //target =  QDir::convertSeparators( dsoDir + *it + ".exe");
             icon   = henHouse() + "egs++" + s + "view" + s + *it + ".ico";
           }
           if ( ! fileExists( target ) ) {
@@ -343,9 +355,8 @@ void QInstallPage::createEGSFolders(){
               // Hardcoding dso location for egs_view
               //**************************************
               //scriptstr.replace( "the_dso", henHouse() +
-                                 //"egs++" + s + "dso" + s + my_machine() );
-              scriptstr.replace( "the_dso", henHouse() +
-                                 "egs++" + s + "dso" + s + QString(EGS_VIEW_DSO) );
+              //                   "egs++" + s + "dso" + s + QString(EGS_VIEW_DSO) );
+              scriptstr.replace( "the_dso",dsoDir );
             }
             scriptstr.replace( "gui_exe",      target );
             if ( ! writeQString2File( scriptstr, script ) ) {
@@ -581,7 +592,7 @@ void QInstallPage::setup_static_guis(){
 }
 /**************************************************************
  * NOT NEEDED. egs_view is not looking for the location below.
- * It will pick the egspp library defined by LD_LIBRARY_PATH
+ * It will pick the egspp library defined by LD_LIBRARY_PATH!
  *
  * Since egs_view is built statically using my_machine = linux32 or linux64 one needs
    to establish a sys link to the actual dso/my_machine
@@ -612,13 +623,13 @@ void QInstallPage::set_guis_dso(){
 }
 
 /**************************************************************
- * Fixing LD_LIBRARY_PATH to point to egsnrc64 which provides
- * precompiled egspp and all dso files needed by egs_view.
+ * Setting LD_LIBRARY_PATH to point to my_machine which provides
+ * the egspp library needed by egs_view.
  **************************************************************/
 void QInstallPage::update_unix_env(){
-    QString dsoDirS = henHouse()  + "egs++" + QDir::separator() +
-                                    "dso"   + QDir::separator() + QString(EGS_VIEW_DSO);
-                                    //QString("dso")   + QDir::separator() + my_machine();
+    //QString dsoDirS = henHouse()  + "egs++" + QDir::separator() +
+    //                                "dso"   + QDir::separator() + QString(EGS_VIEW_DSO);
+    QString dsoDirS = dsoDir;                                  
     QString home = getenv( "HOME");
     /* Get SHELL environment variable */
     QString shell = getenv("SHELL");
@@ -634,8 +645,6 @@ void QInstallPage::update_unix_env(){
                QString("\nexport LD_LIBRARY_PATH=")  + dsoDirS + QString(":$LD_LIBRARY_PATH") +
                QString("\n. ") + henHouse() + QString("scripts")      +
                QDir::separator() + QString("egsnrc_bashrc_additions");
-               //QString("\n. ") + henHouse() + QString("scripts")      +  //Fred moved most of this to
-               //QDir::separator() + QString("beamnrc_bashrc_additions");  //the egsnrc_bashrc_additions
     if (shell == "bash"){
       rcfile +=  QString(".bashrc");
     }
@@ -647,8 +656,6 @@ void QInstallPage::update_unix_env(){
                QString("\nsetenv LD_LIBRARY_PATH ")  + dsoDirS + QString(":$LD_LIBRARY_PATH") +
                QString("\nsource ") + henHouse() + QString("scripts") +
                QDir::separator() + QString("egsnrc_cshrc_additions");
-               //QString("\nsource ") + henHouse() + QString("scripts") + //Fred moved most of this to
-               //QDir::separator() + QString("beamnrc_cshrc_additions");  //the egsnrc_cshrc_additions
     }
     else{
       rcfile +=  QString(".profile");

@@ -49,7 +49,9 @@ HEADERS += egs_wizard.h \
 
 MOC_DIR =       .moc/$$my_machine
 OBJECTS_DIR =   .obj/$$my_machine
-TARGET = egs_configuration
+
+TARGET   = egs_configuration
+DESTDIR  = ../../bin/$$my_machine
 
 win32 {
     DEFINES += WIN32
@@ -66,7 +68,7 @@ win32 {
 
 unix {
     CONFIG  += qt thread warn_on debug_and_release $$my_build
-    DESTDIR  = $(HOME)/HEN_HOUSE_2015
+    #DESTDIR  = $(HOME)/HEN_HOUSE_2015 Used for testing
     #message("CONFIG = $$CONFIG")
     contains( CONFIG, shared ):message( "Dynamic build..." )
     contains( CONFIG, static ){
