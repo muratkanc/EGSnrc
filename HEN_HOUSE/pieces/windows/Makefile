@@ -28,11 +28,16 @@
 #
 ###############################################################################
 
+DSEP := $(subst /,\,/)
 
 cleanup=
 
+MINGWDIR=C:\mingw32\bin$(DSEP)
+DSODIR=..\..\egs++\dso\win-static$(DSEP)
+
 all:   first \
-	egs_gui.exe egs_inprz.exe
+	egs_gui.exe egs_inprz.exe egs_view.exe
+#	egs_gui.exe egs_inprz.exe
 
 test:
 	@echo $(cleanup)
@@ -42,6 +47,27 @@ egs_gui.exe: ..\..\bin\win-static\egs_gui.exe
 
 egs_inprz.exe: ..\..\bin\win-static\egs_inprz.exe
 	copy $< $@
+
+# Dependencies required for deployment
+egs_view.exe: ..\..\egs++\dso\win-static\libgcc_s_dw2-1.dll ..\..\egs++\dso\win-static\libstdc++-6.dll ..\..\egs++\dso\win-static\libwinpthread-1.dll
+#egs_view.exe: ..\..\bin\win-static\egs_view.exe
+#	copy $< $@
+
+$(DSODIR)libgcc_s_dw2-1.dll: $(MINGWDIR)libgcc_s_dw2-1.dll
+	copy $(MINGWDIR)libgcc_s_dw2-1.dll "$(DSODIR)libgcc_s_dw2-1.dll"
+#	copy $< $@
+
+$(DSODIR)libstdc++-6.dll: $(MINGWDIR)libstdc++-6.dll
+	copy "$(MINGWDIR)libstdc++-6.dll" "$(DSODIR)libstdc++-6.dll"
+
+$(DSODIR)libwinpthread-1.dll: $(MINGWDIR)libwinpthread-1.dll
+	copy $(MINGWDIR)libwinpthread-1.dll "$(DSODIR)libwinpthread-1.dll"
+
+$(MINGWDIR)libgcc_s_dw2-1.dll:
+
+$(MINGWDIR)libstdc++-6.dll:
+
+$(MINGWDIR)libwinpthread-1.dll:
 
 first:
 	@build_guis $(cleanup)
