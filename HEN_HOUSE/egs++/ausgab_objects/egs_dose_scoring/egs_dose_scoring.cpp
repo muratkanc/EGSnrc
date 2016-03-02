@@ -286,15 +286,13 @@ void EGS_DoseScoring::reportResults() {
         }
         egsInformation("%s\n",line.c_str());
     }
-    if (doseM) {
-        vector<EGS_Float> massM(nmedia,0);
-        int imed = 0;
-        for (int ir=0; ir<nreg; ir++) {
-          if(app->isRealRegion(ir)) {
-            imed = app->getMedium(ir);
-            EGS_Float volume = vol.size() > 1 ? vol[ir]:vol[0];
-            massM[imed] += app->getMediumRho(imed)*volume;
-          }
+    if (doseM){
+        vector<EGS_Float> massM(nmedia,0); int imed = 0;
+        for (int ir=0; ir<nreg; ir++){
+          if (!(app->isRealRegion(ir))) continue;
+          imed = app->getMedium(ir);
+          EGS_Float volume = vol.size() > 1 ? vol[ir]:vol[0];
+          massM[imed] += app->getMediumRho(imed)*volume;
         }
         if (normE==1) {
             egsInformation("\n\n==> Summary of media dosimetry (per particle)\n");
