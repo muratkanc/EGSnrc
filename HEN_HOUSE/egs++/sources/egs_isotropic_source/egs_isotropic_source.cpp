@@ -41,9 +41,9 @@
 #include <sstream>
 
 EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
-        EGS_ObjectFactory *f) : EGS_BaseSimpleSource(input,f), shape(0), geom(0),
-    regions(0), nrs(0), min_theta(0), max_theta(M_PI), min_phi(0), max_phi(2*M_PI),
-    gc(IncludeAll) {
+    EGS_ObjectFactory *f) : EGS_BaseSimpleSource(input,f), shape(0), geom(0),
+    regions(0), min_theta(0), max_theta(M_PI), min_phi(0), max_phi(2*M_PI),
+    gc(IncludeAll), Fano_source(false) {
     vector<EGS_Float> pos;
     EGS_Input *ishape = input->takeInputItem("shape");
     if (ishape) {
@@ -97,14 +97,15 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
              * be used ...
              *
              *********************************************************************/
-            Fano_source = false; max_mass_density = 0.0;
+            max_mass_density = 0.0;
             int errF = input->getInput("max mass density", max_mass_density);
             if( !errF ) {
                 if( gc != IncludeAll )
                   egsFatal("EGS_IsotropicSource: A Fano source does not require a region selection input.\n"
                            "Remove it or set it to IncludeAll!\n");
-                else
-                  Fano_source = true;
+                else{
+                  Fano_source = true; //real_count = 0.0;
+                }
             }
         }
     }
@@ -133,7 +134,6 @@ EGS_IsotropicSource::EGS_IsotropicSource(EGS_Input *input,
     buf_1 = cos(min_theta);
     buf_2 = cos(max_theta);
 
-
     setUp();
 }
 
@@ -143,6 +143,7 @@ void EGS_IsotropicSource::setUp() {
         description = "Invalid isotropic source";
     }
     else {
+  
         if (Fano_source)
            description = "Isotropic Fano source from a shape of type ";
         else
@@ -150,19 +151,10 @@ void EGS_IsotropicSource::setUp() {
         description += shape->getObjectType();
         description += " with ";
         description += s->getType();
-        if (q == -1) {
-            description += ", electrons";
-        }
-        else if (q == 0) {
-            description += ", photons";
-        }
-        else if (q == 1) {
-            description += ", positrons";
-        }
-        else {
-            description += ", unknown particle type";
-        }
-
+        if     (q == -1) description += ", electrons";
+        else if(q ==  0) description += ", photons";
+        else if(q ==  1) description += ", positrons";
+        else description += ", unknown particle type";
         if (Fano_source){
             ostringstream str_density; str_density << scientific << max_mass_density;
             description += "\n maximum density = " + str_density.str() + "  g/cm3";
