@@ -87,10 +87,16 @@ It is defined using the following input
     charge = -1 or 0 or 1 for electrons or photons or positrons
     min theta = 80  (degree)
     max theta = 100 (degree)
-    :start Fano source:
-        max mass density = 1.2
-        geometry = some_name
-    :stop Fano source:
+    geometry = some_name          # Optional, only particles inside the geometry
+                                  # or inside some of its regions are generated.
+    region selection = IncludeAll # Optional, only for a valid geometry defined as above.
+                                  # Also possible: ExcludeAll, IncludeSelected, ExcludeSelected.
+                                  # Defaults to IncludeAll.
+    selected regions = ir1,...    # If IncludeSelected or ExcludeSelected above, then user must
+                                  # enter the desired regions to be excluded or included. If
+                                  # no region provided, region selection switches to:
+                                  #        IncludeAll if IncludeSelected
+                                  #        ExcludeAll if ExcludeSelected
 :stop source:
 \endverbatim
 It is worth noting that the functionality of source 3 in the RZ series
@@ -145,14 +151,16 @@ public:
 
     void getPositionDirection(EGS_RandomGenerator *rndm,
                               EGS_Vector &x, EGS_Vector &u, EGS_Float &wt) {
-        bool ok = true, okfano = true;
-        if(Fano_source) okfano = false;
+        bool ok = true;
         do {
-            do {
-                x = shape->getRandomPoint(rndm);
-                if (geom) {
-                    if (gc == IncludeAll) {
-                        ok = geom->isInside(x);
+            x = shape->getRandomPoint(rndm);
+            if( geom ) {
+                if( gc == IncludeAll ) ok = geom->isInside(x);
+                else if( gc == ExcludeAll ) ok = !geom->isInside(x);
+                else if( gc == IncludeSelected ) {
+                    ok = false; int ireg = geom->isWhere(x);
+                    for(int j=0; j<nrs; ++j) {
+                        if( ireg == regions[j] ) { ok = true; break; }
                     }
                     else if (gc == ExcludeAll) {
                         ok = !geom->isInside(x);
@@ -178,26 +186,21 @@ public:
                         }
                     }
                 }
-                if( Fano_source && ok )
-                {
-                    if( rndm->getUniform()*max_mass_density > geom->getMediumRho(geom->medium(geom->isWhere(x))) )
-                        okfano = false;
-                    else
-                        okfano = true;
-                }
-            
-          } while ( !ok );
-        } while(!okfano);
-
+            }
+        } while ( !ok );
+        
         u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
-
+        
         EGS_Float sinz = 1-u.z*u.z;
         if( sinz > 1e-15 ) {
           sinz = sqrt(sinz); EGS_Float cphi, sphi;
           EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
           cphi = cos(phi); sphi = sin(phi);
           u.x = sinz*cphi; u.y = sinz*sphi;
-        } else { u.x = 0; u.y = 0; }
+        } else
+        {
+          u.x = 0; u.y = 0;
+        }
         wt = 1;
     };
 
@@ -219,19 +222,19 @@ public:
 
 protected:
 
-    EGS_BaseShape *shape;  //!< The shape from which particles are emitted.
+    EGS_BaseShape    *shape;  //!< The shape from which particles are emitted.
     EGS_BaseGeometry *geom;
     int              *regions;
 
     void setUp();
 
     EGS_Float min_theta, max_theta;
+<<<<<<< HEAD
     EGS_Float buf_1, buf_2; //! avoid multi-calculating cos(min_theta) and cos(max_theta)
+=======
+    EGS_Float buf_1, buf_2;//! avoid multi-calculating cos(min_theta) and cos(max_theta)
+>>>>>>> Revert to source without Fano source option.
     EGS_Float min_phi, max_phi;
-
-    bool Fano_source;
-    EGS_Float max_mass_density;
-    EGS_BaseGeometry *geomfano;
 
     int                 nrs;
     GeometryConfinement gc;
