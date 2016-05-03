@@ -47,6 +47,7 @@
 #include "egs_input.h"
 #include "egs_interpolator.h"
 #include "egs_rndm.h"
+#include "egs_math.h"
 #include "egs_ausgab_object.h"
 
 #include <string>
@@ -1099,7 +1100,7 @@ void EGS_AdvancedApplication::resetRNGState() {
 }
 
 //************************************************************
-// Utility functions for use with ausgab dose scoring objects
+// Utility functions for use with ausgab dose scoring object
 //************************************************************
 // Returns density for medium ind
 EGS_Float EGS_AdvancedApplication::getMediumRho(int ind) {
@@ -1109,7 +1110,6 @@ EGS_Float EGS_AdvancedApplication::getMediumRho(int ind) {
 EGS_Float EGS_AdvancedApplication::getEdep() {
     return the_epcont->edep;
 }
-//************************************************************
 
 extern __extc__ void egsHowfar() {
     CHECK_GET_APPLICATION(app,"egsHowfar()");
