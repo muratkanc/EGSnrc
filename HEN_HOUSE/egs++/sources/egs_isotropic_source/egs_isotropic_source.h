@@ -237,11 +237,7 @@ protected:
     void setUp();
 
     EGS_Float min_theta, max_theta;
-    <<<<<<< HEAD
     EGS_Float buf_1, buf_2; //! avoid multi-calculating cos(min_theta) and cos(max_theta)
-    =======
-        EGS_Float buf_1, buf_2;//! avoid multi-calculating cos(min_theta) and cos(max_theta)
-    >>>>>>> Revert to source without Fano source option.
     EGS_Float min_phi, max_phi;
 
     int                 nrs;
