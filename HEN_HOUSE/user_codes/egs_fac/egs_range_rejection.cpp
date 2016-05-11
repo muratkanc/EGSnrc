@@ -39,16 +39,19 @@
 
 EGS_RangeRejection* EGS_RangeRejection::getRangeRejection(EGS_Input *input,
         EGS_Interpolator *i_ededx, EGS_Interpolator *i_pdedx) {
-    EGS_Input *rr; bool delete_it;
+    EGS_Input *rr;
+    bool delete_it;
     if( input->isA("range rejection") ) {
-        rr = input; delete_it = false;
+        rr = input;
+        delete_it = false;
     }
     else {
         rr = input->takeInputItem("range rejection");
         if( !rr ) return 0;
         delete_it = true;
     }
-    int iaux; int err = rr->getInput("rejection",iaux);
+    int iaux;
+    int err = rr->getInput("rejection",iaux);
     EGS_RangeRejection *result = 0;
     if( !err && iaux > 0 ) {
         result = new EGS_RangeRejection;
@@ -58,31 +61,37 @@ EGS_RangeRejection* EGS_RangeRejection::getRangeRejection(EGS_Input *input,
             result->type = RussianRoulette;
             result->probi = iaux;
         }
-        EGS_Float aux; err = rr->getInput("Esave",aux);
+        EGS_Float aux;
+        err = rr->getInput("Esave",aux);
         if( !err && aux >= 0 ) result->Esave = aux;
         string cavity_geometry;
         err = rr->getInput("cavity geometry",cavity_geometry);
         if( !err ) {
             result->cgeom = EGS_BaseGeometry::getGeometry(cavity_geometry);
             if( !result->cgeom ) egsWarning("\n\n********** no geometry named"
-                       " %s exists => using region-by-region rejection only\n");
+                                                " %s exists => using region-by-region rejection only\n");
         }
         if( result->Esave <= 0.511 && result->type == RangeDiscard ) {
             egsWarning("\n\n********* rr_flag = 1 but Esave = 0 =>"
-                         " not using range rejection\n\n");
-            delete result; result = 0;
+                       " not using range rejection\n\n");
+            delete result;
+            result = 0;
         }
         if( result && result->type != None && result->cgeom ) {
-            string rej_medium; int irej_medium = -1;
+            string rej_medium;
+            int irej_medium = -1;
             err = rr->getInput("rejection range medium",rej_medium);
             if( !err ) {
                 int imed = EGS_BaseGeometry::getMediumIndex(rej_medium);
                 if( imed < 0 ) egsWarning("\n\n*********** no medium"
-                    " with name %s initialized => using region-by-region rejection only\n",
-                    rej_medium.c_str());
+                                              " with name %s initialized => using region-by-region rejection only\n",
+                                              rej_medium.c_str());
                 else irej_medium = imed;
             }
-            if( irej_medium < 0 ) { result->cgeom = 0; result->type = RangeDiscard; }
+            if( irej_medium < 0 ) {
+                result->cgeom = 0;
+                result->type = RangeDiscard;
+            }
             else {
                 //
                 // *** prepare an interpolator for the electron range
@@ -95,7 +104,8 @@ EGS_RangeRejection* EGS_RangeRejection::getRangeRejection(EGS_Input *input,
                 EGS_Float dloge = (log_emax - log_emin)/nbin;
                 EGS_Float *erange = new EGS_Float [nbin];
                 EGS_Float *prange = new EGS_Float [nbin];
-                erange[0] = 0; prange[0] = 0;
+                erange[0] = 0;
+                prange[0] = 0;
                 EGS_Float ededx_old = i_ededx[i].interpolate(log_emin);
                 EGS_Float pdedx_old = i_pdedx[i].interpolate(log_emin);
                 EGS_Float Eold = exp(log_emin);
@@ -106,14 +116,16 @@ EGS_RangeRejection* EGS_RangeRejection::getRangeRejection(EGS_Input *input,
                     EGS_Float ededx = i_ededx[i].interpolate(elke);
                     EGS_Float pdedx = i_pdedx[i].interpolate(elke);
                     if( ededx < ededx_old )
-                    erange[j] = erange[j-1]+1.02*(E-Eold)/ededx;
+                        erange[j] = erange[j-1]+1.02*(E-Eold)/ededx;
                     else
-                    erange[j] = erange[j-1]+1.02*(E-Eold)/ededx_old;
+                        erange[j] = erange[j-1]+1.02*(E-Eold)/ededx_old;
                     if( pdedx < pdedx_old )
-                    prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx;
+                        prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx;
                     else
-                    prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx_old;
-                    Eold = E; ededx_old = ededx; pdedx_old = pdedx;
+                        prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx_old;
+                    Eold = E;
+                    ededx_old = ededx;
+                    pdedx_old = pdedx;
                 }
                 result->erange.initialize(nbin,log_emin,log_emax,erange);
                 result->prange.initialize(nbin,log_emin,log_emax,prange);
@@ -126,8 +138,8 @@ EGS_RangeRejection* EGS_RangeRejection::getRangeRejection(EGS_Input *input,
 
 EGS_RangeRejection::RejectionAction
 EGS_RangeRejection::rangeDiscard(int np, EGS_Stack *stack,
-                    EGS_Float tperp, EGS_Float range, bool is_cav,
-                    EGS_Float logE, EGS_RandomGenerator *rndm) const {
+                                 EGS_Float tperp, EGS_Float range, bool is_cav,
+                                 EGS_Float logE, EGS_RandomGenerator *rndm) const {
     if( type == None ) return NoAction;
     if( (type == RangeDiscard || is_cav) && stack->E[np] > Esave ) return NoAction;
     // i.e., don't take action if type is RangeDiscard or type is RussianRoulette but
@@ -148,8 +160,8 @@ EGS_RangeRejection::rangeDiscard(int np, EGS_Stack *stack,
         if( !cgeom->isInside(x) ) {
             EGS_Float cperp = cgeom->hownear(-1,x);
             EGS_Float crange = q == -1 ?
-                erange.interpolateFast(logE) :
-                prange.interpolateFast(logE);
+                               erange.interpolateFast(logE) :
+                               prange.interpolateFast(logE);
             if( crange < cperp ) {
                 if( type == RangeDiscard ) return retval;
                 do_RR = true;
@@ -159,16 +171,17 @@ EGS_RangeRejection::rangeDiscard(int np, EGS_Stack *stack,
     if( !do_RR ) return NoAction;
     if( rndm->getUniform()*probi < 1 ) {
         // particle survives.
-        stack->wt[np] *= probi; return Survive;
+        stack->wt[np] *= probi;
+        return Survive;
     }
     return Kill; // i.e. particle is killed and must be discarded immediately.
 }
 
 EGS_RangeRejection::RejectionAction
 EGS_RangeRejection::rangeDiscard(int q,
-                    const EGS_Vector &x, EGS_Float E, EGS_Float logE,
-                    EGS_Float tperp, EGS_Float range, bool is_cav,
-                    EGS_RandomGenerator *rndm, EGS_Float &wt) const {
+                                 const EGS_Vector &x, EGS_Float E, EGS_Float logE,
+                                 EGS_Float tperp, EGS_Float range, bool is_cav,
+                                 EGS_RandomGenerator *rndm, EGS_Float &wt) const {
     if( type == None ) return NoAction;
     if( (type == RangeDiscard || is_cav) && E > Esave ) return NoAction;
     // i.e., don't take action if type is RangeDiscard or type is RussianRoulette but
@@ -187,8 +200,8 @@ EGS_RangeRejection::rangeDiscard(int q,
         if( !cgeom->isInside(x) ) {
             EGS_Float cperp = cgeom->hownear(-1,x);
             EGS_Float crange = q == -1 ?
-                erange.interpolateFast(logE) :
-                prange.interpolateFast(logE);
+                               erange.interpolateFast(logE) :
+                               prange.interpolateFast(logE);
             if( crange < cperp ) {
                 if( type == RangeDiscard ) return retval;
                 do_RR = true;
@@ -198,7 +211,8 @@ EGS_RangeRejection::rangeDiscard(int q,
     if( !do_RR ) return NoAction;
     if( rndm->getUniform()*probi < 1 ) {
         // particle survives.
-        wt *= probi; return Survive;
+        wt *= probi;
+        return Survive;
     }
     return Kill; // i.e. particle is killed and must be discarded immediately.
 }

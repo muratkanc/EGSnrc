@@ -115,14 +115,17 @@ class TmpPhsp {
 public:
     // constructor
     TmpPhsp() : np(0), ntot(4), p(new EGS_Particle[4]) {};
-    ~TmpPhsp() { delete [] p; };
+    ~TmpPhsp() {
+        delete [] p;
+    };
     void grow() {
         int ntot_new = 2*ntot;
         if( ntot_new > MAXPHSP ) egsFatal("TmpPhsp::grow(): exceeded maximum size %d\n",MAXPHSP);
         EGS_Particle *pnew = new EGS_Particle [ntot_new];
         for(int j=0; j<np; j++) pnew[j] = p[j];
         delete [] p;
-        p = pnew; ntot = ntot_new;
+        p = pnew;
+        ntot = ntot_new;
     };
 
     void set() {
@@ -140,8 +143,9 @@ public:
         if( np > ntot-1 ) grow();
         p[np++] = particle;
     };
-    void get(){
-        int ip = the_stack->np-1; --np;
+    void get() {
+        int ip = the_stack->np-1;
+        --np;
         the_stack->x[ip]  = p[np].x.x;
         the_stack->y[ip]  = p[np].x.y;
         the_stack->z[ip]  = p[np].x.z;
@@ -154,11 +158,17 @@ public:
         the_stack->wt[ip] = p[np].wt;
     };
 
-    void clean() { np = 0; };
+    void clean() {
+        np = 0;
+    };
 
-    void setPointer(int ip) { np = ip; };
+    void setPointer(int ip) {
+        np = ip;
+    };
 
-    int  size() const { return np; };
+    int  size() const {
+        return np;
+    };
 
 private:
 
@@ -172,366 +182,398 @@ private:
 class APP_EXPORT EGS_PosUncertDistributor {
 
 public:
-        /*Constructor*/
-        EGS_PosUncertDistributor(): transl(), sigma_transl(), max_transl(), theta(), sigma_theta(), max_theta(), typeTransl(0), typeRot(0) {}
+    /*Constructor*/
+    EGS_PosUncertDistributor(): transl(), sigma_transl(), max_transl(), theta(), sigma_theta(), max_theta(), typeTransl(0), typeRot(0) {}
 
-        /*Destructor*/
-        ~EGS_PosUncertDistributor() {};
+    /*Destructor*/
+    ~EGS_PosUncertDistributor() {};
 
-        /*initialization*/
-        void initTranslation(EGS_Vector sigmaval, EGS_Vector maxval) {
-            transl.x = 0;
-            transl.y = 0;
-            transl.z = 0;
-            sigma_transl = sigmaval;
-            max_transl = maxval;
-        };
-        /*initialization*/
-        void initRotation(EGS_Vector sigmaval, EGS_Vector maxval) {
-            theta.x = 0;
-            theta.y = 0;
-            theta.z = 0;
-            sigma_theta = sigmaval;
-            max_theta = maxval;
-        };
-        /*initialization*/
-        int initTypeTransl(int dist) { typeTransl = dist; };
-        int initTypeRot(int dist) { typeRot = dist; };
-        /*validation*/
-        bool validateInput() {
-            bool retval = true;
-            /*make sure values are not negative*/
-            if((sigma_transl.x<0)||(sigma_transl.y<0)||(sigma_transl.z<0)||(max_transl.x<0)||(max_transl.y<0)||(max_transl.z<0))
-                retval = false;
-            if((sigma_theta.x<0)||(sigma_theta.y<0)||(sigma_theta.z<0)||(max_theta.x<0)||(max_theta.y<0)||(max_theta.z<0))
-                retval = false;
-            /*make sure max is at least equal to sigma*/
-            if((max_transl.x<sigma_transl.x)||(max_transl.y<sigma_transl.y)||(max_transl.z<sigma_transl.z))
-                retval = false;
-            if((max_theta.x<sigma_theta.x)  ||(max_theta.y<sigma_theta.y)  ||(max_theta.z<sigma_theta.z))
-                retval = false;
-            /*make sure if sigma is 0, max is 0 also*/
-            if((sigma_transl.x==0&&max_transl.x!=0)||(sigma_transl.y==0&&max_transl.y!=0)||(sigma_transl.z==0&&max_transl.z!=0))
-                retval = false;
-            if((sigma_theta.x==0&&max_theta.x!=0)||(sigma_theta.y==0&&max_theta.y!=0)||(sigma_theta.z==0&&max_theta.z!=0))
-                retval = false;
-            /*make sure distribution types are valid*/
-            if((typeTransl!=0)&&(typeTransl!=1))
-                retval = false;
-            if((typeRot!=0)&&(typeRot!=1))
-                retval = false;
-            /*return value*/
-            return retval;
-        };
-        /*information*/
-        int returnTypeTransl() { return typeTransl; };
-        int returnTypeRot() { return typeRot; };
-        EGS_Vector getTranslation()      { return transl; };
-        EGS_Vector getSigmaTranslation() { return sigma_transl; };
-        EGS_Vector getMaxTranslation()   { return max_transl; };
-        EGS_Vector getRotation()         { return theta; };
-        EGS_Vector getSigmaRotation()    { return sigma_theta; };
-        EGS_Vector getMaxRotation()      { return max_theta; };
-        /*set new shifts*/
-        void setNewShifts(EGS_RandomGenerator *rndm){
-            transl.x = rndmShift(sigma_transl.x,max_transl.x,typeTransl,rndm);
-            transl.y = rndmShift(sigma_transl.y,max_transl.y,typeTransl,rndm);
-            transl.z = rndmShift(sigma_transl.z,max_transl.z,typeTransl,rndm);
-            theta.x = rndmShift(sigma_theta.x,max_theta.x,typeRot,rndm);
-            theta.y = rndmShift(sigma_theta.y,max_theta.y,typeRot,rndm);
-            theta.z = rndmShift(sigma_theta.z,max_theta.z,typeRot,rndm);
-        };
-        /*generate rndm shift*/
-        EGS_Float rndmShift(EGS_Float sigmaval, EGS_Float maxval, int type,EGS_RandomGenerator *rndm) {
-            EGS_Float val = 2*maxval;
-            if(sigmaval*maxval != 0) {
-                if(type==0) {
-                    while((val > maxval)||(val < -maxval))
-                        val = sigmaval*rndm->getGaussian();
-                }
-                else if(type==1)  val = maxval*(rndm->getUniform()-0.5)*2;
+    /*initialization*/
+    void initTranslation(EGS_Vector sigmaval, EGS_Vector maxval) {
+        transl.x = 0;
+        transl.y = 0;
+        transl.z = 0;
+        sigma_transl = sigmaval;
+        max_transl = maxval;
+    };
+    /*initialization*/
+    void initRotation(EGS_Vector sigmaval, EGS_Vector maxval) {
+        theta.x = 0;
+        theta.y = 0;
+        theta.z = 0;
+        sigma_theta = sigmaval;
+        max_theta = maxval;
+    };
+    /*initialization*/
+    int initTypeTransl(int dist) {
+        typeTransl = dist;
+    };
+    int initTypeRot(int dist) {
+        typeRot = dist;
+    };
+    /*validation*/
+    bool validateInput() {
+        bool retval = true;
+        /*make sure values are not negative*/
+        if((sigma_transl.x<0)||(sigma_transl.y<0)||(sigma_transl.z<0)||(max_transl.x<0)||(max_transl.y<0)||(max_transl.z<0))
+            retval = false;
+        if((sigma_theta.x<0)||(sigma_theta.y<0)||(sigma_theta.z<0)||(max_theta.x<0)||(max_theta.y<0)||(max_theta.z<0))
+            retval = false;
+        /*make sure max is at least equal to sigma*/
+        if((max_transl.x<sigma_transl.x)||(max_transl.y<sigma_transl.y)||(max_transl.z<sigma_transl.z))
+            retval = false;
+        if((max_theta.x<sigma_theta.x)  ||(max_theta.y<sigma_theta.y)  ||(max_theta.z<sigma_theta.z))
+            retval = false;
+        /*make sure if sigma is 0, max is 0 also*/
+        if((sigma_transl.x==0&&max_transl.x!=0)||(sigma_transl.y==0&&max_transl.y!=0)||(sigma_transl.z==0&&max_transl.z!=0))
+            retval = false;
+        if((sigma_theta.x==0&&max_theta.x!=0)||(sigma_theta.y==0&&max_theta.y!=0)||(sigma_theta.z==0&&max_theta.z!=0))
+            retval = false;
+        /*make sure distribution types are valid*/
+        if((typeTransl!=0)&&(typeTransl!=1))
+            retval = false;
+        if((typeRot!=0)&&(typeRot!=1))
+            retval = false;
+        /*return value*/
+        return retval;
+    };
+    /*information*/
+    int returnTypeTransl() {
+        return typeTransl;
+    };
+    int returnTypeRot() {
+        return typeRot;
+    };
+    EGS_Vector getTranslation()      {
+        return transl;
+    };
+    EGS_Vector getSigmaTranslation() {
+        return sigma_transl;
+    };
+    EGS_Vector getMaxTranslation()   {
+        return max_transl;
+    };
+    EGS_Vector getRotation()         {
+        return theta;
+    };
+    EGS_Vector getSigmaRotation()    {
+        return sigma_theta;
+    };
+    EGS_Vector getMaxRotation()      {
+        return max_theta;
+    };
+    /*set new shifts*/
+    void setNewShifts(EGS_RandomGenerator *rndm) {
+        transl.x = rndmShift(sigma_transl.x,max_transl.x,typeTransl,rndm);
+        transl.y = rndmShift(sigma_transl.y,max_transl.y,typeTransl,rndm);
+        transl.z = rndmShift(sigma_transl.z,max_transl.z,typeTransl,rndm);
+        theta.x = rndmShift(sigma_theta.x,max_theta.x,typeRot,rndm);
+        theta.y = rndmShift(sigma_theta.y,max_theta.y,typeRot,rndm);
+        theta.z = rndmShift(sigma_theta.z,max_theta.z,typeRot,rndm);
+    };
+    /*generate rndm shift*/
+    EGS_Float rndmShift(EGS_Float sigmaval, EGS_Float maxval, int type,EGS_RandomGenerator *rndm) {
+        EGS_Float val = 2*maxval;
+        if(sigmaval*maxval != 0) {
+            if(type==0) {
+                while((val > maxval)||(val < -maxval))
+                    val = sigmaval*rndm->getGaussian();
             }
-            return val; //positive sign because the fact that we move particle instead of cavity is taken care of
-        };
+            else if(type==1)  val = maxval*(rndm->getUniform()-0.5)*2;
+        }
+        return val; //positive sign because the fact that we move particle instead of cavity is taken care of
+    };
 
 private:
 
-        int  typeTransl, typeRot; //cavity positioning uncertainty typeibution types
+    int  typeTransl, typeRot; //cavity positioning uncertainty typeibution types
 
-        EGS_Vector   transl; //// cavity translation during simulation
+    EGS_Vector   transl; //// cavity translation during simulation
 
-        EGS_Vector   sigma_transl;   // cavity positioning uncertainty translation std values
+    EGS_Vector   sigma_transl;   // cavity positioning uncertainty translation std values
 
-        EGS_Vector   max_transl;   // cavity positioning uncertainty maximum transllation values during rdm gen
+    EGS_Vector   max_transl;   // cavity positioning uncertainty maximum transllation values during rdm gen
 
-        EGS_Vector   theta; //// cavity rotation during simulation
+    EGS_Vector   theta; //// cavity rotation during simulation
 
-        EGS_Vector   sigma_theta;   // cavity positioning uncertainty rotation std values
+    EGS_Vector   sigma_theta;   // cavity positioning uncertainty rotation std values
 
-        EGS_Vector   max_theta;   // cavity positioning uncertainty maximum rotlation values during rdm gen
+    EGS_Vector   max_theta;   // cavity positioning uncertainty maximum rotlation values during rdm gen
 
 };
 /* a class for correlated positioning uncertainty estimator*/
 class APP_EXPORT EGS_PosUncertEstimator {
 
 public:
-        /*Constructor*/
-        EGS_PosUncertEstimator() : K(0), N(0), M(0), previous_score_case(0), correlation(0),
-                                       McasePerPos(0), NposPerSample(0),sum1(0), sum2(0),
-                                       sumdij(0), sumdij2(0), sumDi(0), sumDi2(0), sumvarDi(0),
-                                       sumeij(0), sumeij2(0), sumEi(0), sumEi2(0), sumvarEi(0),
-                                                  sumdijeij(0), sumDiEi(0),sumcovarDiEi(0){};
+    /*Constructor*/
+    EGS_PosUncertEstimator() : K(0), N(0), M(0), previous_score_case(0), correlation(0),
+        McasePerPos(0), NposPerSample(0),sum1(0), sum2(0),
+        sumdij(0), sumdij2(0), sumDi(0), sumDi2(0), sumvarDi(0),
+        sumeij(0), sumeij2(0), sumEi(0), sumEi2(0), sumvarEi(0),
+        sumdijeij(0), sumDiEi(0),sumcovarDiEi(0) {};
 
-        /*Destructor*/
-        ~EGS_PosUncertEstimator() {};
+    /*Destructor*/
+    ~EGS_PosUncertEstimator() {};
 
-        /*Basic functions*/
-        EGS_I64 returnM() { return M;};
-        EGS_I64 returnN() { return N;};
-        EGS_I64 returnK() { return K;};
-        EGS_I64 returnMcasePerPos() { return McasePerPos;};
-        EGS_I64 returnNposPerSample() { return NposPerSample;};
-        EGS_I64 calcIcase(EGS_I64 K, EGS_I64 N, EGS_I64 M) {
-                EGS_I64 icase;
-                icase = K*NposPerSample*McasePerPos + N*McasePerPos + M;
-                return icase;
-        };
-        void invCalcIcase(EGS_I64 icase, EGS_I64 &k, EGS_I64 &n, EGS_I64 &m) {
-            m = (EGS_I64)(icase % McasePerPos);
-            n = (EGS_I64)(((double)(icase - m))/McasePerPos);
-            n = (EGS_I64)(n % NposPerSample);
-            k = (EGS_I64)( ( (double)(((double)(icase - m))/McasePerPos - n) )/NposPerSample);
-        };
-        /*set McasePerPos*/
-        int initMcasePerPos(EGS_I64 m) {
-            int retval = -1;
-            if(McasePerPos==0) {
-                if(m>1)
-                    McasePerPos = m;
-                else
-                    McasePerPos = 2;
-                retval = 0;
-            }
-            return retval;
-        };
-        /*set NposPerSample*/
-        int initNposPerSample(EGS_I64 n) {
-            int retval = -1;
-            if(NposPerSample ==0) {
-                if(n>1)
-                    NposPerSample = n;
-                else
-                    NposPerSample = 2;
-                retval = 0;
-            }
-            return retval;
-        };
-        void initCorrelation(bool flag) {correlation = flag;};
-        /*reset counters after one position*/
-        int resetPos() {
-            int retval = -1;
-            M = 0;
-            sumdij = 0;
-            sumdij2 = 0;
-            if(correlation) {
-                sumeij = 0;
-                sumeij2 = 0;
-                sumdijeij = 0;
-            }
+    /*Basic functions*/
+    EGS_I64 returnM() {
+        return M;
+    };
+    EGS_I64 returnN() {
+        return N;
+    };
+    EGS_I64 returnK() {
+        return K;
+    };
+    EGS_I64 returnMcasePerPos() {
+        return McasePerPos;
+    };
+    EGS_I64 returnNposPerSample() {
+        return NposPerSample;
+    };
+    EGS_I64 calcIcase(EGS_I64 K, EGS_I64 N, EGS_I64 M) {
+        EGS_I64 icase;
+        icase = K*NposPerSample*McasePerPos + N*McasePerPos + M;
+        return icase;
+    };
+    void invCalcIcase(EGS_I64 icase, EGS_I64 &k, EGS_I64 &n, EGS_I64 &m) {
+        m = (EGS_I64)(icase % McasePerPos);
+        n = (EGS_I64)(((double)(icase - m))/McasePerPos);
+        n = (EGS_I64)(n % NposPerSample);
+        k = (EGS_I64)( ( (double)(((double)(icase - m))/McasePerPos - n) )/NposPerSample);
+    };
+    /*set McasePerPos*/
+    int initMcasePerPos(EGS_I64 m) {
+        int retval = -1;
+        if(McasePerPos==0) {
+            if(m>1)
+                McasePerPos = m;
+            else
+                McasePerPos = 2;
             retval = 0;
-            return retval;
-        };
-        /*reset counters after one sample*/
-        int resetSample() {
-            int retval = -2;
-            N = 0;
-            sumDi = 0;
-            sumDi2 = 0;
-            sumvarDi = 0;
-            if(correlation) {
-                sumEi = 0;
-                sumEi2 = 0;
-                sumvarEi = 0;
-                sumDiEi = 0;
-                sumcovarDiEi = 0;
-            }
-            retval = resetPos();
-            return retval;
-        };
-        /*instruction to move cavity or particle*/
-        bool shiftManager(EGS_I64 next_score_case) {
-            EGS_I64 nextM = M + next_score_case - previous_score_case;
-            bool setNewPos = false;
-            if( nextM > McasePerPos ) {
-                setNewPos = true;
-                EGS_I64 nextK, nextN;
-                invCalcIcase(next_score_case, nextK, nextN, nextM);
-                if(returnK()==nextK) {
-                    int err = finishPos(nextN - returnN());
-                    previous_score_case = calcIcase(nextK,nextN,0);
-                }
-                else {
-                    int err = finishPos(NposPerSample - returnN());
-                    err = finishSample(nextK - returnK());
-                    err = finishPos(nextN);
-                    previous_score_case = calcIcase(nextK,nextN,0);
-                }
-            }
-            return setNewPos;
-        };
-        /*score after one history*/
-        int scoreHist(EGS_I64 score_case, EGS_Float dose_val) {
-            int retval = -3;
-            EGS_I64 case_increment = score_case - previous_score_case;
-            previous_score_case = score_case;
-            if(case_increment != 0) retval = 0;
-            /*scoring at this very position was predicted during last score*/
-            M += case_increment;
-            scorePos(dose_val);
-            EGS_I64 k,n,m;
-            invCalcIcase(score_case,k,n,m);
-            return retval;
-        };
-        /*score while still*/
-        void scorePos(EGS_Float dose_val) {
-            sumdij += dose_val;
-            sumdij2 += dose_val*dose_val;
-        };
-        /*score after one history*/
-        int scoreHist(EGS_I64 score_case, EGS_Float dose_val1, EGS_Float dose_val2) {
-            int retval = -3;
-            EGS_I64 case_increment = score_case - previous_score_case;
-            previous_score_case = score_case;
-            if(case_increment != 0) retval = 0;
-            /*scoring at this very position was predicted during last score*/
-            M += case_increment;
-            scorePos(dose_val1,dose_val2);
-            EGS_I64 k,n,m;
-            invCalcIcase(score_case,k,n,m);
-            return retval;
-        };
-        /*score while still*/
-        void scorePos(EGS_Float dose_val1, EGS_Float dose_val2) {
-            sumdij += dose_val1;
-            sumdij2 += dose_val1*dose_val1;
-            sumeij += dose_val2;
-            sumeij2 += dose_val2*dose_val2;
-            sumdijeij += dose_val1*dose_val2;
-        };
-        /*score after one position*/
-        int finishPos(EGS_I64 pos_increment) {
-            int retval = -4;
-            sumdij = sumdij/McasePerPos; //becomes Di
-            sumDi += sumdij;
-            sumDi2 += sumdij*sumdij;
-            sumvarDi += (sumdij2/McasePerPos - sumdij*sumdij)/(McasePerPos-1);
-            if(correlation) {
-                sumeij = sumeij/McasePerPos; //becomes Ei
-                sumEi += sumeij;
-                sumEi2 += sumeij*sumeij;
-                sumDiEi += sumdij*sumeij;
-                sumvarEi += (sumeij2/McasePerPos - sumeij*sumeij)/(McasePerPos-1);
-                sumcovarDiEi += (sumdijeij/McasePerPos - sumdij*sumeij)/(McasePerPos-1);
-            }
-            N += pos_increment;
-            retval = resetPos();
-            return retval;
-        };
-        /*score after one sample*/
-        int finishSample(EGS_I64 sample_increment) {
-            int retval = -5;
-            int flag_good = true;
-            EGS_Float pu_var_est = sumDi2/(NposPerSample-1) - sumDi*sumDi/NposPerSample/(NposPerSample-1) - sumvarDi/NposPerSample;
-            if(correlation) {
-                EGS_Float pu_var2_est = sumEi2/(NposPerSample-1) - sumEi*sumEi/NposPerSample/(NposPerSample-1) - sumvarEi/NposPerSample;
-                EGS_Float pu_covar_est = sumDiEi/(NposPerSample-1) - sumDi*sumEi/NposPerSample/(NposPerSample-1) - sumcovarDiEi/NposPerSample;
-                EGS_Float tmp = 0;
-                if(sumDi!=0 && sumEi!=0) {
-                    tmp +=  pu_var_est/(sumDi/NposPerSample)/(sumDi/NposPerSample);
-                    tmp +=  pu_var2_est/(sumEi/NposPerSample)/(sumEi/NposPerSample);
-                    tmp +=  -2*pu_covar_est/(sumDi/NposPerSample)/(sumEi/NposPerSample);
-                }
-                else
-                    flag_good = false;
-                //tmp = tmp*(sumDi/sumEi)*(sumDi/sumEi); //remember that is it OF = D/E;
-                //sum1 += pu_covar_est;
-                //sum2 += pu_covar_est*pu_covar_est;
-                sum1 += tmp;
-                sum2 += tmp*tmp;
+        }
+        return retval;
+    };
+    /*set NposPerSample*/
+    int initNposPerSample(EGS_I64 n) {
+        int retval = -1;
+        if(NposPerSample ==0) {
+            if(n>1)
+                NposPerSample = n;
+            else
+                NposPerSample = 2;
+            retval = 0;
+        }
+        return retval;
+    };
+    void initCorrelation(bool flag) {
+        correlation = flag;
+    };
+    /*reset counters after one position*/
+    int resetPos() {
+        int retval = -1;
+        M = 0;
+        sumdij = 0;
+        sumdij2 = 0;
+        if(correlation) {
+            sumeij = 0;
+            sumeij2 = 0;
+            sumdijeij = 0;
+        }
+        retval = 0;
+        return retval;
+    };
+    /*reset counters after one sample*/
+    int resetSample() {
+        int retval = -2;
+        N = 0;
+        sumDi = 0;
+        sumDi2 = 0;
+        sumvarDi = 0;
+        if(correlation) {
+            sumEi = 0;
+            sumEi2 = 0;
+            sumvarEi = 0;
+            sumDiEi = 0;
+            sumcovarDiEi = 0;
+        }
+        retval = resetPos();
+        return retval;
+    };
+    /*instruction to move cavity or particle*/
+    bool shiftManager(EGS_I64 next_score_case) {
+        EGS_I64 nextM = M + next_score_case - previous_score_case;
+        bool setNewPos = false;
+        if( nextM > McasePerPos ) {
+            setNewPos = true;
+            EGS_I64 nextK, nextN;
+            invCalcIcase(next_score_case, nextK, nextN, nextM);
+            if(returnK()==nextK) {
+                int err = finishPos(nextN - returnN());
+                previous_score_case = calcIcase(nextK,nextN,0);
             }
             else {
-                sum1 += pu_var_est;
-                sum2 += pu_var_est*pu_var_est;
+                int err = finishPos(NposPerSample - returnN());
+                err = finishSample(nextK - returnK());
+                err = finishPos(nextN);
+                previous_score_case = calcIcase(nextK,nextN,0);
             }
-            if(flag_good)
-                K += sample_increment;
-            retval = resetSample();
-            return retval;
-        };
-        /*get results and delete last sample*/
-        int getResult(EGS_Float &val1, EGS_Float &val2, EGS_Float &val3){
-            int retval = -6;
-            EGS_Float v1 = 0, v2 = 0;
-            if(K>1) {
-                v1 = sum1/K;
-                v2 = (sum2 - sum1*sum1/K)/(K-1)/K; //variance of average
-                if(v2<0) v2 = 0;
-                if(v1>=0) {
-                    val1 = sqrt(v1);
-                    val2 = sqrt(v2/v1/4);
-                    val3 = sqrt(v2);
-                }
-                else  {
-                    val1 = v1;
-                    val2 = sqrt(v2);
-                    val3 = sqrt(v2);
-                }
-                retval = resetSample();
+        }
+        return setNewPos;
+    };
+    /*score after one history*/
+    int scoreHist(EGS_I64 score_case, EGS_Float dose_val) {
+        int retval = -3;
+        EGS_I64 case_increment = score_case - previous_score_case;
+        previous_score_case = score_case;
+        if(case_increment != 0) retval = 0;
+        /*scoring at this very position was predicted during last score*/
+        M += case_increment;
+        scorePos(dose_val);
+        EGS_I64 k,n,m;
+        invCalcIcase(score_case,k,n,m);
+        return retval;
+    };
+    /*score while still*/
+    void scorePos(EGS_Float dose_val) {
+        sumdij += dose_val;
+        sumdij2 += dose_val*dose_val;
+    };
+    /*score after one history*/
+    int scoreHist(EGS_I64 score_case, EGS_Float dose_val1, EGS_Float dose_val2) {
+        int retval = -3;
+        EGS_I64 case_increment = score_case - previous_score_case;
+        previous_score_case = score_case;
+        if(case_increment != 0) retval = 0;
+        /*scoring at this very position was predicted during last score*/
+        M += case_increment;
+        scorePos(dose_val1,dose_val2);
+        EGS_I64 k,n,m;
+        invCalcIcase(score_case,k,n,m);
+        return retval;
+    };
+    /*score while still*/
+    void scorePos(EGS_Float dose_val1, EGS_Float dose_val2) {
+        sumdij += dose_val1;
+        sumdij2 += dose_val1*dose_val1;
+        sumeij += dose_val2;
+        sumeij2 += dose_val2*dose_val2;
+        sumdijeij += dose_val1*dose_val2;
+    };
+    /*score after one position*/
+    int finishPos(EGS_I64 pos_increment) {
+        int retval = -4;
+        sumdij = sumdij/McasePerPos; //becomes Di
+        sumDi += sumdij;
+        sumDi2 += sumdij*sumdij;
+        sumvarDi += (sumdij2/McasePerPos - sumdij*sumdij)/(McasePerPos-1);
+        if(correlation) {
+            sumeij = sumeij/McasePerPos; //becomes Ei
+            sumEi += sumeij;
+            sumEi2 += sumeij*sumeij;
+            sumDiEi += sumdij*sumeij;
+            sumvarEi += (sumeij2/McasePerPos - sumeij*sumeij)/(McasePerPos-1);
+            sumcovarDiEi += (sumdijeij/McasePerPos - sumdij*sumeij)/(McasePerPos-1);
+        }
+        N += pos_increment;
+        retval = resetPos();
+        return retval;
+    };
+    /*score after one sample*/
+    int finishSample(EGS_I64 sample_increment) {
+        int retval = -5;
+        int flag_good = true;
+        EGS_Float pu_var_est = sumDi2/(NposPerSample-1) - sumDi*sumDi/NposPerSample/(NposPerSample-1) - sumvarDi/NposPerSample;
+        if(correlation) {
+            EGS_Float pu_var2_est = sumEi2/(NposPerSample-1) - sumEi*sumEi/NposPerSample/(NposPerSample-1) - sumvarEi/NposPerSample;
+            EGS_Float pu_covar_est = sumDiEi/(NposPerSample-1) - sumDi*sumEi/NposPerSample/(NposPerSample-1) - sumcovarDiEi/NposPerSample;
+            EGS_Float tmp = 0;
+            if(sumDi!=0 && sumEi!=0) {
+                tmp +=  pu_var_est/(sumDi/NposPerSample)/(sumDi/NposPerSample);
+                tmp +=  pu_var2_est/(sumEi/NposPerSample)/(sumEi/NposPerSample);
+                tmp +=  -2*pu_covar_est/(sumDi/NposPerSample)/(sumEi/NposPerSample);
             }
-            else {
+            else
+                flag_good = false;
+            //tmp = tmp*(sumDi/sumEi)*(sumDi/sumEi); //remember that is it OF = D/E;
+            //sum1 += pu_covar_est;
+            //sum2 += pu_covar_est*pu_covar_est;
+            sum1 += tmp;
+            sum2 += tmp*tmp;
+        }
+        else {
+            sum1 += pu_var_est;
+            sum2 += pu_var_est*pu_var_est;
+        }
+        if(flag_good)
+            K += sample_increment;
+        retval = resetSample();
+        return retval;
+    };
+    /*get results and delete last sample*/
+    int getResult(EGS_Float &val1, EGS_Float &val2, EGS_Float &val3) {
+        int retval = -6;
+        EGS_Float v1 = 0, v2 = 0;
+        if(K>1) {
+            v1 = sum1/K;
+            v2 = (sum2 - sum1*sum1/K)/(K-1)/K; //variance of average
+            if(v2<0) v2 = 0;
+            if(v1>=0) {
+                val1 = sqrt(v1);
+                val2 = sqrt(v2/v1/4);
+                val3 = sqrt(v2);
+            }
+            else  {
                 val1 = v1;
-                val2 = v2;
-                val3 = v2;
-                retval = resetSample();
-                egsWarning("Error in getResult(): not enough samples for positioning uncertainty estimation\n");
+                val2 = sqrt(v2);
+                val3 = sqrt(v2);
             }
-            return retval;
-        };
-        /*get current sampling score*/
-        int getScore(EGS_I64 &k, EGS_Float &val1, EGS_Float &val2){
-            int retval = -7;
-            k = K;
-            val1 = sum1;
-            val2 = sum2;
-            retval = 0;
-            return retval;
-        };
-        /*set current sampling score*/
-        int setScore(EGS_I64 k, EGS_Float val1, EGS_Float val2){
-            int retval = -8;
-            K = k;
-            sum1 = val1;
-            sum2 = val2;
             retval = resetSample();
-            return retval;
-        };
+        }
+        else {
+            val1 = v1;
+            val2 = v2;
+            val3 = v2;
+            retval = resetSample();
+            egsWarning("Error in getResult(): not enough samples for positioning uncertainty estimation\n");
+        }
+        return retval;
+    };
+    /*get current sampling score*/
+    int getScore(EGS_I64 &k, EGS_Float &val1, EGS_Float &val2) {
+        int retval = -7;
+        k = K;
+        val1 = sum1;
+        val2 = sum2;
+        retval = 0;
+        return retval;
+    };
+    /*set current sampling score*/
+    int setScore(EGS_I64 k, EGS_Float val1, EGS_Float val2) {
+        int retval = -8;
+        K = k;
+        sum1 = val1;
+        sum2 = val2;
+        retval = resetSample();
+        return retval;
+    };
 
 private:
-        EGS_I64 N, M, K; //integers used during summation: number of positions for a sample, number of cases for a position, number of samples
+    EGS_I64 N, M, K; //integers used during summation: number of positions for a sample, number of cases for a position, number of samples
 
-        EGS_I64 previous_score_case; //case counter
+    EGS_I64 previous_score_case; //case counter
 
-        EGS_I64 McasePerPos, NposPerSample; //integer set during efficiency optimization
+    EGS_I64 McasePerPos, NposPerSample; //integer set during efficiency optimization
 
-        bool correlation; //flag for correlation on or off
+    bool correlation; //flag for correlation on or off
 
-        EGS_Float sum1, sum2; //variables to sum positioning uncertainty estimator in each batch
+    EGS_Float sum1, sum2; //variables to sum positioning uncertainty estimator in each batch
 
-        EGS_Float sumdij, sumdij2, sumDi, sumDi2, sumvarDi; //sum variables
+    EGS_Float sumdij, sumdij2, sumDi, sumDi2, sumvarDi; //sum variables
 
-        EGS_Float sumeij, sumeij2, sumEi, sumEi2, sumvarEi; //sum variables
+    EGS_Float sumeij, sumeij2, sumEi, sumEi2, sumvarEi; //sum variables
 
-        EGS_Float sumdijeij, sumDiEi, sumcovarDiEi;// cum variables
+    EGS_Float sumdijeij, sumDiEi, sumcovarDiEi;// cum variables
 };
 //*HB_end**************************
 
@@ -543,9 +585,9 @@ public:
     EGS_ChamberApplication(int argc, char **argv) :
         EGS_AdvancedApplication(argc,argv), ngeom(0), dose(0),
         fsplit(1), fspliti(1), rr_flag(0), Esave(0), rho_rr(1),
-	cgeom(0), nsmall_step(0), ncg(0), do_cse(0), do_TmpPhsp(0),
-	cgeoms(0), nsubgeoms(0), check_for_subreg(0), is_subgeomreg(0), subgeoms(0),
-	container(0), container2(0), container3(0), save_dose(0), silent(0) ,
+        cgeom(0), nsmall_step(0), ncg(0), do_cse(0), do_TmpPhsp(0),
+        cgeoms(0), nsubgeoms(0), check_for_subreg(0), is_subgeomreg(0), subgeoms(0),
+        container(0), container2(0), container3(0), save_dose(0), silent(0) ,
         iso_pu_flag(0), cav_pu_flag(0), iso_pu_do_shift(0), cav_pu_do_shift(0),pu_flag(0),
         McasePerPos(0), NposPerSample(0), onegeom(0) {  };
 
@@ -553,7 +595,9 @@ public:
     ~EGS_ChamberApplication() {
         if( dose )  delete dose;
         if( ngeom > 0 ) {
-            delete [] geoms; delete [] mass; int j;
+            delete [] geoms;
+            delete [] mass;
+            int j;
             for(j=0; j<ngeom; j++) if( transforms[j] ) delete transforms[j];
             delete [] transforms;
             for(j=0; j<ngeom; j++) delete [] is_cavity[j];
@@ -566,7 +610,9 @@ public:
             delete [] is_subgeomreg;
         }
         if( ncg > 0 ) {
-            delete [] gind1; delete [] gind2; delete [] scg;
+            delete [] gind1;
+            delete [] gind2;
+            delete [] scg;
         }
     };
 
@@ -616,7 +662,7 @@ public:
 
     /*! Get the current simulation result.  */
     void getCurrentResult(double &sum, double &sum2, double &norm,
-            double &count);
+                          double &count);
 
     /*! simulate a shower */
     int shower();
@@ -636,7 +682,7 @@ private:
     EGS_I64          ncase;
 
     int              ngeom;     // number of geometries to calculate
-                                // quantities of interest
+    // quantities of interest
     int              ig;        // current geometry index
 
     int              ncg;       // number of correlated geometry pairs.
@@ -645,15 +691,15 @@ private:
     double           *scg;      // sum(dose(gind1[j])*dose(gind2[j]);
 
     EGS_BaseGeometry **geoms;   // geometries for which to calculate the
-                                // quantites of interest.
+    // quantites of interest.
     EGS_AffineTransform **transforms;
-                                // transformations to apply before transporting
-                                // for each geometry
+    // transformations to apply before transporting
+    // for each geometry
     bool             **is_cavity; // array of flags for each region in each
-                                // geometry, which is true if the region
-                                // belongs to the cavity and false otherwise
+    // geometry, which is true if the region
+    // belongs to the cavity and false otherwise
     EGS_ScoringArray *dose;     // scoring array for dose scoring in each of
-                                // the calculation geometries.
+    // the calculation geometries.
     EGS_Float        *mass;     // mass of the material in the cavity.
 
     EGS_Float        fsplit;    // photon splitting number
@@ -745,28 +791,28 @@ F77_OBJ_(select_photon_mfp,SELECT_PHOTON_MFP)(EGS_Float *dpmfp) {
     EGS_Application *a = EGS_Application::activeApplication();
     EGS_ChamberApplication *app = dynamic_cast<EGS_ChamberApplication *>(a);
     if( !app ) egsFatal("select_photon_mfp called with active application "
-            " not being of type EGS_ChamberApplication!\n");
+                            " not being of type EGS_ChamberApplication!\n");
     app->selectPhotonMFP(*dpmfp);
 }
 
 extern __extc__ void F77_OBJ_(range_discard,RANGE_DISCARD)(
-        const EGS_Float *tperp, const EGS_Float *range) {
+    const EGS_Float *tperp, const EGS_Float *range) {
     EGS_ChamberApplication *app = dynamic_cast<EGS_ChamberApplication *>(
-            EGS_Application::activeApplication());
+                                      EGS_Application::activeApplication());
     the_epcont->idisc = app->rangeDiscard(*tperp,*range);
 }
 extern __extc__ void F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(const int *,
-                                  const EGS_Float *);
+        const EGS_Float *);
 #define egsScaleXsection F77_OBJ_(egs_scale_photon_xsection,EGS_SCALE_PHOTON_XSECTION)
 extern __extc__ void egsScaleXsection(const int *imed, const EGS_Float *fac,
                                       const int *which);
 
-extern __extc__ void F77_OBJ_(do_cs_enhancement,DO_CS_ENHANCEMENT)(EGS_Float *gmfp){
-     EGS_Application *a = EGS_Application::activeApplication();
-     EGS_ChamberApplication *app = dynamic_cast<EGS_ChamberApplication *>(a);
-     if( !app ) egsFatal("do_cs_enhancement called with active application "
-            " not being of type EGS_ChamberApplication!\n");
-     app->do_cs_enhancement(*gmfp);
+extern __extc__ void F77_OBJ_(do_cs_enhancement,DO_CS_ENHANCEMENT)(EGS_Float *gmfp) {
+    EGS_Application *a = EGS_Application::activeApplication();
+    EGS_ChamberApplication *app = dynamic_cast<EGS_ChamberApplication *>(a);
+    if( !app ) egsFatal("do_cs_enhancement called with active application "
+                            " not being of type EGS_ChamberApplication!\n");
+    app->do_cs_enhancement(*gmfp);
 }
 
 void EGS_ChamberApplication::startNewParticle() {
@@ -775,37 +821,37 @@ void EGS_ChamberApplication::startNewParticle() {
 };
 
 void EGS_ChamberApplication::do_cs_enhancement(EGS_Float &gmfp) {
-	// rayleigh-correction-function is called during 'normal' egs-photon routine
-	// (not selectPhotonMFP in here for photon-splitting)
-	// it is misused here to enhance photon cross-sections (adopted from dosrznrc.mortran)
-	// GMFP is passed from egs-photon routine
-	int np = the_stack->np-1;
-	int ir = the_stack->ir[np]-2;
-	if(cs_enhance[ig][ir] > 1 )
-		gmfp /= cs_enhance[ig][ir];
-	return;
+    // rayleigh-correction-function is called during 'normal' egs-photon routine
+    // (not selectPhotonMFP in here for photon-splitting)
+    // it is misused here to enhance photon cross-sections (adopted from dosrznrc.mortran)
+    // GMFP is passed from egs-photon routine
+    int np = the_stack->np-1;
+    int ir = the_stack->ir[np]-2;
+    if(cs_enhance[ig][ir] > 1 )
+        gmfp /= cs_enhance[ig][ir];
+    return;
 }
 
 /*! Describe the application.  */
 void EGS_ChamberApplication::describeUserCode() const {
     egsInformation(
-      "\n               *************************************************"
-      "\n               *                                               *"
-      "\n               *               egs_chamber CSE)                *"
-      "\n               *                                               *"
-      "\n               *************************************************"
-      "\n\n");
+        "\n               *************************************************"
+        "\n               *                                               *"
+        "\n               *               egs_chamber CSE)                *"
+        "\n               *                                               *"
+        "\n               *************************************************"
+        "\n\n");
     egsInformation("This is EGS_ChamberApplication %s based on\n"
-      "      EGS_AdvancedApplication %s\n\n",
-      egsSimplifyCVSKey(revision).c_str(),
-      egsSimplifyCVSKey(base_revision).c_str());
+                   "      EGS_AdvancedApplication %s\n\n",
+                   egsSimplifyCVSKey(revision).c_str(),
+                   egsSimplifyCVSKey(base_revision).c_str());
 
 };
 
 void EGS_ChamberApplication::describeSimulation() {
     EGS_AdvancedApplication::describeSimulation();
     egsInformation("Variance reduction\n"
-            "====================================================\n");
+                   "====================================================\n");
     egsInformation("Photon splitting = ");
     if( fsplit > 1 ) egsInformation("%g\n",fsplit);
     else egsInformation("off\n");
@@ -816,38 +862,39 @@ void EGS_ChamberApplication::describeSimulation() {
         egsInformation("Russian Roullette (RR)\n");
         egsInformation("    rejection in cavity for E < %g\n",Esave);
         egsInformation("    else RR with survival probability %g\n",
-                1./rr_flag);
+                       1./rr_flag);
         if (do_mcav) {
             egsInformation("	multiple cavity option is turned ON\n");
-        	egsInformation("	following cavity-geometries are used:\n");
-        	for (int i=0; i<ngeom; i++)
-        		egsInformation("	%i) %s -> %s\n", i+1, geoms[i]->getName().c_str(),  cgeoms[i]->getName().c_str() );
+            egsInformation("	following cavity-geometries are used:\n");
+            for (int i=0; i<ngeom; i++)
+                egsInformation("	%i) %s -> %s\n", i+1, geoms[i]->getName().c_str(),  cgeoms[i]->getName().c_str() );
         }
         else {
             if (cgeom)
                 egsInformation("    rejection geometry is %s\n",
-                cgeom->getName().c_str());
+                               cgeom->getName().c_str());
             else
                 egsInformation("    on a region-by-region basis\n");
         }
     }
-    if (do_TmpPhsp){
-	egsInformation("\nscoring phase-space at cavity of '%s'",geoms[0]->getName().c_str());
-    	if(do_TmpPhsp>1)egsInformation("\n recycling %i times",do_TmpPhsp);
-	if(do_sub &! silent){ egsInformation("\n\n subgeometries:");
-		for(int j=0; j<ngeom; j++) {
-			if(nsubgeoms[j]>0 && has_sub[j]){
-				egsInformation("\n %i) %s", j+1, geoms[j]->getName().c_str());
-				for(int i=0; i<nsubgeoms[j];i++){
-					egsInformation("\n	- %s",subgeoms[j][i].c_str());
-				}
-				egsInformation("\n 	(regions:");
-				for(int k=0; k<geoms[j]->regions(); k++)
-					if(is_subgeomreg[j][k]) egsInformation(" %i",k);
-				egsInformation(")\n");
-		}
-		}
-	}
+    if (do_TmpPhsp) {
+        egsInformation("\nscoring phase-space at cavity of '%s'",geoms[0]->getName().c_str());
+        if(do_TmpPhsp>1)egsInformation("\n recycling %i times",do_TmpPhsp);
+        if(do_sub &! silent) {
+            egsInformation("\n\n subgeometries:");
+            for(int j=0; j<ngeom; j++) {
+                if(nsubgeoms[j]>0 && has_sub[j]) {
+                    egsInformation("\n %i) %s", j+1, geoms[j]->getName().c_str());
+                    for(int i=0; i<nsubgeoms[j]; i++) {
+                        egsInformation("\n	- %s",subgeoms[j][i].c_str());
+                    }
+                    egsInformation("\n 	(regions:");
+                    for(int k=0; k<geoms[j]->regions(); k++)
+                        if(is_subgeomreg[j][k]) egsInformation(" %i",k);
+                    egsInformation(")\n");
+                }
+            }
+        }
     }
     egsInformation("\n");
     egsInformation("\nphoton cross-section enhancement");
@@ -857,11 +904,11 @@ void EGS_ChamberApplication::describeSimulation() {
             for(int j=0; j<ngeom; j++) {
                 egsInformation("\n %i) %s", j+1, geoms[j]->getName().c_str());
                 egsInformation("\n    regions    : ");
-                for (int k=0; k<geoms[j]->regions(); k++){
+                for (int k=0; k<geoms[j]->regions(); k++) {
                     if(cs_enhance[j][k] > 1)egsInformation(" %i",k);
                 }
                 egsInformation("\n    enhancement: ");
-                for (int k=0; k<geoms[j]->regions(); k++){
+                for (int k=0; k<geoms[j]->regions(); k++) {
                     if(cs_enhance[j][k] > 1)egsInformation(" %i",cs_enhance[j][k]);
                 }
                 egsInformation("\n");
@@ -878,16 +925,16 @@ void EGS_ChamberApplication::describeSimulation() {
             recut = true;
 
 
-    if(recut){
+    if(recut) {
         for(int j=0; j<ngeom; j++) {
-           if(do_rECUT[j]){
-               egsInformation("\n %i) %s", j+1, geoms[j]->getName().c_str());
-               egsInformation("\n    with ECUT of %g MeV",rECUT[j]);
-               egsInformation("\n    regions    : ");
-	           for (int k=0; k<geoms[j]->regions(); k++)
-		           if(is_rECUT[j][k])egsInformation(" %i",k);
-               egsInformation("\n");
-		   }
+            if(do_rECUT[j]) {
+                egsInformation("\n %i) %s", j+1, geoms[j]->getName().c_str());
+                egsInformation("\n    with ECUT of %g MeV",rECUT[j]);
+                egsInformation("\n    regions    : ");
+                for (int k=0; k<geoms[j]->regions(); k++)
+                    if(is_rECUT[j][k])egsInformation(" %i",k);
+                egsInformation("\n");
+            }
         }
 
     }
@@ -913,7 +960,7 @@ int EGS_ChamberApplication::initScoring() {
         //
         int tmps;
         int err815 = vr->getInput("TmpPhsp",tmps);
-        if(!err815){
+        if(!err815) {
             do_TmpPhsp = tmps;
             container = new TmpPhsp;
             container3 = new TmpPhsp;
@@ -921,7 +968,8 @@ int EGS_ChamberApplication::initScoring() {
         //
         // ******* cs enhancement
         //
-        EGS_Float tmp2; int err2 = vr->getInput("cs enhancement",tmp2);
+        EGS_Float tmp2;
+        int err2 = vr->getInput("cs enhancement",tmp2);
         if( err2 || tmp2 == 0 ) {
             do_cse = false;
         }
@@ -930,18 +978,20 @@ int EGS_ChamberApplication::initScoring() {
         //
         // ******** photon splitting
         //
-        EGS_Float tmp; int err = vr->getInput("photon splitting",tmp);
+        EGS_Float tmp;
+        int err = vr->getInput("photon splitting",tmp);
         if( !err && tmp > 1 &! do_cse &! do_TmpPhsp) {
-            fsplit = tmp; fspliti = 1/tmp;
+            fsplit = tmp;
+            fspliti = 1/tmp;
         }
 
         //
         // ******** radiative event splitting
         //
-         int csplit=1;
-         if( !vr->getInput("radiative splitting", csplit) && csplit > 1) {
+        int csplit=1;
+        if( !vr->getInput("radiative splitting", csplit) && csplit > 1) {
             egsInformation("\n => initScoring: splitting radiative events %d times ...\n", csplit);
-           the_egsvr->nbr_split = csplit;
+            the_egsvr->nbr_split = csplit;
         }
 
         //
@@ -949,10 +999,12 @@ int EGS_ChamberApplication::initScoring() {
         //
         EGS_Input *rr = vr->takeInputItem("range rejection");
         if( rr ) {
-            int iaux; err = rr->getInput("rejection",iaux);
+            int iaux;
+            err = rr->getInput("rejection",iaux);
             if( !err && iaux >= 0 ) rr_flag = iaux;
             if( rr_flag ) {
-                EGS_Float aux; err = rr->getInput("Esave",aux);
+                EGS_Float aux;
+                err = rr->getInput("Esave",aux);
                 if( !err && aux >= 0 ) Esave = aux;
                 string cavity_geometry;
                 err = rr->getInput("cavity geometry",cavity_geometry);
@@ -961,14 +1013,15 @@ int EGS_ChamberApplication::initScoring() {
                     cgeom = EGS_BaseGeometry::getGeometry(cavity_geometry);
                 }
                 if( !cgeom || err) egsWarning("\n\n********** no geometry named"
-                            " %s exists => using region-by-region rejection only\n",cavity_geometry.c_str());
+                                                  " %s exists => using region-by-region rejection only\n",cavity_geometry.c_str());
                 if( !Esave && rr_flag == 1 ) {
                     egsWarning("\n\n********* rr_flag = 1 but Esave = 0 =>"
-                            " not using range rejection\n\n");
+                               " not using range rejection\n\n");
                     rr_flag = 0;
                 }
                 if( rr_flag && cgeom ) {
-                    string rej_medium; int irej_medium = -1;
+                    string rej_medium;
+                    int irej_medium = -1;
                     err = rr->getInput("rejection range medium",rej_medium);
                     if( !err ) {
                         EGS_BaseGeometry::setActiveGeometryList(app_index);
@@ -981,7 +1034,10 @@ int EGS_ChamberApplication::initScoring() {
                                 rej_medium.c_str());
                         else irej_medium = imed;
                     }
-                    if( irej_medium < 0 ) { cgeom = 0; rr_flag = 1; }
+                    if( irej_medium < 0 ) {
+                        cgeom = 0;
+                        rr_flag = 1;
+                    }
                     else {
                         //
                         // *** prepare an interpolator for the electron range
@@ -995,7 +1051,8 @@ int EGS_ChamberApplication::initScoring() {
                         EGS_Float dloge = (log_emax - log_emin)/nbin;
                         EGS_Float *erange = new EGS_Float [nbin];
                         EGS_Float *prange = new EGS_Float [nbin];
-                        erange[0] = 0; prange[0] = 0;
+                        erange[0] = 0;
+                        prange[0] = 0;
                         EGS_Float ededx_old = i_ededx[i].interpolate(log_emin);
                         EGS_Float pdedx_old = i_pdedx[i].interpolate(log_emin);
                         EGS_Float Eold = exp(log_emin);
@@ -1013,7 +1070,9 @@ int EGS_ChamberApplication::initScoring() {
                                 prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx;
                             else
                                 prange[j] = prange[j-1]+1.02*(E-Eold)/pdedx_old;
-                            Eold = E; ededx_old = ededx; pdedx_old = pdedx;
+                            Eold = E;
+                            ededx_old = ededx;
+                            pdedx_old = pdedx;
                         }
                         rr_erange.initialize(nbin,log_emin,log_emax,erange);
                         rr_prange.initialize(nbin,log_emin,log_emax,prange);
@@ -1038,12 +1097,16 @@ int EGS_ChamberApplication::initScoring() {
         EGS_Input *scaling;
         EGS_BaseGeometry::setActiveGeometryList(app_index);
         while( (scaling = options->takeInputItem("scale photon x-sections")) ) {
-            EGS_Float factor; string medname; int what;
+            EGS_Float factor;
+            string medname;
+            int what;
             int err1 = scaling->getInput("factor",factor);
             int err2 = scaling->getInput("medium",medname);
             vector<string> allowed;
-            allowed.push_back("all"); allowed.push_back("Rayleigh");
-            allowed.push_back("Compton"); allowed.push_back("Pair");
+            allowed.push_back("all");
+            allowed.push_back("Rayleigh");
+            allowed.push_back("Compton");
+            allowed.push_back("Pair");
             allowed.push_back("Photo");
             what = scaling->getInput("cross section",allowed,0);
             if( !err1 && !err2 ) {
@@ -1052,17 +1115,19 @@ int EGS_ChamberApplication::initScoring() {
                     imed = 0;
                 else {
                     EGS_BaseGeometry::setActiveGeometryList(app_index);
-                    imed = EGS_BaseGeometry::addMedium(medname); ++imed;
+                    imed = EGS_BaseGeometry::addMedium(medname);
+                    ++imed;
                     if( imed > the_media->nmed ) {
                         egsInformation("Scaling requested for medium %s,"
-                                " but such medium does not exist\n",medname.c_str());
+                                       " but such medium does not exist\n",medname.c_str());
                         imed = -1;
                     }
                 }
                 if( imed >= 0 )
                     egsScaleXsection(&imed,&factor,&what);
             }
-            delete scaling; scaling = 0;
+            delete scaling;
+            scaling = 0;
 
         }
 
@@ -1074,7 +1139,7 @@ int EGS_ChamberApplication::initScoring() {
         if(tmp_onegeom == 1)
             onegeom = true;
         else
-        onegeom = false;
+            onegeom = false;
 
         //
         // ********* scale elastic scattering
@@ -1084,7 +1149,8 @@ int EGS_ChamberApplication::initScoring() {
             vector<EGS_Float> tmp;
             int err = scale->getInput("scale xcc",tmp);
             if( !err ) {
-                int im = (int) tmp[0]; ++im;
+                int im = (int) tmp[0];
+                ++im;
                 egsInformation("Scaling xcc of medium %d with %g\n",im,tmp[1]);
                 F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(&im,&tmp[1]);
             }
@@ -1127,9 +1193,9 @@ int EGS_ChamberApplication::initScoring() {
 
             string cav_gname;
             int err999 = aux->getInput("cavity geometry", cav_gname);
-            if (err999){
+            if (err999) {
                 egsWarning("\ninitScoring: missing/wrong 'cavity geometry' "
-                        " for geometry '%s' \n", gname.c_str());
+                           " for geometry '%s' \n", gname.c_str());
                 do_mcav = false;
             }
             int err11, err12;
@@ -1139,7 +1205,10 @@ int EGS_ChamberApplication::initScoring() {
                 err11 = aux->getInput("enhance regions",cs_reg);
                 err12 = aux->getInput("enhancement",cs_fac);
             }
-            else{ err11 = 1; err12 = 1; }
+            else {
+                err11 = 1;
+                err12 = 1;
+            }
 
             if (do_cse && cs_reg[0]<0 && cs_reg[1]<0 && cs_reg.size()==2) {
                 int start = -cs_reg[0];
@@ -1160,19 +1229,20 @@ int EGS_ChamberApplication::initScoring() {
             EGS_Float cmass;
             int err2 = aux->getInput("cavity mass",cmass);
             if( err ) egsWarning("initScoring: missing/wrong 'geometry name' "
-                    "input\n");
+                                     "input\n");
             if( err1 ) egsWarning("initScoring: missing/wrong 'cavity regions' "
-                    "input\n");
+                                      "input\n");
             if( err2 ) {
                 egsWarning("initScoring: missing/wrong 'cavity mass' "
-                        "input\n"); cmass = -1;
+                           "input\n");
+                cmass = -1;
             }
             if( err11 ) egsWarning("initScoring: missing/wrong 'enhance regions' "
-                    "input\n");
+                                       "input\n");
             if( err12 ) egsWarning("initScoring: missing/wrong 'enhancement' "
-                    "input\n");
+                                       "input\n");
             int err13 = 0;
-            if( !err11 && !err12 && (cs_reg.size() != cs_fac.size() )){
+            if( !err11 && !err12 && (cs_reg.size() != cs_fac.size() )) {
                 egsWarning("initScoring: number of 'enhance regions' must match 'enhancement'\n");
                 err13 = 1;
             }
@@ -1181,15 +1251,15 @@ int EGS_ChamberApplication::initScoring() {
                 EGS_BaseGeometry::setActiveGeometryList(app_index);
 
                 EGS_BaseGeometry *cg = EGS_BaseGeometry::getGeometry(cav_gname);
-                if( !cg ){
+                if( !cg ) {
                     egsWarning("initScoring: no 'cavity geometry' named %s -->"
-                            " input ignored\n",cav_gname.c_str());
+                               " input ignored\n",cav_gname.c_str());
                     cg = 0;
                 }
 
                 EGS_BaseGeometry *g = EGS_BaseGeometry::getGeometry(gname);
                 if( !g ) egsWarning("initScoring: no geometry named %s -->"
-                        " input ignored\n",gname.c_str());
+                                        " input ignored\n",gname.c_str());
 
                 else {
                     int nreg = g->regions();
@@ -1198,14 +1268,14 @@ int EGS_ChamberApplication::initScoring() {
                     for(int j=0; j<cav.size(); j++) {
                         if( cav[j] < 0 || cav[j] >= nreg )
                             egsWarning("initScoring: region %d is not within"
-                                    " the allowed range of 0...%d -> input"
-                                    " ignored\n",cav[j],nreg-1);
+                                       " the allowed range of 0...%d -> input"
+                                       " ignored\n",cav[j],nreg-1);
                         else regs[ncav++] = cav[j];
                     }
                     if( !ncav ) {
                         egsWarning("initScoring: no cavity regions "
-                                "specified for geometry %s --> input ignored\n",
-                                gname.c_str());
+                                   "specified for geometry %s --> input ignored\n",
+                                   gname.c_str());
                         delete [] regs;
                     }
                     else {
@@ -1215,11 +1285,12 @@ int EGS_ChamberApplication::initScoring() {
                         cavity_regions.push_back(regs);
                         cavity_masses.push_back(cmass);
                         transformations.push_back(
-                                EGS_AffineTransform::getTransformation(aux));
+                            EGS_AffineTransform::getTransformation(aux));
 
 
                         if( !err5 && !err6 && ecut_r.size() > 0 ) {
-                            int *r = new int [ecut_r.size()]; int nr=0;
+                            int *r = new int [ecut_r.size()];
+                            int nr=0;
                             for(int j=0; j<ecut_r.size(); j++) {
                                 if( ecut_r[j] >= 0 && ecut_r[j] < nreg ) {
                                     r[nr++] = ecut_r[j];
@@ -1245,7 +1316,8 @@ int EGS_ChamberApplication::initScoring() {
 
 
                         if( !err12 && !err11 && !err13 && cs_reg.size() > 0 ) {
-                            int *r = new int [cs_reg.size()]; int nr=0;
+                            int *r = new int [cs_reg.size()];
+                            int nr=0;
                             int *cse = new int [cs_reg.size()];
                             for(int j=0; j<cs_reg.size(); j++) {
                                 if( cs_reg[j] < nreg ) {
@@ -1274,21 +1346,21 @@ int EGS_ChamberApplication::initScoring() {
                     }
 
                     // get the defined subgeometries
-                    if ( do_TmpPhsp ){
+                    if ( do_TmpPhsp ) {
                         vector<string> subgeom_name;
                         int err777 = aux->getInput("sub geometries",subgeom_name);
                         vector<int> subgeom_regs;
                         int err888 = aux->getInput("subgeom regions",subgeom_regs);
-                        if( err777 ){
+                        if( err777 ) {
                             egsWarning("initScoring: missing/wrong 'sub geometries' "
-                                    " for geometry '%s'\n", gname.c_str());
+                                       " for geometry '%s'\n", gname.c_str());
                             n_subgeometries.push_back(0);
                             subgeoms.push_back(0);
                         }
-                        else if(!err888){
+                        else if(!err888) {
                             int nr = 0;
                             string *gnam = new string[subgeom_name.size()];
-                            for(int i=0; i<subgeom_name.size(); i++){
+                            for(int i=0; i<subgeom_name.size(); i++) {
                                 EGS_BaseGeometry *g = EGS_BaseGeometry::getGeometry(subgeom_name[i]);
                                 if(g) {
                                     nr++;
@@ -1296,7 +1368,7 @@ int EGS_ChamberApplication::initScoring() {
                                 }
                                 else egsFatal("\n geometry %s does not exist!\n\n", subgeom_name[i].c_str());
                             }
-                            if( nr ){
+                            if( nr ) {
                                 n_subgeometries.push_back(nr);
                                 subgeoms.push_back(gnam);
                             }
@@ -1307,7 +1379,8 @@ int EGS_ChamberApplication::initScoring() {
                             }
                         }
                         if( !err777 && !err888 && subgeom_regs.size() > 0 ) {
-                            int *r = new int [subgeom_regs.size()]; int nr=0;
+                            int *r = new int [subgeom_regs.size()];
+                            int nr=0;
                             for(int j=0; j<subgeom_regs.size(); j++) {
                                 if( subgeom_regs[j] >= -1 && subgeom_regs[j] < nreg )
                                     r[nr++] = subgeom_regs[j];
@@ -1343,8 +1416,8 @@ int EGS_ChamberApplication::initScoring() {
             return 1;
         }
         is_rECUT = new bool* [ngeom];
-		do_rECUT = new bool [ngeom];
-	    rECUT = new EGS_Float [ngeom];
+        do_rECUT = new bool [ngeom];
+        rECUT = new EGS_Float [ngeom];
 
         cgeoms = new EGS_BaseGeometry* [ngeom];
         for(int j=0; j<ngeom; j++)
@@ -1364,7 +1437,7 @@ int EGS_ChamberApplication::initScoring() {
         //    egsFatal("\nTmpPhsp: the first geometry can only have one cavity-region!\n\n");
 
         for(int j=0; j<ngeom; j++) {
-			do_rECUT[j] = false;
+            do_rECUT[j] = false;
             geoms[j] = geometries[j]; //geoms[j]->ref();
             mass[j] = cavity_masses[j];
             transforms[j] = transformations[j];
@@ -1373,7 +1446,7 @@ int EGS_ChamberApplication::initScoring() {
             cs_enhance[j] = new int[nreg];
             is_subgeomreg[j]  = new bool [nreg];
             int i;
-            for(i=0; i<nreg; i++){
+            for(i=0; i<nreg; i++) {
                 is_cavity[j][i]     = false;
                 cs_enhance[j][i]    = 1;
                 is_subgeomreg[j][i] = false;
@@ -1382,7 +1455,7 @@ int EGS_ChamberApplication::initScoring() {
                 int ireg = subgeometry_regions[j][i];
                 if (ireg == -1)
                     has_sub[j] = false;
-                else{
+                else {
                     has_sub[j] = true;
                     is_subgeomreg[j][ireg] = true;
                 }
@@ -1396,12 +1469,12 @@ int EGS_ChamberApplication::initScoring() {
                 else {
                     int imed1 = geoms[j]->medium(ireg);
                     if( imed1 != imed ) egsWarning("initScoring: different "
-                            "medium %d in region %d compared to medium %d in "
-                            "region %d for geometry %s.\nHope you know what you are doing\n",
-                            imed1,ireg,imed,cavity_regions[j][0],geoms[j]->getName().c_str());
+                                                       "medium %d in region %d compared to medium %d in "
+                                                       "region %d for geometry %s.\nHope you know what you are doing\n",
+                                                       imed1,ireg,imed,cavity_regions[j][0],geoms[j]->getName().c_str());
                 }
             }
-            if ( n_enhance_regions[j] > 0 ){
+            if ( n_enhance_regions[j] > 0 ) {
                 if( enhance_regions[j][0] >= 0 )
                     for(i=0; i<n_enhance_regions[j]; i++) {
                         int ireg = enhance_regions[j][i];
@@ -1414,19 +1487,20 @@ int EGS_ChamberApplication::initScoring() {
                         cs_enhance[j][i] = enhance_fac[j][0];
                         do_cse = true;
                     }
-                    //*HB_end**************************
+                //*HB_end**************************
             }
 
 
-			if( ecut_regions_nr[j] > 0 ) {
-			    do_rECUT[j] = true;
-			    is_rECUT[j] = new bool [nreg];
-			    int i; for(i=0; i<nreg; i++) is_rECUT[j][i] = false;
-			    for(i=0; i<ecut_regions_nr[j]; i++){
-			        is_rECUT[j][ecut_regions[j][i]] = true;
-			    }
-			    delete [] ecut_regions[j];
-			    rECUT[j] = ecut_val[j];
+            if( ecut_regions_nr[j] > 0 ) {
+                do_rECUT[j] = true;
+                is_rECUT[j] = new bool [nreg];
+                int i;
+                for(i=0; i<nreg; i++) is_rECUT[j][i] = false;
+                for(i=0; i<ecut_regions_nr[j]; i++) {
+                    is_rECUT[j][ecut_regions[j][i]] = true;
+                }
+                delete [] ecut_regions[j];
+                rECUT[j] = ecut_val[j];
             }
 
             delete [] cavity_regions[j];
@@ -1446,26 +1520,30 @@ int EGS_ChamberApplication::initScoring() {
                 for(j2=0; j2<ngeom; j2++)
                     if( cgnames[1] == geoms[j2]->getName() ) break;
                 if( j1 < ngeom && j2 < ngeom ) {
-                    cor1.push_back(j1); cor2.push_back(j2);
-		    if(cgnames.size() == 3) //If size of gnames is 3, the 3rd string is the identifier
-		    	correlgnames.push_back(cgnames[2]);
-		    else correlgnames.push_back("-");
+                    cor1.push_back(j1);
+                    cor2.push_back(j2);
+                    if(cgnames.size() == 3) //If size of gnames is 3, the 3rd string is the identifier
+                        correlgnames.push_back(cgnames[2]);
+                    else correlgnames.push_back("-");
                 }
             }
             //*HB_end**************************
         }
         if( cor1.size() > 0 ) {
             ncg = cor1.size();
-            gind1 = new int [ncg]; gind2 = new int [ncg];
+            gind1 = new int [ncg];
+            gind2 = new int [ncg];
             scg = new double [ncg];
             for(int j=0; j<ncg; j++) {
-                scg[j] = 0; gind1[j] = cor1[j]; gind2[j] = cor2[j];
+                scg[j] = 0;
+                gind1[j] = cor1[j];
+                gind2[j] = cor2[j];
             }
         }
         delete aux2;
 
-	//*HB_start************************
-	//
+        //*HB_start************************
+        //
         // **** positioning uncertainty
         //
         EGS_Input *ipu, *ipu_transl, *ipu_rot;
@@ -1583,11 +1661,15 @@ int EGS_ChamberApplication::initScoring() {
                 int  typeTransl = 0, typeRot = 0;
                 EGS_Vector   sigma_transl = EGS_Vector(), max_transl = EGS_Vector(), sigma_rot = EGS_Vector(), max_rot = EGS_Vector();
                 dmb = ipu->getInput("ncase per position",tmp);
-                if(dmb) {if(McasePerPos==0) McasePerPos = 10;}
+                if(dmb) {
+                    if(McasePerPos==0) McasePerPos = 10;
+                }
                 else McasePerPos = tmp;
                 if (McasePerPos < 2) McasePerPos = 2;
                 dmb = ipu->getInput("positions per sample",tmp);
-                if(dmb) {if(NposPerSample==0) NposPerSample = 10;}
+                if(dmb) {
+                    if(NposPerSample==0) NposPerSample = 10;
+                }
                 else NposPerSample = tmp;
                 if (NposPerSample < 2) NposPerSample = 2;
 
@@ -1735,8 +1817,8 @@ int EGS_ChamberApplication::initScoring() {
             egsInformation("\nCavity positioning uncertainty option is set OFF.\n");
             cav_pu_do_shift = false;
         }
-        if(pu_flag){
-            for(int i=1;i<ngeom;i++) {
+        if(pu_flag) {
+            for(int i=1; i<ngeom; i++) {
                 EGS_PosUncertEstimator *putmp = new EGS_PosUncertEstimator();
                 pu_estimator.push_back(putmp);
                 pu_estimator[i-1]->initMcasePerPos(McasePerPos);
@@ -1783,16 +1865,16 @@ int EGS_ChamberApplication::initScoring() {
         return 2;
     }
 
-    if( do_TmpPhsp ){
+    if( do_TmpPhsp ) {
         do_sub = false;
         if(ngeom == 1)
             egsFatal("\nTmpPhsp: define more than one geometry!\n\n");
         for(int i=1; i<ngeom; i++)
-            if(nsubgeoms[i] != 0){
+            if(nsubgeoms[i] != 0) {
                 do_sub = true;
                 break;
             }
-        if(do_sub){
+        if(do_sub) {
             //for(int i=1; i<ngeom; i++)
             //	if(nsubgeoms[i] == 0){
             //		egsFatal("\nsubgeometries");
@@ -1827,7 +1909,7 @@ int EGS_ChamberApplication::initScoring() {
 
     if ( do_TmpPhsp )
         setAusgabCall(AfterTransport, true);
-    if ( do_cse ){
+    if ( do_cse ) {
         setAusgabCall(BeforePair, true);
         setAusgabCall(BeforeCompton, true);
         setAusgabCall(BeforePhoto, true);
@@ -1845,7 +1927,7 @@ int EGS_ChamberApplication::initScoring() {
         }
         setAusgabCall(AfterAnnihFlight,true);
         setAusgabCall(AfterAnnihRest,true);
-        if( rr_flag > 1){
+        if( rr_flag > 1) {
             setAusgabCall(BeforeBrems,true);
 //             setAusgabCall(BeforeMoller,true);
 //             setAusgabCall(BeforeBhabha,true);
@@ -1864,35 +1946,35 @@ int EGS_ChamberApplication::ausgab(int iarg) {
 
     // jwu: check if we are above ECUT
     if( do_rECUT[ig] && (the_stack->iq[np] == -1 || the_stack->iq[np] == 1) )
-        if( is_rECUT[ig][ir] ){
-            if( the_stack->E[np]-the_useful->rm < rECUT[ig] ){
-            // before discarding the particle
-            // deposit all of its energy locally
-            if( ir >= 0 && is_cavity[ig][ir] ) {
-                EGS_Float aux = (the_stack->E[np]-the_useful->rm)*the_stack->wt[np];
-                if(aux > 0){
-                    dose->score(ig,aux);
-                    if(check_for_subreg && nsubgeoms[ig] != 0){
-                        save_dose += aux;	//get the current dose deposition
+        if( is_rECUT[ig][ir] ) {
+            if( the_stack->E[np]-the_useful->rm < rECUT[ig] ) {
+                // before discarding the particle
+                // deposit all of its energy locally
+                if( ir >= 0 && is_cavity[ig][ir] ) {
+                    EGS_Float aux = (the_stack->E[np]-the_useful->rm)*the_stack->wt[np];
+                    if(aux > 0) {
+                        dose->score(ig,aux);
+                        if(check_for_subreg && nsubgeoms[ig] != 0) {
+                            save_dose += aux;	//get the current dose deposition
+                        }
                     }
                 }
+                the_stack->wt[np] = 0;
             }
-        the_stack->wt[np] = 0;
         }
-    }
 
     //
     //  **** temporarily scoring phase-space
     //
     // saving the phase-space at the 'base' geometry
-    if( do_TmpPhsp && ig == 0 && iarg == AfterTransport && is_cavity[ig][ir] ){
+    if( do_TmpPhsp && ig == 0 && iarg == AfterTransport && is_cavity[ig][ir] ) {
         container->set();
         the_stack->wt[np] = 0;
         basereg = ir;
         return 0;
     }
     // saving the phase-space at the defined region of geometries with subgeometries
-    if( check_for_subreg && iarg == AfterTransport && is_subgeomreg[ig][ir] ){
+    if( check_for_subreg && iarg == AfterTransport && is_subgeomreg[ig][ir] ) {
         container2->set();
         the_stack->wt[np] = 0;
         return 0;
@@ -1902,15 +1984,15 @@ int EGS_ChamberApplication::ausgab(int iarg) {
     //
     // (mainly adopted from dosrznrc.mortran)
     // if inside an cs_enhance_region
-    if( cs_enhance[ig][ir] > 1  ){
+    if( cs_enhance[ig][ir] > 1  ) {
         // devide photon in interacting and non-interacting portions
         if( iarg == BeforePair  || iarg == BeforeCompton ||
-            iarg == BeforePhoto || iarg == BeforeRayleigh ) {
+                iarg == BeforePhoto || iarg == BeforeRayleigh ) {
             // increase stack
             ++the_stack->np;
             if (the_stack->np > MXSTACK)
                 egsFatal("\ncs enhancement: unable to add to stack"
-                        "\nincrease MXSTACK in arraysizes.h!");
+                         "\nincrease MXSTACK in arraysizes.h!");
             // copy the photon to top of stack
             COPY_PARTICLE(np,np+1);
             //adjust the weight of interacting photon-portion
@@ -1918,7 +2000,7 @@ int EGS_ChamberApplication::ausgab(int iarg) {
             return 0;
         }
         if( iarg == AfterCompton || iarg == AfterPhoto || iarg == AfterRayleigh || iarg == AfterPair ) {
-            if( rndm->getUniform()*cs_enhance[ig][ir] < 1 ){
+            if( rndm->getUniform()*cs_enhance[ig][ir] < 1 ) {
                 // remove non-interacting portion
                 the_stack->wt[the_stack->npold-2] = 0;
                 // keep all scattered and regain weight
@@ -1943,22 +2025,22 @@ int EGS_ChamberApplication::ausgab(int iarg) {
     // and electrons not likely to contribute to dose in region of
     // interest are reduced in number
     // however dont do this with fat electrons that survived rangerejection-RR (latch > 1)
-    if( iarg == AfterTransport && the_stack->iq[np] && the_stack->latch[np] < 1 ){
+    if( iarg == AfterTransport && the_stack->iq[np] && the_stack->latch[np] < 1 ) {
         // region change occured for e-/e+
         // split since cse is enhanced in this region
-        if( ir >= 0 && cs_enhance[ig][the_epcont->irold-2] < cs_enhance[ig][ir] ){
+        if( ir >= 0 && cs_enhance[ig][the_epcont->irold-2] < cs_enhance[ig][ir] ) {
             int n_esplit = cs_enhance[ig][ir]/cs_enhance[ig][the_epcont->irold-2];
             the_stack->wt[np] = the_stack->wt[np]/(EGS_Float)n_esplit;
             the_stack->np += n_esplit-1;
             if (the_stack->np > MXSTACK)
                 egsFatal("\ncs enhancement: unable to add to stack"
-                        "\nincrease MXSTACK in arraysizes.h");
-            for(int i=np+1; i<(np+n_esplit); i++){
+                         "\nincrease MXSTACK in arraysizes.h");
+            for(int i=np+1; i<(np+n_esplit); i++) {
                 COPY_PARTICLE(np,i);
             }
         }
         //play RR since cse is decreased in this reg
-        if( ir >= 0 && cs_enhance[ig][the_epcont->irold-2] > cs_enhance[ig][ir] ){
+        if( ir >= 0 && cs_enhance[ig][the_epcont->irold-2] > cs_enhance[ig][ir] ) {
             int RRprob = cs_enhance[ig][the_epcont->irold-2]/cs_enhance[ig][ir];
             //
             // ******* IK: why is latch not set here?
@@ -1974,7 +2056,7 @@ int EGS_ChamberApplication::ausgab(int iarg) {
     // split up fat electrons' radiative events
     // i.e. electrons that survived range-rejection RR
     if( (the_stack->latch[np] != 0) &&
-        (iarg == BeforeBrems || iarg == BeforeAnnihFlight || iarg == BeforeAnnihRest) ) {
+            (iarg == BeforeBrems || iarg == BeforeAnnihFlight || iarg == BeforeAnnihRest) ) {
         the_egsvr->nbr_split = the_stack->latch[np];	// split photons up
         return 0;
     }
@@ -1983,13 +2065,13 @@ int EGS_ChamberApplication::ausgab(int iarg) {
     // that can be the descendants of cse-split electrons
     // if these are photons of brems-split (see above) reset latch and splitting#
     if(  (iarg == AfterBrems || iarg == AfterMoller ||
-          iarg == AfterBhabha || iarg == AfterAnnihFlight ||
-          iarg == AfterAnnihRest) && do_cse ) {
+            iarg == AfterBhabha || iarg == AfterAnnihFlight ||
+            iarg == AfterAnnihRest) && do_cse ) {
         for(int ip=the_stack->npold-1; ip<=np; ip++)
             if( !the_stack->iq[ip] )
                 if(cs_enhance[ig][ir] > 1 && the_stack->latch[ip] == 0)
                     // play RR with photons of non-fat electron radiative event
-                    if( rndm->getUniform() * (EGS_Float)cs_enhance[ig][ir] < 1 ){
+                    if( rndm->getUniform() * (EGS_Float)cs_enhance[ig][ir] < 1 ) {
                         the_stack->wt[ip] *= cs_enhance[ig][ir];
                     }
                     else the_stack->wt[ip] = 0;
@@ -2006,17 +2088,17 @@ int EGS_ChamberApplication::ausgab(int iarg) {
         if( the_epcont->ustep < 1e-5 ) {
             if( ++nsmall_step > 10000 ) {
                 egsWarning("Too many small steps: ir=%d x=(%g,%g,%g)\n",
-                        ir,the_stack->x[np],the_stack->y[np],
-                        the_stack->z[np]);
+                           ir,the_stack->x[np],the_stack->y[np],
+                           the_stack->z[np]);
                 the_stack->wt[np] = 0;
                 nsmall_step = 0;
             }
         }
         else nsmall_step = 0;
-        if(!onegeom){
+        if(!onegeom) {
             if( ir >= 0 && is_cavity[ig][ir] ) {
                 EGS_Float aux = the_epcont->edep*the_stack->wt[np];
-                if(aux > 0){
+                if(aux > 0) {
                     /*
                     if( fabs(the_stack->wt[np]*cs_enhance[ig][ir]/p.wt-1) > 0.01 ) {
                         egsInformation("Fat particle scoring in cavity:\n");
@@ -2029,19 +2111,19 @@ int EGS_ChamberApplication::ausgab(int iarg) {
                     }
                     */
                     dose->score(ig,aux);
-                    if(check_for_subreg && nsubgeoms[ig] != 0){
+                    if(check_for_subreg && nsubgeoms[ig] != 0) {
                         save_dose += aux;	//get the current dose deposition
                     }
                 }
             }
-	    }
-	    else{
-		    // we use the onegeom option which means we have identical geometries
-			// except the region numbers differ
+        }
+        else {
+            // we use the onegeom option which means we have identical geometries
+            // except the region numbers differ
             // we simulate only the first geometry so see if the actual region with
             // energy-deposition belongs to any geometry
             if( ir >= 0 )
-                for(int i=0;i<ngeom;i++){
+                for(int i=0; i<ngeom; i++) {
                     if( is_cavity[i][ir] ) {
                         EGS_Float aux = the_epcont->edep*the_stack->wt[np];
                         if( aux > 0 ) {
@@ -2049,7 +2131,7 @@ int EGS_ChamberApplication::ausgab(int iarg) {
                         }
                     }
                 }
-		}
+        }
 
         return 0;
     }
@@ -2059,8 +2141,8 @@ int EGS_ChamberApplication::ausgab(int iarg) {
     //  **** mark or throw away scattered photons
     //
     if( iarg == AfterBrems     || iarg == AfterMoller ||
-        iarg == AfterBhabha    || iarg == AfterAnnihFlight ||
-        iarg == AfterAnnihRest ) {
+            iarg == AfterBhabha    || iarg == AfterAnnihFlight ||
+            iarg == AfterAnnihRest ) {
         for(int ip=the_stack->npold-1; ip<=np; ip++) {
             if( !the_stack->iq[ip] ) {
                 if( fsplit > 1 && the_stack->latch[ip] < 2 ) {
@@ -2070,7 +2152,7 @@ int EGS_ChamberApplication::ausgab(int iarg) {
                         the_stack->wt[ip] = 0;
                 }
                 if( !do_cse && (the_stack->latch[ip] == 0 ||
-                            (rr_flag > 1 && the_stack->latch[ip] == rr_flag) ) ){
+                                (rr_flag > 1 && the_stack->latch[ip] == rr_flag) ) ) {
                     the_stack->latch[ip] += 1;
                 }
             }
@@ -2081,16 +2163,20 @@ int EGS_ChamberApplication::ausgab(int iarg) {
 int EGS_ChamberApplication::runSimulation() {
     bool ok = true;
     if( !geometry ) {
-        egsWarning("%s no geometry\n",__egs_app_msg_my3); ok = false;
+        egsWarning("%s no geometry\n",__egs_app_msg_my3);
+        ok = false;
     }
     if( !source ) {
-        egsWarning("%s no source\n",__egs_app_msg_my3); ok = false;
+        egsWarning("%s no source\n",__egs_app_msg_my3);
+        ok = false;
     }
     if( !rndm ) {
-        egsWarning("%s no RNG\n",__egs_app_msg_my3); ok = false;
+        egsWarning("%s no RNG\n",__egs_app_msg_my3);
+        ok = false;
     }
     if( !run ) {
-        egsWarning("%s no run control object\n",__egs_app_msg_my3); ok = false;
+        egsWarning("%s no run control object\n",__egs_app_msg_my3);
+        ok = false;
     }
     if( !ok ) return 1;
 
@@ -2110,30 +2196,34 @@ int EGS_ChamberApplication::runSimulation() {
         if( run->getCombinedResult(f,df) ) {
             char c = '%';
             egsInformation("    combined result from this and other parallel"
-                    " runs: %lg +/- %7.3lf%c\n\n",f,df,c);
+                           " runs: %lg +/- %7.3lf%c\n\n",f,df,c);
         }
         else egsInformation("\n");
         int nbatch = run->getNbatch();
         EGS_I64 ncase_per_batch = ncase/nbatch;
         if( !ncase_per_batch ) {
-            ncase_per_batch = 1; nbatch = ncase;
+            ncase_per_batch = 1;
+            nbatch = ncase;
         }
         for(int ibatch=0; ibatch<nbatch; ibatch++) {
             if( !run->startBatch(ibatch,ncase_per_batch) ) {
                 egsInformation("  startBatch() loop termination\n");
-                next_chunk = false; break;
+                next_chunk = false;
+                break;
             }
             for(EGS_I64 icase=0; icase<ncase_per_batch; icase++) {
                 if( simulateSingleShower() ) {
                     egsInformation("  simulateSingleShower() "
-                            "loop termination\n");
-                    next_chunk = false; break;
+                                   "loop termination\n");
+                    next_chunk = false;
+                    break;
                 }
             }
             if( !next_chunk ) break;
             if( !run->finishBatch() ) {
                 egsInformation("  finishBatch() loop termination\n");
-                next_chunk = false; break;
+                next_chunk = false;
+                break;
             }
         }
     }
@@ -2184,7 +2274,8 @@ int EGS_ChamberApplication::simulateSingleShower() {
     EGS_Vector x,u;
     current_case = source->getNextParticle(rndm,p.q,p.latch,p.E,p.wt,x,u);
     //egsInformation("Got particle: q=%d E=%g wt=%g latch=%d x=(%g,%g,%g) u=(%g,%g,%g)\n",p.q,p.E,p.wt,p.latch,x.x,x.y,x.z,u.x,u.y,u.z);
-    int err = startNewShower(); if( err ) return err;
+    int err = startNewShower();
+    if( err ) return err;
     //*HB_start************************
     //isocenter positioning uncertainty
     int jpu = 0;
@@ -2206,52 +2297,61 @@ int EGS_ChamberApplication::simulateSingleShower() {
         jpu++;
         //egsInformation("Got rotation (%f,%f,%f) and translation (%f%f,%f)\n",tmp1.x,tmp1.y,tmp1.z,tmp2.x,tmp2.y,tmp2.z);
     }
-/*
-    //cavity positioning uncertainty (implem here to avoid delay in shift if particle do not reach TmpPhsp)
-    if(cav_pu_do_shift) {
-        for(int j=1;j<ngeom; j++) {
-            if(j==1) pu_distributor[jpu]->setNewShifts(rndm);
-            EGS_Vector tmp1 = pu_distributor[jpu]->getTranslation();
-            EGS_Vector tmp2 = pu_distributor[jpu]->getRotation();
-            EGS_RotationMatrix Rtmp = EGS_RotationMatrix(tmp2.x,tmp2.y,tmp2.z);
-            if( !transforms[j] ) transforms[j] = new EGS_AffineTransform();
-            (*transforms[j]) = EGS_AffineTransform(Rtmp,tmp1);
+    /*
+        //cavity positioning uncertainty (implem here to avoid delay in shift if particle do not reach TmpPhsp)
+        if(cav_pu_do_shift) {
+            for(int j=1;j<ngeom; j++) {
+                if(j==1) pu_distributor[jpu]->setNewShifts(rndm);
+                EGS_Vector tmp1 = pu_distributor[jpu]->getTranslation();
+                EGS_Vector tmp2 = pu_distributor[jpu]->getRotation();
+                EGS_RotationMatrix Rtmp = EGS_RotationMatrix(tmp2.x,tmp2.y,tmp2.z);
+                if( !transforms[j] ) transforms[j] = new EGS_AffineTransform();
+                (*transforms[j]) = EGS_AffineTransform(Rtmp,tmp1);
+            }
+            cav_pu_do_shift = false;
         }
-        cav_pu_do_shift = false;
-    }
-*/
+    */
     //*HB_end**************************
     EGS_BaseGeometry *save_geometry = geometry;
     if(!do_TmpPhsp) {
         for(ig=0; ig<stop_geom; ig++) {
-            geometry = geoms[ig]; p.x = x; p.u = u;
+            geometry = geoms[ig];
+            p.x = x;
+            p.u = u;
             if( transforms[ig] ) {
-                transforms[ig]->transform(p.x); transforms[ig]->rotate(p.u);
+                transforms[ig]->transform(p.x);
+                transforms[ig]->rotate(p.u);
             }
             int ireg = geometry->isWhere(p.x);
             if( ireg < 0 ) {
-                EGS_Float t = 1e30; ireg = geometry->howfar(ireg,p.x,p.u,t);
+                EGS_Float t = 1e30;
+                ireg = geometry->howfar(ireg,p.x,p.u,t);
                 if( ireg >= 0 ) p.x += p.u*t;
             }
             if( ireg >= 0 ) {
                 p.ir = ireg;
                 nsmall_step = 0;
-                err = shower(); if( err ) return err;
+                err = shower();
+                if( err ) return err;
             }
         }
     }
     else {
         // start with the first geometry
-        for(ig=0; ig<ngeom; ig++){
-            if(ig == 0){
+        for(ig=0; ig<ngeom; ig++) {
+            if(ig == 0) {
                 container->clean();
-                geometry = geoms[ig]; p.x = x; p.u = u;
+                geometry = geoms[ig];
+                p.x = x;
+                p.u = u;
                 if( transforms[ig] ) {
-                    transforms[ig]->transform(p.x); transforms[ig]->rotate(p.u);
+                    transforms[ig]->transform(p.x);
+                    transforms[ig]->rotate(p.u);
                 }
                 int ireg = geometry->isWhere(p.x);
                 if( ireg < 0 ) {
-                    EGS_Float t = 1e30; ireg = geometry->howfar(ireg,p.x,p.u,t);
+                    EGS_Float t = 1e30;
+                    ireg = geometry->howfar(ireg,p.x,p.u,t);
                     if( ireg >= 0 ) p.x += p.u*t;
                 }
                 if( ireg >= 0 ) {
@@ -2266,7 +2366,8 @@ int EGS_ChamberApplication::simulateSingleShower() {
                     }
                     // during shower the phasespace will be scored
                     // at the 'base' geometry (i.e. the first defined)
-                    err = shower(); if( err ) return err;
+                    err = shower();
+                    if( err ) return err;
                 }
                 /*
                 else {
@@ -2277,8 +2378,8 @@ int EGS_ChamberApplication::simulateSingleShower() {
                 */
             }
             // when particles were scored reuse them for all other geometries
-            else if(container->size() > 0){
-                if( (nsubgeoms[ig] != 0) || !do_sub ){
+            else if(container->size() > 0) {
+                if( (nsubgeoms[ig] != 0) || !do_sub ) {
                     // i.e. has subgeometries or no subgeom option
                     geometry = geoms[ig];
                     int pc;
@@ -2287,10 +2388,10 @@ int EGS_ChamberApplication::simulateSingleShower() {
                     if(has_sub[ig])check_for_subreg = true;
                     save_dose = 0;
                     // get tmpPhsp1 and use as a source
-                    while(container->size() > 0){
+                    while(container->size() > 0) {
                         int tmppc2 = container->size();
                         //recycle particles
-                        for( int i=0; i< do_TmpPhsp; i++){
+                        for( int i=0; i< do_TmpPhsp; i++) {
                             container->setPointer(tmppc2);
                             nsmall_step = 0;
                             the_stack->np = 1;
@@ -2300,8 +2401,12 @@ int EGS_ChamberApplication::simulateSingleShower() {
                                 transforms[ig]->transform(xt);
                                 EGS_Vector ut(the_stack->u[0], the_stack->v[0], the_stack->w[0]);
                                 transforms[ig]->rotate(ut);
-                                the_stack->u[0] = ut.x; the_stack->v[0] = ut.y; the_stack->w[0] = ut.z;
-                                the_stack->x[0] = xt.x; the_stack->y[0] = xt.y; the_stack->z[0] = xt.z;
+                                the_stack->u[0] = ut.x;
+                                the_stack->v[0] = ut.y;
+                                the_stack->w[0] = ut.z;
+                                the_stack->x[0] = xt.x;
+                                the_stack->y[0] = xt.y;
+                                the_stack->z[0] = xt.z;
                             }
                             //HB Nov. 2009: Could implement motion of paricle here for positioning uncertainty
                             //*HB_start************************
@@ -2321,8 +2426,12 @@ int EGS_ChamberApplication::simulateSingleShower() {
                                 xt.x -= tmp2.x;
                                 xt.y -= tmp2.y;
                                 xt.z -= tmp2.z;
-                                the_stack->u[0] = ut.x; the_stack->v[0] = ut.y; the_stack->w[0] = ut.z;
-                                the_stack->x[0] = xt.x; the_stack->y[0] = xt.y; the_stack->z[0] = xt.z;
+                                the_stack->u[0] = ut.x;
+                                the_stack->v[0] = ut.y;
+                                the_stack->w[0] = ut.z;
+                                the_stack->x[0] = xt.x;
+                                the_stack->y[0] = xt.y;
+                                the_stack->z[0] = xt.z;
                             }
                             //*HB_end**************************
 
@@ -2335,16 +2444,16 @@ int EGS_ChamberApplication::simulateSingleShower() {
                             // I assume that the cse_enhance in the cavity of the TmpPhsp object
                             // is related to the actual weight of the electron
                             // when I start in the geometry I compare with the new and old cse
-                            if( the_stack->iq[0] ){
+                            if( the_stack->iq[0] ) {
                                 int ir = the_stack->ir[0]-2;
-                                if( cs_enhance[0][basereg] < cs_enhance[ig][ir] ){
+                                if( cs_enhance[0][basereg] < cs_enhance[ig][ir] ) {
                                     // split since CSE increased in this reg
                                     int n_esplit = cs_enhance[ig][ir]/cs_enhance[0][basereg];
                                     the_stack->wt[0] = the_stack->wt[0]/(EGS_Float)n_esplit;
-                                    for(int i=0; i<n_esplit; i++){
+                                    for(int i=0; i<n_esplit; i++) {
                                         container3->set();
                                     }
-                                    while(container3->size() > 0){
+                                    while(container3->size() > 0) {
                                         nsmall_step = 0;
                                         the_stack->dnear[0] = 0;
                                         the_stack->np = 1;
@@ -2355,35 +2464,35 @@ int EGS_ChamberApplication::simulateSingleShower() {
                                     }
                                 }
                                 //play RR since cse is decreased in this reg
-                                else if( ir >= 0 && cs_enhance[0][basereg] > cs_enhance[ig][ir] ){
+                                else if( ir >= 0 && cs_enhance[0][basereg] > cs_enhance[ig][ir] ) {
                                     int RRprob = cs_enhance[0][basereg]/cs_enhance[ig][ir];
-                                    if( rndm->getUniform()*RRprob < 1 ){
+                                    if( rndm->getUniform()*RRprob < 1 ) {
                                         the_stack->wt[0] *= RRprob;
                                         egsShower();
                                     }
                                 }
-                                else{
+                                else {
                                     // CSE stayed the same
                                     egsShower(); // shortcut to mortran-backend
                                 }
                             }
-                            else{
+                            else {
                                 egsShower();
                             }
                         }
                     }
                     container->setPointer(tmppc);	// for next geometry
-                    if(do_sub){				// when subgeometries are defined
+                    if(do_sub) {				// when subgeometries are defined
 
-                        if(container2->size() > 0 || save_dose > 0){
-                            if(container2->size() > 0){
+                        if(container2->size() > 0 || save_dose > 0) {
+                            if(container2->size() > 0) {
                                 saveRNGState();
                                 pc = container2->size();
-                            }else pc = 0;
+                            } else pc = 0;
                             check_for_subreg = false;
-                            for(int j=0; j<nsubgeoms[ig]; j++){	// use phasespace for each subgeometry
-                                for(int sub_ig = 1; sub_ig < ngeom; sub_ig++){
-                                    if(geoms[sub_ig]->getName().c_str() == subgeoms[ig][j]){
+                            for(int j=0; j<nsubgeoms[ig]; j++) {	// use phasespace for each subgeometry
+                                for(int sub_ig = 1; sub_ig < ngeom; sub_ig++) {
+                                    if(geoms[sub_ig]->getName().c_str() == subgeoms[ig][j]) {
                                         container2->setPointer(pc);
                                         int save_ig = ig;
                                         ig = sub_ig;
@@ -2392,7 +2501,7 @@ int EGS_ChamberApplication::simulateSingleShower() {
                                         if ( (ig != save_ig) && (save_dose > 0) )
                                             dose->score(ig,save_dose);
                                         geometry = geoms[ig];
-                                        while(container2->size() > 0){
+                                        while(container2->size() > 0) {
                                             nsmall_step = 0;
                                             the_stack->np = 1;
                                             container2->get();
@@ -2461,7 +2570,8 @@ int EGS_ChamberApplication::outputData() {
     }
     //*HB_end**************************
     data_out->flush();
-    delete data_out; data_out = 0;
+    delete data_out;
+    data_out = 0;
     return 0;
 };
 
@@ -2528,7 +2638,8 @@ int EGS_ChamberApplication::addState(istream &data) {
     (*dose) += tmp;
     if( ncg > 0 ) {
         for(int j=0; j<ncg; j++) {
-            double tmp; data >> tmp;
+            double tmp;
+            data >> tmp;
             if( !data.good() ) return 104;
             scg[j] += tmp;
         }
@@ -2573,7 +2684,7 @@ int EGS_ChamberApplication::addState(istream &data) {
 /*! Output the results of a simulation. */
 void EGS_ChamberApplication::outputResults() {
     egsInformation("\n\n last case = %lld fluence = %g\n\n",
-            current_case,source->getFluence());
+                   current_case,source->getFluence());
     //*HB_start************************
     if(pu_flag)
         egsInformation("%-25s       Cavity dose      \tPositioning uncertainty","Geometry");
@@ -2582,14 +2693,16 @@ void EGS_ChamberApplication::outputResults() {
     //*HB_end**************************
 
     egsInformation("\n"
-                    "-----------------------------------------------\n");
+                   "-----------------------------------------------\n");
     char c = '%';
     for(int j=0; j<ngeom; j++) {
-        double r,dr; dose->currentResult(j,r,dr);
-        if( r > 0 ) dr = 100*dr/r; else dr = 100;
+        double r,dr;
+        dose->currentResult(j,r,dr);
+        if( r > 0 ) dr = 100*dr/r;
+        else dr = 100;
         EGS_Float norm = 1.602e-10*current_case/source->getFluence();
         norm /= mass[j];
-	//*HB_start************************
+        //*HB_start************************
         if(pu_flag&&j) {
             EGS_Float dr1,ddr1,dvr1;
             EGS_I64 m = pu_estimator[j-1]->returnMcasePerPos();
@@ -2598,28 +2711,34 @@ void EGS_ChamberApplication::outputResults() {
             int errpu = pu_estimator[j-1]->getResult(dr1,ddr1,dvr1);
             EGS_Float eff = 1/dvr1/dvr1/(n*m*k);
             if(errpu)
-                    egsWarning("\nError %d in getResult() of pu option for geometry index %d. (K,N,M) = (%d,%d,%d)\n", \
-                                errpu,j,pu_estimator[j-1]->returnK(), \
-                                pu_estimator[j-1]->returnN(),pu_estimator[j-1]->returnM());
-            if( r > 0 ) {dr1 = 100*dr1/r ; ddr1 = 100*ddr1/r;}
-            else {dr1 = 100; ddr1 = 100;}
+                egsWarning("\nError %d in getResult() of pu option for geometry index %d. (K,N,M) = (%d,%d,%d)\n", \
+                           errpu,j,pu_estimator[j-1]->returnK(), \
+                           pu_estimator[j-1]->returnN(),pu_estimator[j-1]->returnM());
+            if( r > 0 ) {
+                dr1 = 100*dr1/r ;
+                ddr1 = 100*ddr1/r;
+            }
+            else {
+                dr1 = 100;
+                ddr1 = 100;
+            }
             if (dr1 > 0) {
                 egsInformation("%-25s %10.4le +/- %-7.3lf%c \t+/- (%-7.3lf +/- %-7.3lf)%c (efficiency indicator: %10.4le)",
-                    geoms[j]->getName().c_str(),
-                    r*norm,dr,c,dr1,ddr1,c,eff);
+                               geoms[j]->getName().c_str(),
+                               r*norm,dr,c,dr1,ddr1,c,eff);
             }
             else {
                 ddr1 = r*ddr1/100.0;
                 egsInformation("%-25s %10.4le +/- %-7.3lf%c \t+/- Negative estimator! (efficiency indicator: %10.4le)",
-                    geoms[j]->getName().c_str(),
-                    r*norm,dr,c,eff);
+                               geoms[j]->getName().c_str(),
+                               r*norm,dr,c,eff);
 
             }
         }
         else {
             egsInformation("%-25s %10.4le +/- %-7.3lf%c ",
-                    geoms[j]->getName().c_str(),
-                    r*norm,dr,c);
+                           geoms[j]->getName().c_str(),
+                           r*norm,dr,c);
         }
         //*HB_end**************************
         if(do_TmpPhsp && j==0)egsInformation("(this MUST be zero!)");
@@ -2627,13 +2746,13 @@ void EGS_ChamberApplication::outputResults() {
     }
     egsInformation("\n\n");
     if( ncg > 0 ) {
-	//*HB_start************************
+        //*HB_start************************
         if(pu_flag)
             egsInformation("%-20s %-20s %-20s     Dose ratio\t\t\tPositioning uncertainty\n","Geometry 1",
-                "Geometry 2","Identifier");
+                           "Geometry 2","Identifier");
         else
             egsInformation("%-20s %-20s %-20s     Dose ratio\n","Geometry 1",
-            "Geometry 2","Identifier");
+                           "Geometry 2","Identifier");
         //*HB_end**************************
         vector<double> ratio, dratio;
         for(int j=0; j<ncg; j++) {
@@ -2642,7 +2761,8 @@ void EGS_ChamberApplication::outputResults() {
             dose->currentResult(gind2[j],r2,dr2);
             if( r1 > 0 && r2 > 0 ) {
                 double rc=(scg[j]/(r1*r2*current_case)-1)/(current_case-1);
-                dr1 /= r1; dr2 /= r2;
+                dr1 /= r1;
+                dr2 /= r2;
                 double dr = dr1*dr1 + dr2*dr2 - 2*rc;
                 if( dr > 0 ) dr = sqrt(dr);
                 double r = r1*mass[gind2[j]]/(r2*mass[gind1[j]]);
@@ -2652,19 +2772,20 @@ void EGS_ChamberApplication::outputResults() {
                     int errpu = pu_estimator_corr[j]->getResult(tmp1,tmp2,tmp3);
                     if(tmp1>0)
                         egsInformation("%-20s %-20s %-20s     %-8.5lf +/- %-7.5lf \t+/- (%-7.5lf +/- %-7.5lf)\n",
-                               geoms[gind1[j]]->getName().c_str(),
-                               geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr,tmp1*r,tmp2*r);
+                                       geoms[gind1[j]]->getName().c_str(),
+                                       geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr,tmp1*r,tmp2*r);
                     else
                         egsInformation("%-20s %-20s %-20s     %-8.5lf +/- %-7.5lf \t+/- Negative estimator!\n",
-                               geoms[gind1[j]]->getName().c_str(),
-                               geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr);
+                                       geoms[gind1[j]]->getName().c_str(),
+                                       geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr);
                 }
                 else
                     egsInformation("%-20s %-20s %-20s     %-8.5lf +/- %-7.5lf\n",
-                               geoms[gind1[j]]->getName().c_str(),
-                               geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr);
+                                   geoms[gind1[j]]->getName().c_str(),
+                                   geoms[gind2[j]]->getName().c_str(),correlgnames[j].c_str(),r,r*dr);
                 //*HB_end**************************
-                ratio.push_back(r); dratio.push_back(r*dr);
+                ratio.push_back(r);
+                dratio.push_back(r*dr);
             }
             else egsInformation("zero dose\n");
         }
@@ -2675,7 +2796,8 @@ void EGS_ChamberApplication::outputResults() {
 /*! Get the current simulation result.  */
 void EGS_ChamberApplication::getCurrentResult(double &sum, double &sum2, double &norm,
         double &count) {
-    count = current_case; double flu = source->getFluence();
+    count = current_case;
+    double flu = source->getFluence();
     int geom_count = do_TmpPhsp ? 1 : 0;
     norm = flu > 0 ? 1.602e-10*count/(flu*mass[geom_count]) : 0;
     dose->currentScore(geom_count,sum,sum2);
@@ -2690,19 +2812,25 @@ int EGS_ChamberApplication::shower() {
 void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     int np = the_stack->np-1;
     if( fsplit <= 1 ) {
-        dpmfp = -log(1 - rndm->getUniform()); return;
+        dpmfp = -log(1 - rndm->getUniform());
+        return;
     }
     if( the_stack->iq[np] ) egsFatal("selectPhotonMFP called with a"
-        " particle of charge %d\n",the_stack->iq[np]);
+                                         " particle of charge %d\n",the_stack->iq[np]);
     EGS_Float wt_o = the_stack->wt[np];
     EGS_Float E = the_stack->E[np];
     int ireg   = the_stack->ir[np]-2, latch = the_stack->latch[np];
     int latch1 = latch;
     EGS_Float f_split, f_spliti;
-    if( latch < 2 ) { f_split = fsplit; f_spliti = fspliti; }
+    if( latch < 2 ) {
+        f_split = fsplit;
+        f_spliti = fspliti;
+    }
     else {
-        f_split = rr_flag; f_spliti = 1/f_split;
-        latch1 = latch - rr_flag; the_stack->latch[np] = latch1;
+        f_split = rr_flag;
+        f_spliti = 1/f_split;
+        latch1 = latch - rr_flag;
+        the_stack->latch[np] = latch1;
     }
     the_stack->wt[np] = wt_o*f_spliti;
     int imed = geometry->medium(ireg);
@@ -2723,18 +2851,26 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     int i_survive = (int) ( f_split*rndm->getUniform() );
     EGS_Float mfp_old = 0,
               eta_prime = 1 + rndm->getUniform()*f_spliti;
-    dpmfp = -1; int isplit = 0;
+    dpmfp = -1;
+    int isplit = 0;
     while(1) {
         eta_prime -= f_spliti;
-        if( eta_prime <= 0 ) { --the_stack->np; return; }
+        if( eta_prime <= 0 ) {
+            --the_stack->np;
+            return;
+        }
         EGS_Float mfp = -log(eta_prime) - mfp_old;
         EGS_Float xp , up, t;
         double ttot = 0;
         mfp_old = mfp_old + mfp;
         while(1) {
-            EGS_Float tstep = mfp*gmfp; int newmed;
+            EGS_Float tstep = mfp*gmfp;
+            int newmed;
             int inew = geometry->howfar(ireg,x,u,tstep,&newmed);
-            if( inew < 0 ) { --the_stack->np; return; }
+            if( inew < 0 ) {
+                --the_stack->np;
+                return;
+            }
             x += u*tstep;
             if( inew == ireg ) break;
             mfp -= tstep/gmfp;
@@ -2743,7 +2879,8 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
             else rhor = 1;
             ireg = inew;
             if( newmed != imed ) {
-                imed = newmed; the_useful->medium = imed+1;
+                imed = newmed;
+                the_useful->medium = imed+1;
                 if( imed >= 0 ) {
                     gmfpr = i_gmfp[imed].interpolateFast(gle);
                     if( the_xoptions->iraylr ) {
@@ -2751,23 +2888,30 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
                         gmfpr *= cohfac;
                     }
                 }
-                else { gmfpr=1e15, cohfac=1; }
+                else {
+                    gmfpr=1e15, cohfac=1;
+                }
             }
             gmfp = gmfpr/rhor;
         }
-        the_stack->x[np]=x.x; the_stack->y[np]=x.y; the_stack->z[np]=x.z;
+        the_stack->x[np]=x.x;
+        the_stack->y[np]=x.y;
+        the_stack->z[np]=x.z;
         the_stack->ir[np] = ireg+2;
         the_stack->dnear[np] = 0;
         bool is_rayleigh = false;
         if( the_xoptions->iraylr ) {
             if( rndm->getUniform() < 1 - cohfac ) { // ******** rayleigh
                 is_rayleigh = true;
-                if( isplit != i_survive ) { --np; --the_stack->np; }
+                if( isplit != i_survive ) {
+                    --np;
+                    --the_stack->np;
+                }
                 else {
-                 the_stack->wt[np] = wt_o;
-                 doRayleigh();
-                 the_stack->latch[np] = latch < 2 ?
-                        1 : (rr_flag+1);
+                    the_stack->wt[np] = wt_o;
+                    doRayleigh();
+                    the_stack->latch[np] = latch < 2 ?
+                                           1 : (rr_flag+1);
                 }
             }
         }
@@ -2785,7 +2929,8 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
             else {                                     // ********* photo
                 F77_OBJ(photo,PHOTO)();
             }
-            np = the_stack->np-1; int ip = the_stack->npold-1;
+            np = the_stack->np-1;
+            int ip = the_stack->npold-1;
             int ipo = ip, npo = np;
             bool do_rr=(rr_flag>0 && !is_cavity[ig][ireg]);
             EGS_Float cperp=1e30;
@@ -2797,20 +2942,21 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
             do {
                 if( !the_stack->iq[ip] ) {
                     if( isplit == i_survive ) {
-                      the_stack->wt[ip] = wt_o;
-                      the_stack->latch[ip++] = latch < 2 ?
-                            1 : (rr_flag+1);
+                        the_stack->wt[ip] = wt_o;
+                        the_stack->latch[ip++] = latch < 2 ?
+                                                 1 : (rr_flag+1);
                     }
                     else {
-                    if( ip < np ) {
+                        if( ip < np ) {
                             the_stack->E[ip] = the_stack->E[np];
                             the_stack->iq[ip] = the_stack->iq[np];
                             the_stack->latch[ip] = the_stack->latch[np];
                             the_stack->u[ip] = the_stack->u[np];
                             the_stack->v[ip] = the_stack->v[np];
                             the_stack->w[ip] = the_stack->w[np];
-                    }
-                    --np; --the_stack->np;
+                        }
+                        --np;
+                        --the_stack->np;
                     }
                 }
                 else {
@@ -2821,8 +2967,8 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
                         if( e > 0 ) {
                             EGS_Float elke=log(e);
                             crange = the_stack->iq[ip] == -1 ?
-                                rr_erange.interpolate(elke) :
-                                rr_prange.interpolate(elke);
+                                     rr_erange.interpolate(elke) :
+                                     rr_prange.interpolate(elke);
                         }
                         if( crange < cperp ) {
                             if( rr_flag == 1 ) keep = false;
@@ -2844,19 +2990,26 @@ void EGS_ChamberApplication::selectPhotonMFP(EGS_Float &dpmfp) {
                             the_stack->v[ip] = the_stack->v[np];
                             the_stack->w[ip] = the_stack->w[np];
                         }
-                        --np; --the_stack->np;
+                        --np;
+                        --the_stack->np;
                     }
                 }
             } while (ip <= np);
         }
         ++isplit;
-        ++np; ++the_stack->np;
-        the_stack->E[np] = E; the_stack->wt[np] = wt_o*f_spliti;
+        ++np;
+        ++the_stack->np;
+        the_stack->E[np] = E;
+        the_stack->wt[np] = wt_o*f_spliti;
         the_stack->iq[np] = 0;
         the_stack->latch[np] = latch1;
         the_stack->ir[np] = ireg+2;
-        the_stack->u[np]=u.x; the_stack->v[np]=u.y; the_stack->w[np]=u.z;
-        the_stack->x[np]=x.x; the_stack->y[np]=x.y; the_stack->z[np]=x.z;
+        the_stack->u[np]=u.x;
+        the_stack->v[np]=u.y;
+        the_stack->w[np]=u.z;
+        the_stack->x[np]=x.x;
+        the_stack->y[np]=x.y;
+        the_stack->z[np]=x.z;
         the_stack->dnear[np] = 0;
     }
 };
@@ -2883,27 +3036,27 @@ int EGS_ChamberApplication::rangeDiscard(EGS_Float tperp, EGS_Float range) const
 
     // if transport is done only in one geometry
     // check if current region is cavity in the others ones
-    if(onegeom &! is_cav){
-            int gcount = 0;
-            is_cav = false;
-            while(gcount < ngeom){
-                if(is_cavity[gcount][the_stack->ir[np]-2]){
-                    is_cav = true;
-                    break;
-                }
-                gcount++;
+    if(onegeom &! is_cav) {
+        int gcount = 0;
+        is_cav = false;
+        while(gcount < ngeom) {
+            if(is_cavity[gcount][the_stack->ir[np]-2]) {
+                is_cav = true;
+                break;
             }
+            gcount++;
+        }
     }
     // remember to set a huge cavity geometry which encompasses all
-	// cavity geometries, so that the range calc is valid... (below)
+    // cavity geometries, so that the range calc is valid... (below)
 
 
     if( (rr_flag == 1 || is_cav) && the_stack->E[np] > Esave ) return 0;
-      // i.e., if rr_flag is 1 or rr_flag > 1 but we are in the cavity and
-      // the energy is greater than Esave, don't discard the particle
+    // i.e., if rr_flag is 1 or rr_flag > 1 but we are in the cavity and
+    // the energy is greater than Esave, don't discard the particle
     int retval = the_stack->iq[np] == -1 ? 1 : 99;
-      // if here: rr_flag = 1 && E < Esave
-      //  or      rr_flag > 1 && (in cavity but E<Esave) || not in cavity
+    // if here: rr_flag = 1 && E < Esave
+    //  or      rr_flag > 1 && (in cavity but E<Esave) || not in cavity
     bool do_RR = false;
     if( range < tperp ) { // can not escape current region
         if( rr_flag == 1 || is_cav ) return retval;
@@ -2918,8 +3071,8 @@ int EGS_ChamberApplication::rangeDiscard(EGS_Float tperp, EGS_Float range) const
         if( ireg < 0 ) {
             EGS_Float cperp = cgeoms[ig]->hownear(ireg,x);
             EGS_Float crange = the_stack->iq[np] == -1 ?
-                rr_erange.interpolateFast(the_epcont->elke) :
-                rr_prange.interpolateFast(the_epcont->elke);
+                               rr_erange.interpolateFast(the_epcont->elke) :
+                               rr_prange.interpolateFast(the_epcont->elke);
             //egsInformation("E=%g elke=%g crange=%g x=(%g,%g,%g) cperp=%g\n",
             //        the_stack->E[np],the_epcont->elke,crange,
             //        x.x,x.y,x.z,cperp);
@@ -2946,16 +3099,16 @@ int EGS_ChamberApplication::rangeDiscard(EGS_Float tperp, EGS_Float range) const
 
 /*! Start a new shower.  */
 int EGS_ChamberApplication::startNewShower() {
-  int res = EGS_Application::startNewShower();
-  if( res ) return res;
-  if( current_case != last_case ) {
-      if( ncg > 0 ) {
-          for(int j=0; j<ncg; j++)
-              scg[j] += dose->thisHistoryScore(gind1[j])*
-                        dose->thisHistoryScore(gind2[j]);
-      }
-      //*HB_start************************
-      if(pu_flag) {
+    int res = EGS_Application::startNewShower();
+    if( res ) return res;
+    if( current_case != last_case ) {
+        if( ncg > 0 ) {
+            for(int j=0; j<ncg; j++)
+                scg[j] += dose->thisHistoryScore(gind1[j])*
+                          dose->thisHistoryScore(gind2[j]);
+        }
+        //*HB_start************************
+        if(pu_flag) {
             for (int j = 1; j<ngeom ; j++) {
                 int errpu = pu_estimator[j-1]->scoreHist(last_case,dose->thisHistoryScore(j));
                 bool instrct = pu_estimator[j-1]->shiftManager(current_case);
@@ -2971,12 +3124,12 @@ int EGS_ChamberApplication::startNewShower() {
                 int errpu = pu_estimator_corr[j]->scoreHist(last_case,dose->thisHistoryScore(gind1[j]),dose->thisHistoryScore(gind2[j]));
                 bool instrct = pu_estimator_corr[j]->shiftManager(current_case);
             }
-      }
-      //*HB_end**************************
-      dose->setHistory(current_case);
-      last_case = current_case;
-  }
-  return 0;
+        }
+        //*HB_end**************************
+        dose->setHistory(current_case);
+        last_case = current_case;
+    }
+    return 0;
 };
 
 #ifdef BUILD_APP_LIB

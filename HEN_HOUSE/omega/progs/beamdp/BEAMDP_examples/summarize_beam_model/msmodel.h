@@ -43,39 +43,39 @@ using namespace std;
 
 class ms_model
 {
-   private:
-     char title[100];		// This is more than max size of title
-     char phsp[160];		// Path could be very long
-     int num_sources;		// Number of sub-sources
-     source *my_sources[MAX_NUM_SOURCES];
+private:
+    char title[100];		// This is more than max size of title
+    char phsp[160];		// Path could be very long
+    int num_sources;		// Number of sub-sources
+    source *my_sources[MAX_NUM_SOURCES];
 
-   public:
-      ms_model(void);
+public:
+    ms_model(void);
 
-      // Write/read title
-      void put_title(char *);
-      char* get_title(void);
+    // Write/read title
+    void put_title(char *);
+    char* get_title(void);
 
-      // Phase-space file name
-      void put_phsp(char *);
-      char* get_phsp(void);
+    // Phase-space file name
+    void put_phsp(char *);
+    char* get_phsp(void);
 
-      // Add/get sub-source
-      int get_num_sources(void);	// Get number of sub-sources
-      source* add_source(int,int,int);	// Add sub-source
-      source* get_source(int);		// Get sub-source
+    // Add/get sub-source
+    int get_num_sources(void);	// Get number of sub-sources
+    source* add_source(int,int,int);	// Add sub-source
+    source* get_source(int);		// Get sub-source
 
-      // Misc
-      double total_intensity();		// Total intensity
-      void CalculateIntensity(void); // Total charge particle intensity
-      double total_Particleintensity(int);// Total charge particle intensity
+    // Misc
+    double total_intensity();		// Total intensity
+    void CalculateIntensity(void); // Total charge particle intensity
+    double total_Particleintensity(int);// Total charge particle intensity
 
-      // Print
-      void print_fluence_dist(void) const;
-      void print_energy_spectrum(void) const;
-      void print_mean_energies(void) const;
-      void print_parameters(void) const;
-      void print(void) const;
+    // Print
+    void print_fluence_dist(void) const;
+    void print_energy_spectrum(void) const;
+    void print_mean_energies(void) const;
+    void print_parameters(void) const;
+    void print(void) const;
 };
 
 #endif

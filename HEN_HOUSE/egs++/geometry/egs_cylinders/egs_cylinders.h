@@ -46,22 +46,22 @@ using namespace std;
 
 #ifdef WIN32
 
-    #ifdef BUILD_CYLINDERS_DLL
-        #define EGS_CYLINDERS_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_CYLINDERS_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_CYLINDERS_LOCAL
+#ifdef BUILD_CYLINDERS_DLL
+#define EGS_CYLINDERS_EXPORT __declspec(dllexport)
+#else
+#define EGS_CYLINDERS_EXPORT __declspec(dllimport)
+#endif
+#define EGS_CYLINDERS_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_CYLINDERS_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_CYLINDERS_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_CYLINDERS_EXPORT
-        #define EGS_CYLINDERS_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_CYLINDERS_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_CYLINDERS_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_CYLINDERS_EXPORT
+#define EGS_CYLINDERS_LOCAL
+#endif
 
 #endif
 

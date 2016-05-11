@@ -36,7 +36,7 @@
 #include <qheaderview.h>
 
 #ifdef VIEW_DEBUG
-    extern void (* egsWarning)(const char *, ...);
+extern void (* egsWarning)(const char *, ...);
 #endif
 
 ClippingPlanesWidget::ClippingPlanesWidget(QWidget *parent, const char *name)

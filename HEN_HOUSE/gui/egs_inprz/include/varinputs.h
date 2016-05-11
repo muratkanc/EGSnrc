@@ -42,24 +42,24 @@
 class MVARInputs : public MInputBlock
 {
 public:
-	MVARInputs();
-	~MVARInputs();
+    MVARInputs();
+    ~MVARInputs();
 
-	QString BremsSplitting;
- 	int     nBrems;
- 	QString chargedPartRR;
- 	QString eRangeRej;
- 	QString ESAVEIN;
- 	QString RRDepth;
- 	QString RRFraction;
- 	QString ExpoTrafoC;
- 	QString PhotonForcing;
- 	int     startForcing;
- 	int     stopForcing;
- 	int     CSEnhancement;
- 	v_int   CSEnhanStart;
- 	v_int   CSEnhanStop;
- 	int     nsplit;
+    QString BremsSplitting;
+    int     nBrems;
+    QString chargedPartRR;
+    QString eRangeRej;
+    QString ESAVEIN;
+    QString RRDepth;
+    QString RRFraction;
+    QString ExpoTrafoC;
+    QString PhotonForcing;
+    int     startForcing;
+    int     stopForcing;
+    int     CSEnhancement;
+    v_int   CSEnhanStart;
+    v_int   CSEnhanStop;
+    int     nsplit;
 };
 std::ifstream & operator >> ( std::ifstream & in, MVARInputs * rVAR );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MVARInputs * rVAR );

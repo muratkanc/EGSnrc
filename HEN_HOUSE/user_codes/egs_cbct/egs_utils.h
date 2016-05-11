@@ -58,20 +58,22 @@ struct Interaction {
     int        ir,latch,type,nsplit,where;
     Interaction() {};
     Interaction(const EGS_Vector &X, const EGS_Vector &U,
-                      EGS_Float e, EGS_Float Wt,
-                      int Ir, int Latch, int Type, int N, int W){};
+                EGS_Float e, EGS_Float Wt,
+                int Ir, int Latch, int Type, int N, int W) {};
 };
 
 class EGS_CBCT_Interactions {
 public:
 
-    EGS_CBCT_Interactions() : n(0), nnow(0){};
+    EGS_CBCT_Interactions() : n(0), nnow(0) {};
 
-    ~EGS_CBCT_Interactions() { if(nnow>0) delete i; };
+    ~EGS_CBCT_Interactions() {
+        if(nnow>0) delete i;
+    };
 
     void addInteraction(const EGS_Vector &x, const EGS_Vector &u,
-                              EGS_Float E, EGS_Float wt,
-                              int ir, int latch, int type,int N, int W);
+                        EGS_Float E, EGS_Float wt,
+                        int ir, int latch, int type,int N, int W);
 
     void addInteraction(const Interaction &I);
 
@@ -106,40 +108,40 @@ public:
     ~EGS_CorrelatedScoring();
 
     inline void startNewCase(EGS_I64 this_case) {
-       if( this_case != last_case ) {
-           last_case = this_case;
-           for(int j=0; j<nlist; j++) {
-               int ibin = list[j];
-               corr[ibin] += s1->thisHistoryScore(ibin)*
-                             s2->thisHistoryScore(ibin);
-           }
-           nlist = 0;
-           s1->setHistory(last_case);
-           s2->setHistory(last_case);
-       }
+        if( this_case != last_case ) {
+            last_case = this_case;
+            for(int j=0; j<nlist; j++) {
+                int ibin = list[j];
+                corr[ibin] += s1->thisHistoryScore(ibin)*
+                              s2->thisHistoryScore(ibin);
+            }
+            nlist = 0;
+            s1->setHistory(last_case);
+            s2->setHistory(last_case);
+        }
     };
 
     inline void score(int ibin) {
-      if( !s1->thisHistoryScore(ibin) && !s2->thisHistoryScore(ibin) )
-          list[nlist++] = ibin;
+        if( !s1->thisHistoryScore(ibin) && !s2->thisHistoryScore(ibin) )
+            list[nlist++] = ibin;
     };
 
     inline void score(int ibin, int which, double x)
     {
-      if( x>1e-35 && !s1->thisHistoryScore(ibin) &&
-                     !s2->thisHistoryScore(ibin) ) {
-          if( nlist < nreg ) list[nlist++] = ibin;
-          else {
-              egsWarning("List overflow in score(int,int,double)?\n");
-              for(int j=0; j<nreg; j++) {
-                  egsWarning("%d %g %g\n",j,s1->thisHistoryScore(j),
-                          s2->thisHistoryScore(j));
-              }
-              egsFatal("Quitting now\n");
-          }
-      }
-      EGS_ScoringArray *s = which ? s2 : s1;
-      s->score(ibin,x);
+        if( x>1e-35 && !s1->thisHistoryScore(ibin) &&
+                !s2->thisHistoryScore(ibin) ) {
+            if( nlist < nreg ) list[nlist++] = ibin;
+            else {
+                egsWarning("List overflow in score(int,int,double)?\n");
+                for(int j=0; j<nreg; j++) {
+                    egsWarning("%d %g %g\n",j,s1->thisHistoryScore(j),
+                               s2->thisHistoryScore(j));
+                }
+                egsFatal("Quitting now\n");
+            }
+        }
+        EGS_ScoringArray *s = which ? s2 : s1;
+        s->score(ibin,x);
     };
 
     bool storeState(ostream &data);
@@ -150,7 +152,9 @@ public:
 
     EGS_CorrelatedScoring &operator+=(const EGS_CorrelatedScoring &x);
 
-    double getCorrelation(int j) const { return corr[j]; };
+    double getCorrelation(int j) const {
+        return corr[j];
+    };
 
 
 protected:
@@ -165,53 +169,63 @@ protected:
 
 };
 
-class EGS_BaseFile{
+class EGS_BaseFile {
 
 public:
 
-  EGS_BaseFile(){};
-  EGS_BaseFile(const char *n){name = const_cast<char *>(n);};
-  ~EGS_BaseFile(){};
-  bool fileExist(const char *pName);
-  bool fileExist();
-  EGS_I64 fileSize();
-  EGS_I64 fileSize(const char * n);
-  char *Name(){return name;};
+    EGS_BaseFile() {};
+    EGS_BaseFile(const char *n) {
+        name = const_cast<char *>(n);
+    };
+    ~EGS_BaseFile() {};
+    bool fileExist(const char *pName);
+    bool fileExist();
+    EGS_I64 fileSize();
+    EGS_I64 fileSize(const char * n);
+    char *Name() {
+        return name;
+    };
 
 protected:
 
-char * name;
+    char * name;
 
 };
 
-class EGS_BinaryFile: public EGS_BaseFile{
+class EGS_BinaryFile: public EGS_BaseFile {
 
 public:
 
- EGS_BinaryFile(const char *n, const EGS_I64 &s, char *what);
- EGS_BinaryFile(const char *n, char *what);
- EGS_BinaryFile(const char *n);
- ~EGS_BinaryFile(){if(size) delete [] block;};
- void writeBinary( const EGS_I64 &pos );
- void writeBinary(char          *what,
-                  const EGS_I64 &s,
-                  const EGS_I64 &pos);
- void readBinary();
- float * readValues();
- void    readValues(float *s, const int &_size);
- void writeASCII( const int &chunk );
- void readASCII();
- void setBlock(const EGS_I64 &s, char *what){
-      size =s;block = new char[s];block=what;
- };
- void fillWith(const EGS_I64 &s, const char *what);
- EGS_I64 blockSize(){return fileSize()/sizeof(float);};
+    EGS_BinaryFile(const char *n, const EGS_I64 &s, char *what);
+    EGS_BinaryFile(const char *n, char *what);
+    EGS_BinaryFile(const char *n);
+    ~EGS_BinaryFile() {
+        if(size) delete [] block;
+    };
+    void writeBinary( const EGS_I64 &pos );
+    void writeBinary(char          *what,
+                     const EGS_I64 &s,
+                     const EGS_I64 &pos);
+    void readBinary();
+    float * readValues();
+    void    readValues(float *s, const int &_size);
+    void writeASCII( const int &chunk );
+    void readASCII();
+    void setBlock(const EGS_I64 &s, char *what) {
+        size =s;
+        block = new char[s];
+        block=what;
+    };
+    void fillWith(const EGS_I64 &s, const char *what);
+    EGS_I64 blockSize() {
+        return fileSize()/sizeof(float);
+    };
 protected:
 
 private:
 
- EGS_I64  size;
- char *block;
+    EGS_I64  size;
+    char *block;
 
 };
 
@@ -226,26 +240,34 @@ public:
     void saveProfile(const string pName,
                      const vector<string> prof);
     void saveProjection(const string pName,
-                     const EGS_Float *proj);
+                        const EGS_Float *proj);
     void describeIt();
 
-    bool isDefined(){return defined;};
+    bool isDefined() {
+        return defined;
+    };
 
 protected:
     string** getProfile(const vector<string> prof);
     vector<EGS_Float> getPositions(int N, EGS_Float a);
-    int index(int i, int j){return i + j*Nx;};
-    int get_i(EGS_Float x){return int(Nx*(x+ax/2.0)/ax);};
-    int get_j(EGS_Float y){return int(Ny*(y+ay/2.0)/ay);};
+    int index(int i, int j) {
+        return i + j*Nx;
+    };
+    int get_i(EGS_Float x) {
+        return int(Nx*(x+ax/2.0)/ax);
+    };
+    int get_j(EGS_Float y) {
+        return int(Ny*(y+ay/2.0)/ay);
+    };
 private:
 
-bool              defined;// true if defined, false else
-int               iscan; // 0: X-scan, non-zero: Y-scan
-int               icoord;// 0: off, 1: by regions, 2: by location
-int               Nx, Ny;
-EGS_Float         ax, ay;
-vector<EGS_Float> position;// either geometrical or region index
-vector<int> region;
+    bool              defined;// true if defined, false else
+    int               iscan; // 0: X-scan, non-zero: Y-scan
+    int               icoord;// 0: off, 1: by regions, 2: by location
+    int               Nx, Ny;
+    EGS_Float         ax, ay;
+    vector<EGS_Float> position;// either geometrical or region index
+    vector<int> region;
 };
 
 /************************************/
@@ -253,20 +275,23 @@ vector<int> region;
 /************************************/
 class EGS_CBCT_ParticleContainer {
 
-inline void grow()
-{
+    inline void grow()
+    {
         int n = ntot ? 2*ntot : 32;
         EGS_CBCT_Photon *tmp = new EGS_CBCT_Photon [n];
         for(int j=0; j<nnow; j++) tmp[j] = particles[j];
         if( ntot > 0 ) delete [] particles;
-        ntot = n; particles = tmp;
-}
+        ntot = n;
+        particles = tmp;
+    }
 
 public:
     int nnow, ntot;
     EGS_CBCT_Photon *particles;
     EGS_CBCT_ParticleContainer() : nnow(0), ntot(0) {};
-    ~EGS_CBCT_ParticleContainer(){if( ntot > 0 ) delete [] particles;};
+    ~EGS_CBCT_ParticleContainer() {
+        if( ntot > 0 ) delete [] particles;
+    };
 
     inline void addParticle(const EGS_CBCT_Photon &p)
     {
@@ -276,7 +301,7 @@ public:
 
     inline EGS_CBCT_Photon takeParticle()
     {
-      return nnow > 0 ? particles[--nnow] : EGS_CBCT_Photon();
+        return nnow > 0 ? particles[--nnow] : EGS_CBCT_Photon();
     };
 
 };
@@ -286,16 +311,18 @@ class EGS_PlanePointSelector {
 public:
 
     EGS_PlanePointSelector(const EGS_Vector &midpoint, const EGS_Vector &Ux,
-            const EGS_Vector &Uy, EGS_Float Ax, EGS_Float Ay, int Nx, int Ny);
+                           const EGS_Vector &Uy, EGS_Float Ax, EGS_Float Ay, int Nx, int Ny);
 
     ~EGS_PlanePointSelector();
 
-    void refreshList(EGS_RandomGenerator *rndm){nlist = nreg;};
+    void refreshList(EGS_RandomGenerator *rndm) {
+        nlist = nreg;
+    };
 
-    void resetList(){};
+    void resetList() {};
 
     inline int  getPoint(EGS_RandomGenerator *rndm,
-                                      EGS_Vector &v)
+                         EGS_Vector &v)
     {
         int ireg;
         if( at ) ireg = at->sampleBin(rndm);
@@ -303,7 +330,8 @@ public:
             if( !nlist ) refreshList(rndm);
             int j = (int) (rndm->getUniform()*nlist);
             ireg = list[j];
-            list[j] = list[--nlist]; list[nlist] = ireg;
+            list[j] = list[--nlist];
+            list[nlist] = ireg;
         }
         int ix = ireg%nx, iy = ireg/nx;
         //EGS_Float rx = xmin + dx*(ix + rrx);

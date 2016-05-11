@@ -43,20 +43,20 @@
 class MCAVInputs : public MInputBlock
 {
 public:
-	MCAVInputs();
-	~MCAVInputs();
-	void       SetInputMethod( const QString& rInpMeth );
+    MCAVInputs();
+    ~MCAVInputs();
+    void       SetInputMethod( const QString& rInpMeth );
 
-	QString    inp_meth;
+    QString    inp_meth;
 
-	v_int cav_reg;
- 	QString ncavreg;
- 	QString wall_thick;
- 	QString cav_rad;
- 	QString cav_len;
- 	QString electr_rad;
- 	QString wall_mat;
- 	QString electr_mat;
+    v_int cav_reg;
+    QString ncavreg;
+    QString wall_thick;
+    QString cav_rad;
+    QString cav_len;
+    QString electr_rad;
+    QString wall_mat;
+    QString electr_mat;
 };
 std::ifstream & operator >> ( std::ifstream & in, MCAVInputs * rCAV );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MCAVInputs * rCAV );

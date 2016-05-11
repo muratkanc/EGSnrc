@@ -78,10 +78,10 @@ static const char* queues[] = {
 */
 
 static const char* comp_type[] = {
-"process mortran source into fortran and"
-"\ncompile fortran source.(default)",
-"Just process mortran source code into fortran.",
-"Compile the fortran source."
+    "process mortran source into fortran and"
+    "\ncompile fortran source.(default)",
+    "Just process mortran source code into fortran.",
+    "Compile the fortran source."
 };
 
 // Tool tip definitions for I/O Control Tab
@@ -107,86 +107,86 @@ static const char* comp_type[] = {
 		         " end with value < or = last value."
 
 static const char* out_cav[] = {
-"short output - just the cavity summary"
-"\nand the dose grid.",
+    "short output - just the cavity summary"
+    "\nand the dose grid.",
 
-"cavity summary, dose grid and details for"
-"\neach cavity zone."
+    "cavity summary, dose grid and details for"
+    "\neach cavity zone."
 };
 
 static const char* out_dos[] = {
-"short output - just dose grid(DG)",
+    "short output - just dose grid(DG)",
 
-"output dose summary only (DS)<br>"
-"(<i>no kerma output </i>)",
+    "output dose summary only (DS)<br>"
+    "(<i>no kerma output </i>)",
 
-"output material summary grid(MG)"
-"\nand dose grid (DG).",
+    "output material summary grid(MG)"
+    "\nand dose grid (DG).",
 
-"output material summary grid(MG)<br>"
-"and dose summary (DS).<br>"
-"(<i>no kerma output </i>)",
+    "output material summary grid(MG)<br>"
+    "and dose summary (DS).<br>"
+    "(<i>no kerma output </i>)",
 
-"output material summary grid(MG), "
-"\ndose grid (DG) and dose summary (DS)."
+    "output material summary grid(MG), "
+    "\ndose grid (DG) and dose summary (DS)."
 };
 
 static const char* spectrum_type[] = {
 
-"Print total fluence spectra  only.",
+    "Print total fluence spectra  only.",
 
-"Print total fluence spectra and electron <br>"
-"spectra, excluding <i> knock-on </i> electrons <br>"
-"and descendants.",
+    "Print total fluence spectra and electron <br>"
+    "spectra, excluding <i> knock-on </i> electrons <br>"
+    "and descendants.",
 
-"As option <i> electron primaries </i> but also"
-"<br>excludes bremsstrahlung secondaries and "
-"<br>descendants.",
+    "As option <i> electron primaries </i> but also"
+    "<br>excludes bremsstrahlung secondaries and "
+    "<br>descendants.",
 
-"Print spectra excluding all secondary or"
-"<br>scattered particles.",
+    "Print spectra excluding all secondary or"
+    "<br>scattered particles.",
 
-"Print spectra for <i> knock-on </i> electrons"
-"<br>and their descendants."
+    "Print spectra for <i> knock-on </i> electrons"
+    "<br>and their descendants."
 };
 
 static const char* electron_transport[] = {
 
-"Normal electron transport (discrete interactions).",
+    "Normal electron transport (discrete interactions).",
 
-"no discrete interactions (used for CDSA calculations"
-"<br>but note that special data sets are also needed"
-"<br>to do a full CSDA calculation."
+    "no discrete interactions (used for CDSA calculations"
+    "<br>but note that special data sets are also needed"
+    "<br>to do a full CSDA calculation."
 };
 
 static const char* irestart[] = {
 
-"First run for this input file.",
+    "First run for this input file.",
 
-"Restart a previous run, <i> i.e. </i> add more histories.",
+    "Restart a previous run, <i> i.e. </i> add more histories.",
 
-"Just read in the raw data and do the statistical"
-"\nanalysis( gives no timing - restart 100 histories"
-"\nto get the same effect and more info)",
+    "Just read in the raw data and do the statistical"
+    "\nanalysis( gives no timing - restart 100 histories"
+    "\nto get the same effect and more info)",
 
-"Read starting random numbers from a file <br>"
-"(<i> e.g. </i>FOR OUTPUT TO A GRAPHICS PACKAGE).",
+    "Read starting random numbers from a file <br>"
+    "(<i> e.g. </i>FOR OUTPUT TO A GRAPHICS PACKAGE).",
 
-"Post-process distributed runs (all files <br>"
-"named <i> filenamebase_w# </i>)."
+    "Post-process distributed runs (all files <br>"
+    "named <i> filenamebase_w# </i>)."
 };
 
 static const char* iwatch[] = {
 
-"Normal output.",
+    "Normal output.",
 
-"Output on every discrete interaction.",
+    "Output on every discrete interaction.",
 
-"Output on every electron/photon step as well.",
+    "Output on every electron/photon step as well.",
 
-"Prints out only when energy is deposited.",
+    "Prints out only when energy is deposited.",
 
-"Prints out file for graphics."
+    "Prints out file for graphics."
 };
 
 // Tool tip definitions for Monte Carlo Tab
@@ -233,40 +233,40 @@ static const char* iwatch[] = {
 			"\ntypical setting when FANO conditions are examined."
 
 static const char* ifull_cav[] = {
-"Just calculate total dose and that due\n"
-"to stoppers and discards.",
+    "Just calculate total dose and that due\n"
+    "to stoppers and discards.",
 
-"Calculate total dose, that due\n"
-"to stoppers and discards,\n"
-"Aatt and Ascat.",
+    "Calculate total dose, that due\n"
+    "to stoppers and discards,\n"
+    "Aatt and Ascat.",
 
-"Calculate total dose, that due\n"
-"to stoppers and discards,\n"
-"Aatt, Ascat and also Ap.",
+    "Calculate total dose, that due\n"
+    "to stoppers and discards,\n"
+    "Aatt, Ascat and also Ap.",
 
-"Calculate total dose, that due\n"
-"to stoppers and discards,\n"
-"Aatt, Ascat, Ap plus Afl \n"
-"and <s>g,w as well"
+    "Calculate total dose, that due\n"
+    "to stoppers and discards,\n"
+    "Aatt, Ascat, Ap plus Afl \n"
+    "and <s>g,w as well"
 };
 
 static const char* ifull_dos[] = {
-"Just calculate total dose and that due"
-"\nto stoppers and discards.",
+    "Just calculate total dose and that due"
+    "\nto stoppers and discards.",
 
-"Calculate total dose, that due"
-"\nto stoppers and discards,"
-"\nand analyze the total dose"
-"\nper entrance region.",
+    "Calculate total dose, that due"
+    "\nto stoppers and discards,"
+    "\nand analyze the total dose"
+    "\nper entrance region.",
 
-"Score a pulse height distribution in"
-"\nthe volume specified after the"
-"\nmaterial inputs.",
+    "Score a pulse height distribution in"
+    "\nthe volume specified after the"
+    "\nmaterial inputs.",
 
-"Score the scatter fraction instead of"
-"\nstoppers.  Only for incident photons."
-"\nDose after Compton and for fluorescent"
-"\nphotons if followed."
+    "Score the scatter fraction instead of"
+    "\nstoppers.  Only for incident photons."
+    "\nDose after Compton and for fluorescent"
+    "\nphotons if followed."
 };
 
 // Tool tip definitions for Geometry Tab
@@ -278,8 +278,8 @@ static const char* ifull_dos[] = {
 	             "\nGeometry is then set up automatically."
 
 static const char* media_regions[] = {
-"using the IRL region numbers",
-"using the radius number IX and plane number IZ"
+    "using the IRL region numbers",
+    "using the radius number IX and plane number IZ"
 };
 
 // Tool tip definitions for Cavity Tab
@@ -287,58 +287,58 @@ static const char* media_regions[] = {
 // Tool tip definitions for Source Tab
 
 static const char* imode[] = {
-"7 variables/record: X,Y,U,V,E,WT,LATCH",
+    "7 variables/record: X,Y,U,V,E,WT,LATCH",
 
-"8 variables/record: the above + ZLAST"
+    "8 variables/record: the above + ZLAST"
 
 };
 
 static const char* sources[] = {
-"PARALLEL BEAM INCIDENT FROM THE FRONT\n"
-"( positive Z-axis side).",
+    "PARALLEL BEAM INCIDENT FROM THE FRONT\n"
+    "( positive Z-axis side).",
 
-"POINT SOURCE ON AXIS INCIDENT FROM FRONT" ,
+    "POINT SOURCE ON AXIS INCIDENT FROM FRONT" ,
 
-"BROAD PARALLEL BEAM INCIDENT FROM FRONT\n"
-"( positive Z-axis side). Beam has unit area and large scoring area",
+    "BROAD PARALLEL BEAM INCIDENT FROM FRONT\n"
+    "( positive Z-axis side). Beam has unit area and large scoring area",
 
-"UNIFORM ISOTROPICALLY RADIATING DISK OF FINITE SIZE.\n"
-"(must be allowed for in the geometrical definitions)",
+    "UNIFORM ISOTROPICALLY RADIATING DISK OF FINITE SIZE.\n"
+    "(must be allowed for in the geometrical definitions)",
 
-"FOR CENTRAL AXIS FLUENCE VS BEAM RADIUS.\n"
-"Note: this source option treats the cylindrical radii as\n"
-"beam radii. The largest radius must be infinite and the\n"
-"phantom must be homogeneous (at least in each layer).",
+    "FOR CENTRAL AXIS FLUENCE VS BEAM RADIUS.\n"
+    "Note: this source option treats the cylindrical radii as\n"
+    "beam radii. The largest radius must be infinite and the\n"
+    "phantom must be homogeneous (at least in each layer).",
 
-"PARALLEL BEAM INCIDENT FROM THE SIDE\n"
-"( positive Y-axis side).",
+    "PARALLEL BEAM INCIDENT FROM THE SIDE\n"
+    "( positive Y-axis side).",
 
-"POINT SOURCE INCIDENT FROM THE SIDE",
+    "POINT SOURCE INCIDENT FROM THE SIDE",
 
-"POINT SOURCE OFF AXIS",
+    "POINT SOURCE OFF AXIS",
 
-"PARALLEL BEAM FROM ANY ANGLE",
+    "PARALLEL BEAM FROM ANY ANGLE",
 
-"POINT SOURCE ON AXIS INCIDENT FROM FRONT. All events below radius\n"
-"RMINBM are terminated by the source routine by giving them zero weight.",
+    "POINT SOURCE ON AXIS INCIDENT FROM FRONT. All events below radius\n"
+    "RMINBM are terminated by the source routine by giving them zero weight.",
 
-"POINT SOURCE OFF AXIS. Similar to source 12 but uses an alternative\n "
-"sampling of points on the surface of the RZ-geomtry. The motivation was\n "
-"to check source 12 was OK and the effect of varying weights from the source\n "
-"on the statistical uncertainty (contrary to source 12, source 15 produces\n "
-"essentially constant weights if the geometry-to-source distance is large compared\n"
-"to the geometry dimension, a typical situation for ion chamber simulations)",
+    "POINT SOURCE OFF AXIS. Similar to source 12 but uses an alternative\n "
+    "sampling of points on the surface of the RZ-geomtry. The motivation was\n "
+    "to check source 12 was OK and the effect of varying weights from the source\n "
+    "on the statistical uncertainty (contrary to source 12, source 15 produces\n "
+    "essentially constant weights if the geometry-to-source distance is large compared\n"
+    "to the geometry dimension, a typical situation for ion chamber simulations)",
 
-"EXTENDED (CIRC. OR RECT.) SOURCE OFF AXIS",
-"RADIAL DISTRIBUTION INPUT. Parallel beam incident from front with radial distribution. ",
+    "EXTENDED (CIRC. OR RECT.) SOURCE OFF AXIS",
+    "RADIAL DISTRIBUTION INPUT. Parallel beam incident from front with radial distribution. ",
 
-"FULL BEAM PHASE-SPACE BEAM DATA, INCIDENT ON FRONT FACE",
+    "FULL BEAM PHASE-SPACE BEAM DATA, INCIDENT ON FRONT FACE",
 
-"FULL BEAM PHASE-SPACE BEAM DATA FROM ANY ANGLE, INSIDE OR OUTSIDE",
+    "FULL BEAM PHASE-SPACE BEAM DATA FROM ANY ANGLE, INSIDE OR OUTSIDE",
 
-"BEAM TREATMENT HEAD SIMULATION AS SOURCE INCIDENT FROM AN ANGLE,\n"
-"INSIDE OR OUTSIDE PHANTOM. PARTICLES ARE READ DIRECTLY FROM A BEAM\n"
-"SIMULATION COMPILED AS A SHARED LIBRARY."
+    "BEAM TREATMENT HEAD SIMULATION AS SOURCE INCIDENT FROM AN ANGLE,\n"
+    "INSIDE OR OUTSIDE PHANTOM. PARTICLES ARE READ DIRECTLY FROM A BEAM\n"
+    "SIMULATION COMPILED AS A SHARED LIBRARY."
 };
 
 #define RAD_DIS_LOCAL "Radial distribution is to be input locally through the .egsinp file"

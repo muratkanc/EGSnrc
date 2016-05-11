@@ -61,27 +61,30 @@ bool configLibExists(const QString& lib );
 using namespace std;
 
 EGS_MainWidget::EGS_MainWidget(QWidget *parent, Qt::WFlags f)
-                                          : QWidget(parent,f)
+    : QWidget(parent,f)
 {
 
-   setWindowTitle("EGSnrc GUI, National Research Council of Canada");
-   setWindowIcon(QIcon(":/images/desktop_icon.png"));
-   setWindowIconText("egs_gui");
+    setWindowTitle("EGSnrc GUI, National Research Council of Canada");
+    setWindowIcon(QIcon(":/images/desktop_icon.png"));
+    setWindowIconText("egs_gui");
 
     config_reader = new EGS_ConfigReader;
 
     // topl is the layout of the entire widget
     QVBoxLayout *topl = new QVBoxLayout(this);
-    topl->setSpacing(6); topl->setMargin(11);
+    topl->setSpacing(6);
+    topl->setMargin(11);
 
     // wl is the layout responsible for the area occupied by the
     // control area and work area
     QHBoxLayout *wl = new QHBoxLayout;
-    wl->setSpacing(6); wl->setMargin(11);
+    wl->setSpacing(6);
+    wl->setMargin(11);
 
     // wbl is the layout for the control area and the user code combo box
     QVBoxLayout *wbl = new QVBoxLayout;
-    wbl->setSpacing(6); wbl->setMargin(11);
+    wbl->setSpacing(6);
+    wbl->setMargin(11);
 
     // The control area is a list with clickable items that change the
     // page in the widget stack below
@@ -115,15 +118,17 @@ EGS_MainWidget::EGS_MainWidget(QWidget *parent, Qt::WFlags f)
 
     control->setCurrentItem(control->item(0));
     connect(control,SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),this,
-             SLOT(changePage(QListWidgetItem *,QListWidgetItem *)));
+            SLOT(changePage(QListWidgetItem *,QListWidgetItem *)));
 
     wbl->addWidget(control);
 
     // here gb is the group box for the user code combo box
     QGroupBox *gb = new QGroupBox(this);
     gb->setTitle( tr("User code") );
-    QHBoxLayout *h = new QHBoxLayout(gb); h->setAlignment(Qt::AlignCenter);
-    user_code = new QComboBox(gb); user_code->addItem("user code");
+    QHBoxLayout *h = new QHBoxLayout(gb);
+    h->setAlignment(Qt::AlignCenter);
+    user_code = new QComboBox(gb);
+    user_code->addItem("user code");
     h->addWidget(user_code);
 
     wbl->addWidget(gb);
@@ -136,7 +141,8 @@ EGS_MainWidget::EGS_MainWidget(QWidget *parent, Qt::WFlags f)
     topl->addLayout(wl);
 
     QHBoxLayout *bl = new QHBoxLayout;
-    bl->setSpacing(6); topl->setMargin(11);
+    bl->setSpacing(6);
+    topl->setMargin(11);
     QAbstractButton *b = new QPushButton("&Help",this);
     connect(b,SIGNAL(clicked()),this,SLOT(getHelp()));
     bl->addWidget(b);
@@ -161,7 +167,7 @@ EGS_MainWidget::EGS_MainWidget(QWidget *parent, Qt::WFlags f)
     work_area->addWidget(run_page);
 
     conf_page = new EGS_ConfigurationPage(config_reader,
-            this,"configuration page");
+                                          this,"configuration page");
     work_area->addWidget(conf_page);
 
     pegs_page = new EGS_PegsPage(this);
@@ -169,24 +175,24 @@ EGS_MainWidget::EGS_MainWidget(QWidget *parent, Qt::WFlags f)
     work_area->addWidget(pegs_page);
 
     connect(conf_page,SIGNAL(egsHomeChanged(const QString &)),this,
-             SLOT(changeEgsHome(const QString &)));
+            SLOT(changeEgsHome(const QString &)));
     connect(conf_page,SIGNAL(henHouseChanged(const QString &)),this,
-             SLOT(changeHenHouse(const QString &)));
+            SLOT(changeHenHouse(const QString &)));
     connect(user_code,SIGNAL(activated(const QString &)),this,
-             SLOT(changeUserCode(const QString &)));
+            SLOT(changeUserCode(const QString &)));
     connect(this,SIGNAL(userCodeChanged(const QString &)),compile_page,
-             SLOT(setUserCode(const QString &)));
+            SLOT(setUserCode(const QString &)));
     connect(this,SIGNAL(userCodeChanged(const QString &)),run_page,
-             SLOT(setUserCode(const QString &)));
+            SLOT(setUserCode(const QString &)));
     connect(compile_page,SIGNAL(targetChanged(const QString &)),run_page,
-             SLOT(setTarget(const QString &)));
+            SLOT(setTarget(const QString &)));
     connect(conf_page,SIGNAL(henHouseChanged(const QString &)),
-             run_page,SLOT(getBatchOptions(const QString &)) );
+            run_page,SLOT(getBatchOptions(const QString &)) );
 
     egs_home = conf_page->egsHome();
     changeHenHouse(conf_page->henHouse());
     if( !user_code->currentText().isEmpty() )
-      emit userCodeChanged(user_code->currentText());
+        emit userCodeChanged(user_code->currentText());
     compile_page->sendSignals();
 }
 
@@ -203,88 +209,92 @@ void EGS_MainWidget::aboutEGSGui() {
 }
 
 void EGS_MainWidget::aboutQt() {
-  QMessageBox::aboutQt(this);
+    QMessageBox::aboutQt(this);
 }
 
 void EGS_MainWidget::getHelp() {
-  QString info =
-    "Sorry, this version of the EGSnrc GUI does not provide\n";
-  info +=
-    "online help. Perhaps the reports PIRS-701, PIRS-702 or\n";
-  info +=
-    "PIRS-877 (provided with the distribution) can answer \n";
-  info += "your question ?";
-  QMessageBox::information(this,"Help",info,QMessageBox::Ok);
+    QString info =
+        "Sorry, this version of the EGSnrc GUI does not provide\n";
+    info +=
+        "online help. Perhaps the reports PIRS-701, PIRS-702 or\n";
+    info +=
+        "PIRS-877 (provided with the distribution) can answer \n";
+    info += "your question ?";
+    QMessageBox::information(this,"Help",info,QMessageBox::Ok);
 }
 
 void EGS_MainWidget::changeUserCode(const QString &uc) {
-  emit userCodeChanged(uc);
+    emit userCodeChanged(uc);
 }
 
 void EGS_MainWidget::changeEgsHome(const QString &new_egs_home) {
-  if( new_egs_home == egs_home ) return;
-  egs_home = new_egs_home;
-  updateUserCodeList();
+    if( new_egs_home == egs_home ) return;
+    egs_home = new_egs_home;
+    updateUserCodeList();
 }
 
 void EGS_MainWidget::changeHenHouse(const QString &new_hen_house) {
-  if( new_hen_house == hen_house ) return;
-  hen_house = new_hen_house;
-  updateUserCodeList();
+    if( new_hen_house == hen_house ) return;
+    hen_house = new_hen_house;
+    updateUserCodeList();
 }
 
 void EGS_MainWidget::updateUserCodeList() {
-  QString last_uc = user_code->currentText();
-  int j;
-  for(j=user_code->count()-1; j>=0; j--) user_code->removeItem(j);
-  addUserCodes(egs_home);
-  if( !hen_house.isEmpty() )
-    addUserCodes(hen_house + QDir::separator() + "user_codes");
-  for(j=0; j<user_code->count(); j++) {
-    if( last_uc == user_code->itemText(j) ) {
-      user_code->setCurrentIndex(j); return;
+    QString last_uc = user_code->currentText();
+    int j;
+    for(j=user_code->count()-1; j>=0; j--) user_code->removeItem(j);
+    addUserCodes(egs_home);
+    if( !hen_house.isEmpty() )
+        addUserCodes(hen_house + QDir::separator() + "user_codes");
+    for(j=0; j<user_code->count(); j++) {
+        if( last_uc == user_code->itemText(j) ) {
+            user_code->setCurrentIndex(j);
+            return;
+        }
     }
-  }
-  user_code->setCurrentIndex(0);
-  emit userCodeChanged(user_code->currentText());
+    user_code->setCurrentIndex(0);
+    emit userCodeChanged(user_code->currentText());
 }
 
 
 void EGS_MainWidget::addUserCodes(const QString &from_dir) {
-  if( from_dir.isEmpty() ) return;
-  QDir d1(from_dir);
-  QStringList list = d1.entryList(QDir::Dirs);
-  for( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) {
-    QString s = *it;
-    if( s != "." && s != ".." && s != "bin" && s != "pegs4" ) {
-      QString aux = from_dir + QDir::separator() + s + QDir::separator() +
-                    "Makefile";
-      QFile f(aux);
-      if( f.exists() ) {
-        bool is_there = false;
-        for(int j=0; j<user_code->count(); j++) {
-          if( s == user_code->itemText(j) ) { is_there = true; break; }
+    if( from_dir.isEmpty() ) return;
+    QDir d1(from_dir);
+    QStringList list = d1.entryList(QDir::Dirs);
+    for( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) {
+        QString s = *it;
+        if( s != "." && s != ".." && s != "bin" && s != "pegs4" ) {
+            QString aux = from_dir + QDir::separator() + s + QDir::separator() +
+                          "Makefile";
+            QFile f(aux);
+            if( f.exists() ) {
+                bool is_there = false;
+                for(int j=0; j<user_code->count(); j++) {
+                    if( s == user_code->itemText(j) ) {
+                        is_there = true;
+                        break;
+                    }
+                }
+                if( !is_there ) user_code->addItem(s);
+            }
         }
-        if( !is_there ) user_code->addItem(s);
-      }
     }
-  }
 }
 
 void EGS_MainWidget::exitGUI() {
-  emit quit();
+    emit quit();
 }
 
 void EGS_MainWidget::changePage(QListWidgetItem *item,QListWidgetItem * previous) {
 #ifdef IK_DEBUG
-  qDebug("Selection changed to: %s",item->text().toLatin1().data());
+    qDebug("Selection changed to: %s",item->text().toLatin1().data());
 #endif
-  if( item->text() == "Compile" ) work_area->setCurrentWidget(compile_page);
-  else if( item->text() == "Execute" ) work_area->setCurrentWidget(run_page);
-  else if( item->text() == "PEGS Data" ) work_area->setCurrentWidget(pegs_page);
-  else if( item->text() == "Settings" ) work_area->setCurrentWidget(conf_page);
+    if( item->text() == "Compile" ) work_area->setCurrentWidget(compile_page);
+    else if( item->text() == "Execute" ) work_area->setCurrentWidget(run_page);
+    else if( item->text() == "PEGS Data" ) work_area->setCurrentWidget(pegs_page);
+    else if( item->text() == "Settings" ) work_area->setCurrentWidget(conf_page);
 #ifdef IK_DEBUG
-  else qDebug("Unknow page %s",item->text().toLatin1());
+    else qDebug("Unknow page %s",item->text().toLatin1());
 #endif
 }
 

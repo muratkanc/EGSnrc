@@ -45,22 +45,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_PARALLEL_BEAM_DLL
-        #define EGS_PARALLEL_BEAM_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_PARALLEL_BEAM_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_PARALLEL_BEAM_LOCAL
+#ifdef BUILD_PARALLEL_BEAM_DLL
+#define EGS_PARALLEL_BEAM_EXPORT __declspec(dllexport)
+#else
+#define EGS_PARALLEL_BEAM_EXPORT __declspec(dllimport)
+#endif
+#define EGS_PARALLEL_BEAM_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_PARALLEL_BEAM_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_PARALLEL_BEAM_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_PARALLEL_BEAM_EXPORT
-        #define EGS_PARALLEL_BEAM_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_PARALLEL_BEAM_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_PARALLEL_BEAM_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_PARALLEL_BEAM_EXPORT
+#define EGS_PARALLEL_BEAM_LOCAL
+#endif
 
 #endif
 

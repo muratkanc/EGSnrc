@@ -49,49 +49,50 @@ class MCompiler;
 class EGS_Wizard : public QWizard
 {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  enum { Page_Intro, Page_Location, Page_Compiler,
-         Page_Licence, Page_Install, Page_Conclusion };
+    enum { Page_Intro, Page_Location, Page_Compiler,
+           Page_Licence, Page_Install, Page_Conclusion
+         };
 
-  EGS_Wizard(QWidget * parent = 0, Qt::WFlags f = 0);
-  ~EGS_Wizard(){}
+    EGS_Wizard(QWidget * parent = 0, Qt::WFlags f = 0);
+    ~EGS_Wizard() {}
 
 public slots:
 
-void exitGUI();
-void aboutQt();
-void aboutEGSWizard();
-void getHelp();
-void processCustomButtonClick(int id);
+    void exitGUI();
+    void aboutQt();
+    void aboutEGSWizard();
+    void getHelp();
+    void processCustomButtonClick(int id);
 signals:
 
 private:
 
-  QWizardPage   * createWelcomePage();
-  QCompilerPage * createCompilerPage();
-  QLocationPage * createLocationPage();
-  QLicencePage  * createLicencePage();
-  QInstallPage  * createInstallPage();
+    QWizardPage   * createWelcomePage();
+    QCompilerPage * createCompilerPage();
+    QLocationPage * createLocationPage();
+    QLicencePage  * createLicencePage();
+    QInstallPage  * createInstallPage();
 
-  MCompiler     *fc, *cc, *cpp, *make; // Compilers + make utility
+    MCompiler     *fc, *cc, *cpp, *make; // Compilers + make utility
 
-  QString the_year, version;
-  QString  egs_home;
-  QString  hen_house;
-  QString  libpath;
+    QString the_year, version;
+    QString  egs_home;
+    QString  hen_house;
+    QString  libpath;
 
-  QLicencePage     *licencePage;
-  QLocationPage    *locationPage;
-  QCompilerPage    *compilerPage;
-  QInstallPage     *installPage;
-  EGS_ConfigReader *config_reader;
+    QLicencePage     *licencePage;
+    QLocationPage    *locationPage;
+    QCompilerPage    *compilerPage;
+    QInstallPage     *installPage;
+    EGS_ConfigReader *config_reader;
 
-  QString canonicalSys;
+    QString canonicalSys;
 
-  bool custom;
+    bool custom;
 
 };
 

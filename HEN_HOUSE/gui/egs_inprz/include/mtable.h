@@ -61,11 +61,15 @@ class MTable : public QTable
 public:
     MTable( QWidget *parent = 0, const char *name = 0 );
     MTable( int numRows, int numCols,
-    	    QWidget *parent = 0, const char *name = 0 );
+            QWidget *parent = 0, const char *name = 0 );
     ~MTable();
-    void setItemList( v_string il ) { itemList = il; }
+    void setItemList( v_string il ) {
+        itemList = il;
+    }
     void stopEditing();
-    void setValidator(bool val){validate=val;};
+    void setValidator(bool val) {
+        validate=val;
+    };
 
     enum CellType { LineEdit, ComboBox };
     void setCellType( CellType ct );
@@ -73,18 +77,18 @@ public:
 
 protected:
     virtual QWidget *createEditor( int row, int col, bool initFromCell ) const;
-               QWidget *createBoxEditor( int row, int col ) const;
+    QWidget *createBoxEditor( int row, int col ) const;
     virtual void setCellContentFromEditor( int row, int col );
     virtual void endEdit( int row, int col, bool accept, bool replace );
 
 //               void keyPressEvent( QKeyEvent* e );
-             bool eventFilter( QObject *o, QEvent *e );
+    bool eventFilter( QObject *o, QEvent *e );
 
-v_string itemList;
-v_string itemCopy;
+    v_string itemList;
+    v_string itemCopy;
 
 private:
-CellType  ctype;
-bool validate;
+    CellType  ctype;
+    bool validate;
 };
 #endif // MTABLE_H

@@ -47,30 +47,30 @@
 */
 class ComboBoxToolTip : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  ComboBoxToolTip(QWidget *parent, const char *name, const char* rtips[], const int& r_size );
- ~ComboBoxToolTip();
+    ComboBoxToolTip(QWidget *parent, const char *name, const char* rtips[], const int& r_size );
+    ~ComboBoxToolTip();
 
-  QLabel*       tipLabel;
-  MEventFilter* eFilter;
-  //qt3to4 -- BW
-  //QListBox*     lb;
-  QComboBox*    lb;
-  const char**  tips;
-  uint          tipSize;
+    QLabel*       tipLabel;
+    MEventFilter* eFilter;
+    //qt3to4 -- BW
+    //QListBox*     lb;
+    QComboBox*    lb;
+    const char**  tips;
+    uint          tipSize;
 
 public slots:
 
-        void setTips( const char** rtips, const int& r_size );
-virtual void showTipLabel( int index );
-        //qt3to4 -- BW
-        //void ShowHideTip( int index, QLabel* tipL, Q3ListBox* lb, const QString& text );
-        void ShowHideTip( int index, QLabel* tipL, QComboBox* lb, const QString& text );
-        void MovingMouseOnBox( );
-	void PressingMouseButton();
+    void setTips( const char** rtips, const int& r_size );
+    virtual void showTipLabel( int index );
+    //qt3to4 -- BW
+    //void ShowHideTip( int index, QLabel* tipL, Q3ListBox* lb, const QString& text );
+    void ShowHideTip( int index, QLabel* tipL, QComboBox* lb, const QString& text );
+    void MovingMouseOnBox( );
+    void PressingMouseButton();
 };
 #endif
 

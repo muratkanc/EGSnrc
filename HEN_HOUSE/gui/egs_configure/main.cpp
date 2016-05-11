@@ -39,10 +39,10 @@
 int main(int argc, char **argv) {
 
     QApplication::setStyle("windows");
-   QApplication a(argc,argv);
-   EGS_Wizard ew(0);
-   //a.connect(&ew,SIGNAL(quit()),SLOT(quit()));
-   ew.show();
-   return a.exec();
+    QApplication a(argc,argv);
+    EGS_Wizard ew(0);
+    //a.connect(&ew,SIGNAL(quit()),SLOT(quit()));
+    ew.show();
+    return a.exec();
 
 }

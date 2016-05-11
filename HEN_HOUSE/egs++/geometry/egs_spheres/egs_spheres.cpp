@@ -124,9 +124,9 @@ int EGS_cSpheres::inside(const EGS_Vector &x) {
  */
 
 #ifdef SPHERES_DEBUG
-    EGS_Vector last_x, last_u;
-    int last_ireg;
-    EGS_Float last_d,last_t,last_aa,last_bb2,last_R2b2,last_tmp;
+EGS_Vector last_x, last_u;
+int last_ireg;
+EGS_Float last_d,last_t,last_aa,last_bb2,last_R2b2,last_tmp;
 #endif
 
 EGS_Float EGS_cSpheres::howfarToOutside(int ireg, const EGS_Vector &x,

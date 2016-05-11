@@ -37,7 +37,7 @@
 
 MTitle::MTitle()
 {
-	str = "EGSnrc input template file: Please modify this !!!";
+    str = "EGSnrc input template file: Please modify this !!!";
 }
 
 MTitle::~MTitle()
@@ -48,41 +48,41 @@ MTitle::~MTitle()
 //QString parseStr( std::ifstream & in, const QString & id, const QString & defvalue )
 QString parseStr( std::ifstream & in, const QString & id )
 {
-	const int bufsize = 1024;
-	char buf[1024];
-	QString strLine;
-	QString t;
-	do { // while blank or comment line
-		in.getline( buf, bufsize );
-		strLine = buf;
-		t = strLine.simplified();
-	}while ( in && ( t.left(1)=="#" || t.isEmpty() || t.isNull() ) );
+    const int bufsize = 1024;
+    char buf[1024];
+    QString strLine;
+    QString t;
+    do { // while blank or comment line
+        in.getline( buf, bufsize );
+        strLine = buf;
+        t = strLine.simplified();
+    } while ( in && ( t.left(1)=="#" || t.isEmpty() || t.isNull() ) );
 
-	int i = t.indexOf( id,0,Qt::CaseInsensitive );
-	if ( i == -1 ){// id not found...!
-		return "*** error ***" ;
-	}
-	else { // found id, cut it and check for a comment
-		QString s = t;
-		s.remove(i,id.length());
-		int indx = s.indexOf("#",0,Qt::CaseInsensitive );
-		if (indx != -1) {
-		    s.remove(indx,s.length()-indx+1);
-		    s = s.simplified();
-		}
-		return s;
-	}
+    int i = t.indexOf( id,0,Qt::CaseInsensitive );
+    if ( i == -1 ) { // id not found...!
+        return "*** error ***" ;
+    }
+    else { // found id, cut it and check for a comment
+        QString s = t;
+        s.remove(i,id.length());
+        int indx = s.indexOf("#",0,Qt::CaseInsensitive );
+        if (indx != -1) {
+            s.remove(indx,s.length()-indx+1);
+            s = s.simplified();
+        }
+        return s;
+    }
 }
 
 
 std::ifstream & operator >> ( std::ifstream & in, MTitle* t )
 {
-  t->str = parseStr(in, "TITLE= ");
-  if ( t->str == "*** error ***" ){
-       t->errors = "*** Title not found *** <br>";
-       t->str       = "*** Title not found ***";
-   }
-  return in;
+    t->str = parseStr(in, "TITLE= ");
+    if ( t->str == "*** error ***" ) {
+        t->errors = "*** Title not found *** <br>";
+        t->str       = "*** Title not found ***";
+    }
+    return in;
 }
 /*
 Q3TextStream & operator << ( Q3TextStream & ts, MTitle* t )
@@ -95,7 +95,7 @@ Q3TextStream & operator << ( Q3TextStream & ts, MTitle* t )
 //qt3to4 -- BW
 QTextStream & operator << ( QTextStream & ts, MTitle* t )
 {
-        ts << "TITLE= " << t->str << "\n" << "\n";
-        return ts;
+    ts << "TITLE= " << t->str << "\n" << "\n";
+    return ts;
 }
 

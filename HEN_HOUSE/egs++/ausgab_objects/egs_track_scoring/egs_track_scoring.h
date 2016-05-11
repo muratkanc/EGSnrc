@@ -43,22 +43,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_TRACK_SCORING_DLL
-        #define EGS_TRACK_SCORING_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_TRACK_SCORING_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_TRACK_SCORING_LOCAL
+#ifdef BUILD_TRACK_SCORING_DLL
+#define EGS_TRACK_SCORING_EXPORT __declspec(dllexport)
+#else
+#define EGS_TRACK_SCORING_EXPORT __declspec(dllimport)
+#endif
+#define EGS_TRACK_SCORING_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_TRACK_SCORING_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_TRACK_SCORING_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_TRACK_SCORING_EXPORT
-        #define EGS_TRACK_SCORING_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_TRACK_SCORING_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_TRACK_SCORING_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_TRACK_SCORING_EXPORT
+#define EGS_TRACK_SCORING_LOCAL
+#endif
 
 #endif
 

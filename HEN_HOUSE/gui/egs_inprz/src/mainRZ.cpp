@@ -35,17 +35,17 @@
 int main( int argc, char* argv[] )
 {
 
-  QApplication::setStyle("windows");
+    QApplication::setStyle("windows");
 
-  QApplication app( argc, argv);
+    QApplication app( argc, argv);
 
-  inputRZImpl* inputRZ = new inputRZImpl(0,"egs_inprz",FALSE,0);
+    inputRZImpl* inputRZ = new inputRZImpl(0,"egs_inprz",FALSE,0);
 
-  inputRZ->show();
+    inputRZ->show();
 
-  if ( argc > 1 )
-      inputRZ->SetInpfileName( argv[1]);
+    if ( argc > 1 )
+        inputRZ->SetInpfileName( argv[1]);
 
-  int ret = app.exec();
-  return ret;
+    int ret = app.exec();
+    return ret;
 }

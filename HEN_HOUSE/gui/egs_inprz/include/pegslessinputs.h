@@ -49,32 +49,32 @@
 
 class PEGSLESSInputs : public MInputBlock
 {
-  public:
-   PEGSLESSInputs();
-  ~PEGSLESSInputs();
+public:
+    PEGSLESSInputs();
+    ~PEGSLESSInputs();
 
- 	QString AE;
- 	QString UE;
- 	QString AP;
-        QString UP;
+    QString AE;
+    QString UE;
+    QString AP;
+    QString UP;
 
-        QString matdatafile;
+    QString matdatafile;
 
- 	int ninpmedia;
-        int inpmedind;
-        int nelements[MXMED];
+    int ninpmedia;
+    int inpmedind;
+    int nelements[MXMED];
 
-        bool spec_by_pz[MXMED];
-        QString inpmedium[MXMED];
-        v_string elements[MXMED];
-        v_string pz_or_rhoz[MXMED];
-        QString rho[MXMED];
-        QString spr[MXMED];
-        QString bc[MXMED];
-        QString gasp[MXMED];
-        bool isgas[MXMED];
-        QString dffile[MXMED];
-        QString sterncid[MXMED];
+    bool spec_by_pz[MXMED];
+    QString inpmedium[MXMED];
+    v_string elements[MXMED];
+    v_string pz_or_rhoz[MXMED];
+    QString rho[MXMED];
+    QString spr[MXMED];
+    QString bc[MXMED];
+    QString gasp[MXMED];
+    bool isgas[MXMED];
+    QString dffile[MXMED];
+    QString sterncid[MXMED];
 };
 std::ifstream & operator >> ( std::ifstream & in, PEGSLESSInputs * rPEGSLESS );
 //Q3TextStream   & operator << ( Q3TextStream &    t, PEGSLESSInputs * rPEGSLESS );

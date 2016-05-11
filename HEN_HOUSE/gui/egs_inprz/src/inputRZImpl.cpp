@@ -77,10 +77,10 @@ using namespace std;
 #define zapM(x)  cout<<"deleting "<< string(x->metaObject()->className())<< endl;if(x){delete(x);x=0;}
 
 inputRZImpl::inputRZImpl( QWidget* parent, const char* name,
-             bool modal, Qt::WFlags f )
+                          bool modal, Qt::WFlags f )
 //qt3to4 -- BW
 //           : InputRZForm( parent, name, f )
-             : QWidget(parent)
+    : QWidget(parent)
 {
 
     //qt3to4 -- BW
@@ -93,16 +93,16 @@ inputRZImpl::inputRZImpl( QWidget* parent, const char* name,
 
 inputRZImpl::~inputRZImpl()
 {
-  zapM( srcTip );
-  zapM( ifullTip );
-  zapM( iwatchTip );
-  zapM( irestartTip );
-  zapM( etransportTip );
-  zapM( outputTip );
-  zapM( mediaTip );
-  zapM( imodeTip );
-  zapM( iprimaryTip );
-  zap( mediaTable );
+    zapM( srcTip );
+    zapM( ifullTip );
+    zapM( iwatchTip );
+    zapM( irestartTip );
+    zapM( etransportTip );
+    zapM( outputTip );
+    zapM( mediaTip );
+    zapM( imodeTip );
+    zapM( iprimaryTip );
+    zap( mediaTable );
 }
 
 //**********************************
@@ -116,38 +116,38 @@ void inputRZImpl::compile_userCode()
     QString egs_compiler = readVarFromConf("make_prog");
     if ( egs_compiler.isEmpty() ) egs_compiler = "make";// default is GNU make
 
-   QString code_generation = "opt"; // default
-   if ( DebugradioButton->isChecked() )
+    QString code_generation = "opt"; // default
+    if ( DebugradioButton->isChecked() )
         code_generation = "debug";
-   else if ( NoOptradioButton->isChecked() )
+    else if ( NoOptradioButton->isChecked() )
         code_generation = "noopt";
-   else if ( CleanradioButton->isChecked() )
+    else if ( CleanradioButton->isChecked() )
         code_generation = "clean";
-   else{// optimization desired
-       code_generation = "opt"; // default
-   }
+    else { // optimization desired
+        code_generation = "opt"; // default
+    }
 
-   QDir::setCurrent( ironIt( EGS_HOME + QDir::separator() + usercodename) );
+    QDir::setCurrent( ironIt( EGS_HOME + QDir::separator() + usercodename) );
 
-   QStringList args;
-   args.push_back(egs_compiler);
-   args += code_generation;
+    QStringList args;
+    args.push_back(egs_compiler);
+    args += code_generation;
 //   if ( code_generation.toLower() != "clean"){
-   QString dummy =  (QString)"EGS_CONFIG=" +
+    QString dummy =  (QString)"EGS_CONFIG=" +
                      ironIt( HEN_HOUSE + s +
-                     (QString)"specs"  + s +
-                     CONFcomboBox->currentText());
-   args += dummy;
-   //args += dummy.replace("\\", "/");
+                             (QString)"specs"  + s +
+                             CONFcomboBox->currentText());
+    args += dummy;
+    //args += dummy.replace("\\", "/");
 //   }
 
-   QString vTitle = "Compiling RZ user code " + usercodename.toUpper();
-   // let's run the compiler comand
-   CommandManager* compile_egs = new CommandManager( this, vTitle.toLatin1().data(), args );
-   //compile_egs->show(); //runs modeless
-   compile_egs->exec(); //runs modal
-   //checkErrors();
-   checkExecutionAbility();
+    QString vTitle = "Compiling RZ user code " + usercodename.toUpper();
+    // let's run the compiler comand
+    CommandManager* compile_egs = new CommandManager( this, vTitle.toLatin1().data(), args );
+    //compile_egs->show(); //runs modeless
+    compile_egs->exec(); //runs modal
+    //checkErrors();
+    checkExecutionAbility();
 }
 
 //**********************************
@@ -155,109 +155,109 @@ void inputRZImpl::compile_userCode()
 //**********************************
 void inputRZImpl::run_userCode()
 {
-     QString inpf  = EGSfileName;
-     //qt3to4 -- BW
-     //char s = QDir::separator();
-     char s = QDir::separator().toAscii();
-     QString the_user_code_area = ironIt( EGS_HOME+s+usercodename+s );
+    QString inpf  = EGSfileName;
+    //qt3to4 -- BW
+    //char s = QDir::separator();
+    char s = QDir::separator().toAscii();
+    QString the_user_code_area = ironIt( EGS_HOME+s+usercodename+s );
 
-     if ( EGSdir != the_user_code_area  ){
-	 QString exe_msg   =
-             "Do you want to copy the input file to your user code area?\n";
-                 exe_msg+="Current input file location is: "+EGSdir;
-                 exe_msg+="\nIf not, execution will abort !";
-	switch( QMessageBox::warning( this, "user code area :" +
-                the_user_code_area,
-                exe_msg,
-                "Yes",  "No", 0, 0, 1 ) ){
-	case 0: // The user clicked the yes button or pressed Enter
-	                  copy( EGSdir                         +EGSfileName,
-			  the_user_code_area+EGSfileName);
-		    break;
-	case 1: // The user clicked the no or pressed Escape
-		    return;
-		    break;
-	}
+    if ( EGSdir != the_user_code_area  ) {
+        QString exe_msg   =
+            "Do you want to copy the input file to your user code area?\n";
+        exe_msg+="Current input file location is: "+EGSdir;
+        exe_msg+="\nIf not, execution will abort !";
+        switch( QMessageBox::warning( this, "user code area :" +
+                                      the_user_code_area,
+                                      exe_msg,
+                                      "Yes",  "No", 0, 0, 1 ) ) {
+        case 0: // The user clicked the yes button or pressed Enter
+            copy( EGSdir                         +EGSfileName,
+                  the_user_code_area+EGSfileName);
+            break;
+        case 1: // The user clicked the no or pressed Escape
+            return;
+            break;
+        }
 
-     }
+    }
 
 //    inpf.remove(inpf.find(".egsinp",1),7);
 //  PEGSdir is updated on getPEGSfile and a separator is appended
-     QString datf;
-     if(is_pegsless) datf = "pegsless";
-     else  datf  = PEGSdir + PEGSfileName;
+    QString datf;
+    if(is_pegsless) datf = "pegsless";
+    else  datf  = PEGSdir + PEGSfileName;
 //     datf.remove(datf.find(".pegs4dat",1),9);
-     QString exe = getExecutable();
-     if (exe.isEmpty() ){
+    QString exe = getExecutable();
+    if (exe.isEmpty() ) {
         QString exe_error = "No executable found, try compiling first !";
         QMessageBox::critical( 0,  tr("Error !!!"), tr( exe_error.toLatin1() ), tr("OK") );
         return;
-     }
+    }
 
-     QDir::setCurrent( EGS_HOME + s + usercodename );
-     //QDir::setCurrent( EGSdir );
+    QDir::setCurrent( EGS_HOME + s + usercodename );
+    //QDir::setCurrent( EGSdir );
 
-/*  -----------------------------------------------
-    This is used to run the user code interactively
-     -----------------------------------------------
-     QString vTitle = "Running : " + exe;
-     QStringList args;
-     args.push_back( exe );
-      args += "-i"; args += inpf ;
-      args += "-p"; args += datf ;
-    CommandManager* run_egs = new CommandManager( 0, vTitle, args );
-    run_egs->show(); //runs modeless
-    ------------------------------------------------
-*/
+    /*  -----------------------------------------------
+        This is used to run the user code interactively
+         -----------------------------------------------
+         QString vTitle = "Running : " + exe;
+         QStringList args;
+         args.push_back( exe );
+          args += "-i"; args += inpf ;
+          args += "-p"; args += datf ;
+        CommandManager* run_egs = new CommandManager( 0, vTitle, args );
+        run_egs->show(); //runs modeless
+        ------------------------------------------------
+    */
 
-     QString exec_str = HEN_HOUSE    + " " +
-			usercodename + " " +
-			exe                       + " " +
-			inpf                      + " " +
-			datf;
-     ExecutiondlgImpl* executionDialog = new ExecutiondlgImpl( this, exec_str.toLatin1(),
-                                                               false, 0);
-     executionDialog->inputFileLabel->setText(EGSfileName);
+    QString exec_str = HEN_HOUSE    + " " +
+                       usercodename + " " +
+                       exe                       + " " +
+                       inpf                      + " " +
+                       datf;
+    ExecutiondlgImpl* executionDialog = new ExecutiondlgImpl( this, exec_str.toLatin1(),
+            false, 0);
+    executionDialog->inputFileLabel->setText(EGSfileName);
 #ifdef WIN32
-      executionDialog->batchRadioButton->setEnabled(false);
+    executionDialog->batchRadioButton->setEnabled(false);
 #endif
-     executionDialog->show();
+    executionDialog->show();
 }
 
 void inputRZImpl::set_cav_regions()
 {
-  if ( ( groupRadioButton->isChecked()      ) ||
-       ( individualRadioButton->isChecked() ) ){
-       gr_indGroupBox->setEnabled( true );
-       cavityGroupBox->setEnabled( false );
-       CavityInfoLabel->hide();
-  }
-  else {
-       gr_indGroupBox->setEnabled( false );
-       cavityGroupBox->setEnabled( true );
-       CavityInfoLabel->show();
-  }
+    if ( ( groupRadioButton->isChecked()      ) ||
+            ( individualRadioButton->isChecked() ) ) {
+        gr_indGroupBox->setEnabled( true );
+        cavityGroupBox->setEnabled( false );
+        CavityInfoLabel->hide();
+    }
+    else {
+        gr_indGroupBox->setEnabled( false );
+        cavityGroupBox->setEnabled( true );
+        CavityInfoLabel->show();
+    }
 }
 
 //**********************************************
 // *********  CONFIGURATION  STUFF   ***********
 //**********************************************
 /* Commented out as this is not offered in egs_inprz anymore */
-bool inputRZImpl::configLibExists(){
-/*    char s = QDir::separator();
-    QString machine = readVarFromConf( "my_machine" );
-    QString lib = ironIt(HEN_HOUSE + s + (QString)"bin" + s + machine);
-    QDir dir( lib );
-    if ( ! dir.exists() ) return false;
-    QStringList lst = dir.entryList( "*.*" );
-    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it ) {
-	if ( ( *it ).contains( "egsconfig" ) ){
-                confErrors = QString::null;
-                return true;
-	}
-    }
-    confErrors += (QString)"<br><b>Configuration library not found in</b> <i>" +
-            lib + (QString)"</i> !!!<br>";*/
+bool inputRZImpl::configLibExists() {
+    /*    char s = QDir::separator();
+        QString machine = readVarFromConf( "my_machine" );
+        QString lib = ironIt(HEN_HOUSE + s + (QString)"bin" + s + machine);
+        QDir dir( lib );
+        if ( ! dir.exists() ) return false;
+        QStringList lst = dir.entryList( "*.*" );
+        for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it ) {
+    	if ( ( *it ).contains( "egsconfig" ) ){
+                    confErrors = QString::null;
+                    return true;
+    	}
+        }
+        confErrors += (QString)"<br><b>Configuration library not found in</b> <i>" +
+                lib + (QString)"</i> !!!<br>";*/
     return false;
 }
 
@@ -265,44 +265,44 @@ QString inputRZImpl::readVarFromConf( const QString& var )
 {
 //qt3to4 -- BW
 //char s = QDir::separator();
-QChar s = QDir::separator();
-QString val = QString();
-QString egsconf = ((CONFcomboBox->currentText()).lastIndexOf(QDir::separator())<0)?
-   ironIt( HEN_HOUSE + s + (QString)"specs" + s + CONFcomboBox->currentText() ):
-   CONFcomboBox->currentText();
- if ( !egsconf.isEmpty() ){
-  EGS_ConfigReader* egs = new EGS_ConfigReader(egsconf);
-  int res = egs->checkConfigFile(egsconf);
-  if (!res){
-   val = egs->getVariable(var,true);
-  }
-  else if(res == 1){
-   confErrors += (QString)"<br><b> Could not find or read config file: </b>" +
-                 egsconf;
-   confErrors += (QString)"<br> EGS_CONFIG must point to a valid file!";
-   confErrors += (QString)"<br> EGS_CONFIG is needed for compiling and "+
-                 (QString)"executing EGSnrc user codes.";
-  }
-  else if( res == 2 ) {
-   confErrors += tr("<br>Reading variable <b>") + var +
-                 tr("</b> from what seems to be a ")  +
+    QChar s = QDir::separator();
+    QString val = QString();
+    QString egsconf = ((CONFcomboBox->currentText()).lastIndexOf(QDir::separator())<0)?
+                      ironIt( HEN_HOUSE + s + (QString)"specs" + s + CONFcomboBox->currentText() ):
+                      CONFcomboBox->currentText();
+    if ( !egsconf.isEmpty() ) {
+        EGS_ConfigReader* egs = new EGS_ConfigReader(egsconf);
+        int res = egs->checkConfigFile(egsconf);
+        if (!res) {
+            val = egs->getVariable(var,true);
+        }
+        else if(res == 1) {
+            confErrors += (QString)"<br><b> Could not find or read config file: </b>" +
+                          egsconf;
+            confErrors += (QString)"<br> EGS_CONFIG must point to a valid file!";
+            confErrors += (QString)"<br> EGS_CONFIG is needed for compiling and "+
+                          (QString)"executing EGSnrc user codes.";
+        }
+        else if( res == 2 ) {
+            confErrors += tr("<br>Reading variable <b>") + var +
+                          tr("</b> from what seems to be a ")  +
 #ifdef WIN32
-                 tr("Unix/Linux config file!!!\n");
+                          tr("Unix/Linux config file!!!\n");
 #else
-                 tr("MS Windows config file!!!\n");
+                          tr("MS Windows config file!!!\n");
 #endif
 
-   val = egs->getVariable(var,true);
+            val = egs->getVariable(var,true);
 
-   confErrors += tr("<br><i>") + var +
-                 tr(" = ")     + val +
-                 tr("</i><br>");
-  }
- }
- else{
-  confErrors += tr("<br>Empty config file pased to <b>updateConfiguration</b>");
- }
- return val;
+            confErrors += tr("<br><i>") + var +
+                          tr(" = ")     + val +
+                          tr("</i><br>");
+        }
+    }
+    else {
+        confErrors += tr("<br>Empty config file pased to <b>updateConfiguration</b>");
+    }
+    return val;
 }
 
 /***************************************************************************
@@ -315,33 +315,33 @@ QString egsconf = ((CONFcomboBox->currentText()).lastIndexOf(QDir::separator())<
  ****************************************************************************/
 void inputRZImpl::configure()
 {
-/*    QString machine = readVarFromConf( "my_machine" );
+    /*    QString machine = readVarFromConf( "my_machine" );
 
-    typedef  QDialog* (*CreateEGS)( QWidget*, const QString& );
-    char        s = QDir::separator();
-    QLibrary* lib = new QLibrary(  ironIt (HEN_HOUSE + s + (QString)"bin" + s +
-                                   machine   + s + (QString)"egsconfig")  );
+        typedef  QDialog* (*CreateEGS)( QWidget*, const QString& );
+        char        s = QDir::separator();
+        QLibrary* lib = new QLibrary(  ironIt (HEN_HOUSE + s + (QString)"bin" + s +
+                                       machine   + s + (QString)"egsconfig")  );
 
-    if( !lib->load() ) {
-	confErrors = (QString)"<b>Failed to load library </b><i>" +
-                      lib->library().toLatin1() + (QString)"</i><br>";
-        checkConfigLib();
-	return;
-    }
-    CreateEGS create2 =(CreateEGS)  lib->resolve("create2");
-    if ( create2 ) {
-       QDialog *config = create2( this, EGS_CONFIG );
-       if ( config->exec() == QDialog::Accepted )
-	   update_conf_files();
-    }
-    else{
-	confErrors = (QString)"Failed resolving \"create1\" !!!!<br>";
-        checkConfigLib();
-    }*/
+        if( !lib->load() ) {
+    	confErrors = (QString)"<b>Failed to load library </b><i>" +
+                          lib->library().toLatin1() + (QString)"</i><br>";
+            checkConfigLib();
+    	return;
+        }
+        CreateEGS create2 =(CreateEGS)  lib->resolve("create2");
+        if ( create2 ) {
+           QDialog *config = create2( this, EGS_CONFIG );
+           if ( config->exec() == QDialog::Accepted )
+    	   update_conf_files();
+        }
+        else{
+    	confErrors = (QString)"Failed resolving \"create1\" !!!!<br>";
+            checkConfigLib();
+        }*/
 
 }
 
-void inputRZImpl::update_conf_files(){
+void inputRZImpl::update_conf_files() {
 
     disconnect( CONFcomboBox, SIGNAL( editTextChanged(const QString&) ),
                 this, SLOT( checkConfigLib() ) );
@@ -349,7 +349,7 @@ void inputRZImpl::update_conf_files(){
     connect( CONFcomboBox, SIGNAL( editTextChanged(const QString&) ),
              this, SLOT( checkConfigLib() ) );
 
- }
+}
 
 
 //**********************************************
@@ -374,7 +374,7 @@ void inputRZImpl::checkErrors( const QString& fun )
 
 //qt3to4 -- BW
 //   cout << "Called from " << fun << endl;
-     cout << "Called from " << fun.toStdString() << endl;
+    cout << "Called from " << fun.toStdString() << endl;
 
 }
 
@@ -392,129 +392,129 @@ void inputRZImpl::checkErrors()
     caught_errors();
 }
 
-void inputRZImpl::checkConfigLib(){
- QString egsconf = ((CONFcomboBox->currentText()).lastIndexOf(QDir::separator())<0)?
-                   ironIt( HEN_HOUSE + QDir::separator() +
-                   (QString)"specs"  + QDir::separator() +
-                   CONFcomboBox->currentText() ):
-                   CONFcomboBox->currentText();
- confErrors = QString();
- if (fileExists(egsconf)){
-    updateConfiguration( egsconf );
-    checkExecutionAbility();
-    checkCompilationAbility();
-    checkPreviewRZ();
-    checkPrintAbility();
+void inputRZImpl::checkConfigLib() {
+    QString egsconf = ((CONFcomboBox->currentText()).lastIndexOf(QDir::separator())<0)?
+                      ironIt( HEN_HOUSE + QDir::separator() +
+                              (QString)"specs"  + QDir::separator() +
+                              CONFcomboBox->currentText() ):
+                      CONFcomboBox->currentText();
+    confErrors = QString();
+    if (fileExists(egsconf)) {
+        updateConfiguration( egsconf );
+        checkExecutionAbility();
+        checkCompilationAbility();
+        checkPreviewRZ();
+        checkPrintAbility();
 
-/*    if ( ! configLibExists() ){
-      ConfigurationButton->setEnabled( false );
+        /*    if ( ! configLibExists() ){
+              ConfigurationButton->setEnabled( false );
+            }
+            else{
+              ConfigurationButton->setEnabled( true );
+            }*/
+        caught_errors();
     }
-    else{
-      ConfigurationButton->setEnabled( true );
-    }*/
+}
+
+
+void inputRZImpl::checkCompilationAbility() {
+
+    //qt3to4 -- BW
+    //char s = QDir::separator();
+    char s = QDir::separator().toAscii();
+
+    QString missing_files = QString();
+
+    if (!check_file( HEN_HOUSE + s + "makefiles" + s + "standard_makefile" ) )
+        missing_files += ironIt( HEN_HOUSE + s + "makefiles" + s + "standard_makefile<br>");
+    if (!check_file( EGS_HOME + s + usercodename + s + "Makefile" ) )
+        missing_files += ironIt(  EGS_HOME + s + usercodename + s + "Makefile<br>" );
+    if (!check_file( EGS_HOME + s + usercodename + s +  usercodename + ".mortran" ) )
+        missing_files += ironIt(  EGS_HOME + s + usercodename + s +  usercodename + ".mortran<br>" );
+    if (!check_file( EGS_HOME + s + usercodename + s +  usercodename + ".make" ) )
+        missing_files += ironIt(  EGS_HOME + s + usercodename + s +  usercodename + ".make<br>" );
+
+    if ( missing_files.isEmpty() )
+        compileButton->setEnabled(true);
+    else {
+        compileButton->setEnabled(false);
+        missing_files =
+            "<br><b>Compilation disabled since following files missing:</b><br>" +
+            missing_files;
+        confErrors += missing_files;
+        //QMessageBox::warning ( this, "Warning", missing_files, 1, 0, 0 );
+    }
+
     caught_errors();
- }
-}
-
-
-void inputRZImpl::checkCompilationAbility(){
-
-  //qt3to4 -- BW
-  //char s = QDir::separator();
-  char s = QDir::separator().toAscii();
-
-  QString missing_files = QString();
-
-  if (!check_file( HEN_HOUSE + s + "makefiles" + s + "standard_makefile" ) )
-      missing_files += ironIt( HEN_HOUSE + s + "makefiles" + s + "standard_makefile<br>");
-  if (!check_file( EGS_HOME + s + usercodename + s + "Makefile" ) )
-      missing_files += ironIt(  EGS_HOME + s + usercodename + s + "Makefile<br>" );
-  if (!check_file( EGS_HOME + s + usercodename + s +  usercodename + ".mortran" ) )
-      missing_files += ironIt(  EGS_HOME + s + usercodename + s +  usercodename + ".mortran<br>" );
-  if (!check_file( EGS_HOME + s + usercodename + s +  usercodename + ".make" ) )
-      missing_files += ironIt(  EGS_HOME + s + usercodename + s +  usercodename + ".make<br>" );
-
-  if ( missing_files.isEmpty() )
-      compileButton->setEnabled(true);
-  else{
-      compileButton->setEnabled(false);
-      missing_files =
-      "<br><b>Compilation disabled since following files missing:</b><br>" +
-                      missing_files;
-      confErrors += missing_files;
-      //QMessageBox::warning ( this, "Warning", missing_files, 1, 0, 0 );
-  }
-
-  caught_errors();
 
 }
 
-void inputRZImpl::checkExecutionAbility(){
+void inputRZImpl::checkExecutionAbility() {
 
     if ( ((!is_pegsless && pegs_is_ok( PEGSdir + PEGSfileName ) && pegsErrors.isEmpty()) ||
-          (is_pegsless && pegsless_is_ok() && pegsErrors.isEmpty())) &&
-       ( openErrors.isEmpty() ) &&
-       ( formErrors.isEmpty() )                         &&
-         check_file( EGSdir + EGSfileName )             && // check input file or directory exists
-         !EGSfileName.isEmpty()                         && // check non-blank input file name
-         !getExecutable().isEmpty()                     ){
-           ExecuteButton->setEnabled( true );
-       }
-     else {
-         ExecuteButton->setEnabled( false );
+            (is_pegsless && pegsless_is_ok() && pegsErrors.isEmpty())) &&
+            ( openErrors.isEmpty() ) &&
+            ( formErrors.isEmpty() )                         &&
+            check_file( EGSdir + EGSfileName )             && // check input file or directory exists
+            !EGSfileName.isEmpty()                         && // check non-blank input file name
+            !getExecutable().isEmpty()                     ) {
+        ExecuteButton->setEnabled( true );
+    }
+    else {
+        ExecuteButton->setEnabled( false );
     }
 
     caught_errors();
 }
 
-void inputRZImpl::checkPreviewRZ(){
- previewErrors = QString();
- previewRZ_exists = fileExists( ironIt(HEN_HOUSE + "/previewRZ/previewRZ.tcl") );
- if ( ! previewRZ_exists )
-  previewErrors += tr("<br><b>previewRZ</b> utility not found in the $HEN_HOUSE : ") +
-                     HEN_HOUSE +
-                     tr("<br> You won't be able to preview RZ geometries!!!");
+void inputRZImpl::checkPreviewRZ() {
+    previewErrors = QString();
+    previewRZ_exists = fileExists( ironIt(HEN_HOUSE + "/previewRZ/previewRZ.tcl") );
+    if ( ! previewRZ_exists )
+        previewErrors += tr("<br><b>previewRZ</b> utility not found in the $HEN_HOUSE : ") +
+                         HEN_HOUSE +
+                         tr("<br> You won't be able to preview RZ geometries!!!");
 
- previewRZ_exists = previewRZ_exists && isTclTkInstalled();
+    previewRZ_exists = previewRZ_exists && isTclTkInstalled();
 
- if ( previewRZ_exists && geoErrors.isEmpty() &&
-    check_file(EGSdir + EGSfileName) && !EGSfileName.isEmpty() ){
-    PreviewRZButton->setEnabled( true );
- }
- else {
-   PreviewRZButton->setEnabled( false );
- }
- caught_errors();
+    if ( previewRZ_exists && geoErrors.isEmpty() &&
+            check_file(EGSdir + EGSfileName) && !EGSfileName.isEmpty() ) {
+        PreviewRZButton->setEnabled( true );
+    }
+    else {
+        PreviewRZButton->setEnabled( false );
+    }
+    caught_errors();
 }
 
-bool inputRZImpl::isTclTkInstalled(){
+bool inputRZImpl::isTclTkInstalled() {
 #ifdef WIN32
-  QStringList wish = find_programs_in_system(QStringList("wish.exe"),*(";"));
-  if ( wish.count() > 0 && wish.contains((QString)"wish.exe") > 0 )
+    QStringList wish = find_programs_in_system(QStringList("wish.exe"),*(";"));
+    if ( wish.count() > 0 && wish.contains((QString)"wish.exe") > 0 )
 #else
-  QStringList wish = find_programs_in_system(QStringList("wish"),*(":"));
-  if ( wish.count() > 0 && wish.contains((QString)"wish") > 0 )
+    QStringList wish = find_programs_in_system(QStringList("wish"),*(":"));
+    if ( wish.count() > 0 && wish.contains((QString)"wish") > 0 )
 #endif
-     return true;
-  else{
-     previewErrors += tr("<br>Couldn't find <i>wish</i>. ") +
-                      tr("Assuming <b>Tcl/Tk</b> is not installed.<br>")+
-                      tr("You won't be able to use <b>previewRZ</b>!!!");
-     return false;
-  }
+        return true;
+    else {
+        previewErrors += tr("<br>Couldn't find <i>wish</i>. ") +
+                         tr("Assuming <b>Tcl/Tk</b> is not installed.<br>")+
+                         tr("You won't be able to use <b>previewRZ</b>!!!");
+        return false;
+    }
 }
 
 
-void inputRZImpl::checkPrintAbility(){
-   if ( check_file(EGSdir + EGSfileName)   &&
-        !EGSfileName.isEmpty() ) {
-     PrintButton->setEnabled( true );
-   }
-   else {
-     PrintButton->setEnabled( false );
-     //confErrors += tr("<br>No input file for printing!");
-   }
- caught_errors();
+void inputRZImpl::checkPrintAbility() {
+    if ( check_file(EGSdir + EGSfileName)   &&
+            !EGSfileName.isEmpty() ) {
+        PrintButton->setEnabled( true );
+    }
+    else {
+        PrintButton->setEnabled( false );
+        //confErrors += tr("<br>No input file for printing!");
+    }
+    caught_errors();
 }
 
 
@@ -533,40 +533,40 @@ void inputRZImpl::SetInpfileName( QString inp_name )
     QString tmpDir = EGSdir;
     //qt3to4 -- BW
     //char s         = QDir::separator();
-     char s = QDir::separator().toAscii();
+    char s = QDir::separator().toAscii();
     if ( !inp_name.isEmpty() ) {
-       EGSfileName = ironIt( inp_name ); // may be a full path name
-       QFileInfo fi( EGSfileName );
-       tmpDir = ironIt( fi.absolutePath() + s );
+        EGSfileName = ironIt( inp_name ); // may be a full path name
+        QFileInfo fi( EGSfileName );
+        tmpDir = ironIt( fi.absolutePath() + s );
 
-       //cout << tmpDir << " vs. " << QDir::currentDirPath()+s << endl;
-       //if (fi.absolutePath() !=  QDir::currentDirPath() ||
-         if ( EGSfileName.indexOf(s) >= 0 )
-          EGSfileName.remove( 0, tmpDir.length() );
+        //cout << tmpDir << " vs. " << QDir::currentDirPath()+s << endl;
+        //if (fi.absolutePath() !=  QDir::currentDirPath() ||
+        if ( EGSfileName.indexOf(s) >= 0 )
+            EGSfileName.remove( 0, tmpDir.length() );
 
-       if (EGSfileName.indexOf(".egsinp") < 0)
-           EGSfileName = EGSfileName + ".egsinp";
+        if (EGSfileName.indexOf(".egsinp") < 0)
+            EGSfileName = EGSfileName + ".egsinp";
 
 
-       if( tmpDir != ironIt( EGS_HOME   + s + usercodename + s) &&
-           tmpDir != ironIt( HEN_HOUSE + s + usercodename + s) )
-          The_Other_Area = tmpDir;
+        if( tmpDir != ironIt( EGS_HOME   + s + usercodename + s) &&
+                tmpDir != ironIt( HEN_HOUSE + s + usercodename + s) )
+            The_Other_Area = tmpDir;
 
-       if ( tmpDir != EGSdir) {
-       //cout << tmpDir << " vs. " << EGSdir << endl;
-              EGSdir = tmpDir;
-              usercodename = find_usercode_name( EGSdir );
-   	      update_from_user_area();
-              egs_dir_changed = true;
-       }
-       else egs_dir_changed = false;
+        if ( tmpDir != EGSdir) {
+            //cout << tmpDir << " vs. " << EGSdir << endl;
+            EGSdir = tmpDir;
+            usercodename = find_usercode_name( EGSdir );
+            update_from_user_area();
+            egs_dir_changed = true;
+        }
+        else egs_dir_changed = false;
 
-       if ( !EGSfileName.isEmpty() ) {
-           open();
-           checkExecutionAbility();
-           checkPrintAbility();
-           checkPreviewRZ();
-      }
+        if ( !EGSfileName.isEmpty() ) {
+            open();
+            checkExecutionAbility();
+            checkPrintAbility();
+            checkPreviewRZ();
+        }
     }
 
 
@@ -580,37 +580,37 @@ void inputRZImpl::OpenEGSInpFile()
     char s = QDir::separator().toAscii();
     QDir d(tmpDir);
     if ( !d.exists() ) {
-       tmpDir = GetCurrentDir( usercodename, EGS_HOME, HEN_HOUSE );
+        tmpDir = GetCurrentDir( usercodename, EGS_HOME, HEN_HOUSE );
     }
     //qt3to4 -- BW
     //QString f = Q3FileDialog::getOpenFileName( tmpDir, "EGS input files (*.egsinp)", this );
     QString f = QFileDialog::getOpenFileName( this,"",tmpDir, "EGS input files (*.egsinp)");
     if ( !f.isEmpty() ) {
-       EGSfileName = f;
-       QFileInfo fi( EGSfileName );
-       tmpDir = ironIt( fi.path() + s );
-       EGSfileName.remove( 0, tmpDir.length() );
+        EGSfileName = f;
+        QFileInfo fi( EGSfileName );
+        tmpDir = ironIt( fi.path() + s );
+        EGSfileName.remove( 0, tmpDir.length() );
 
 
-       if( tmpDir != ironIt( EGS_HOME   + s + usercodename + s) &&
-           tmpDir != ironIt( HEN_HOUSE + s + usercodename + s) )
-          The_Other_Area = tmpDir;
+        if( tmpDir != ironIt( EGS_HOME   + s + usercodename + s) &&
+                tmpDir != ironIt( HEN_HOUSE + s + usercodename + s) )
+            The_Other_Area = tmpDir;
 
-       if ( tmpDir != EGSdir) {
+        if ( tmpDir != EGSdir) {
             EGSdir = tmpDir;
             usercodename = find_usercode_name( EGSdir );
-   	    update_from_user_area();
+            update_from_user_area();
             egs_dir_changed = true;
-       }
-       else egs_dir_changed = false;
+        }
+        else egs_dir_changed = false;
 
-       if ( !EGSfileName.isEmpty() ) {
-           open();
-           //checkErrors();
-           checkExecutionAbility();
-           checkPrintAbility();
-           checkPreviewRZ();
-      }
+        if ( !EGSfileName.isEmpty() ) {
+            open();
+            //checkErrors();
+            checkExecutionAbility();
+            checkPrintAbility();
+            checkPreviewRZ();
+        }
     }
 }
 
@@ -629,181 +629,181 @@ void inputRZImpl::mediaTable_clicked( int row, int col) {
 */
 
 void inputRZImpl::mediaTable_clicked( int row, int col) {
-   if(col == 0) {//just use default line editor if not in column 0
-       //qt3to4 -- BW
-       QString str;
-       if(mediaTable->item(row,col)) str = mediaTable->item(row,col)->text();
-       //QString str = mediaTable->text(row,col);
-       QStringList medlist=StrListToQStrList( listMedia ) ; //fill up a list of currently available media
-       QComboBox *e = new QComboBox;
-       e->addItems(medlist);
-       if(!str.isNull()) {//see if it's already in the media list
-         bool found=false;
-         for(int i=0; i<e->count(); i++) {
-              if(str == e->itemText(i)){
-                found=true;
-                e->setCurrentIndex(i);
-                break;
-              }
-         }
-         if(!found) {
-              e->insertItem(0,str);
-              e->setCurrentIndex(0);
-         }
-       }
-       mediaTable->setCellWidget(row,col,e);
-   }
+    if(col == 0) {//just use default line editor if not in column 0
+        //qt3to4 -- BW
+        QString str;
+        if(mediaTable->item(row,col)) str = mediaTable->item(row,col)->text();
+        //QString str = mediaTable->text(row,col);
+        QStringList medlist=StrListToQStrList( listMedia ) ; //fill up a list of currently available media
+        QComboBox *e = new QComboBox;
+        e->addItems(medlist);
+        if(!str.isNull()) {//see if it's already in the media list
+            bool found=false;
+            for(int i=0; i<e->count(); i++) {
+                if(str == e->itemText(i)) {
+                    found=true;
+                    e->setCurrentIndex(i);
+                    break;
+                }
+            }
+            if(!found) {
+                e->insertItem(0,str);
+                e->setCurrentIndex(0);
+            }
+        }
+        mediaTable->setCellWidget(row,col,e);
+    }
 }
 
 //protects column 0 from being editable if not already a comboBox and single clicked
 void inputRZImpl::mediaTable_singleclicked( int row, int col) {
-   if(col == 0) {
-     QWidget *editor = mediaTable->cellWidget( row, col );
-     if(!editor) {//protect any text already there
-       //qt3to4 -- BW
-       //QString str = mediaTable->text(row,col);
-       QTableWidgetItem* w =  mediaTable->item(row,col);
-       if(w) {
-          QString str = w->text();
-          mediaTable->setItem(row,col,new QTableWidgetItem(str));
-       }
-     }
-   }
-//if we click away from a comboBox, freeze it and just display the text
-   for(int irow =0; irow < mediaTable->rowCount(); irow++) {
-     if(row != irow || col !=0) {
-       QWidget *editor = mediaTable->cellWidget( irow, 0 );
-       if(editor) {
-        if(string(editor->metaObject()->className())=="QComboBox"){
-          QComboBox* cb = (QComboBox*)editor;
-          QString str = cb->currentText();
-          mediaTable->removeCellWidget(irow,0);
-          mediaTable->setItem(irow,0,new QTableWidgetItem(str));
+    if(col == 0) {
+        QWidget *editor = mediaTable->cellWidget( row, col );
+        if(!editor) {//protect any text already there
+            //qt3to4 -- BW
+            //QString str = mediaTable->text(row,col);
+            QTableWidgetItem* w =  mediaTable->item(row,col);
+            if(w) {
+                QString str = w->text();
+                mediaTable->setItem(row,col,new QTableWidgetItem(str));
+            }
         }
-      }
-     }
-   }
+    }
+//if we click away from a comboBox, freeze it and just display the text
+    for(int irow =0; irow < mediaTable->rowCount(); irow++) {
+        if(row != irow || col !=0) {
+            QWidget *editor = mediaTable->cellWidget( irow, 0 );
+            if(editor) {
+                if(string(editor->metaObject()->className())=="QComboBox") {
+                    QComboBox* cb = (QComboBox*)editor;
+                    QString str = cb->currentText();
+                    mediaTable->removeCellWidget(irow,0);
+                    mediaTable->setItem(irow,0,new QTableWidgetItem(str));
+                }
+            }
+        }
+    }
 }
 
 //do the same for customFFTable
 void inputRZImpl::customFFTable_clicked( int row, int col) {
-   if(col == 0) {//just use default line editor if not in column 0
-       //qt3to4 -- BW
-       QString str;
-       //QString str = customFFTable->text(row,col);
-       if(customFFTable->item(row,col)) str = customFFTable->item(row,col)->text();
-       QStringList medlist=StrListToQStrList( listMedia ) ; //fill up a list of currently available media
-       QComboBox *e = new QComboBox;
-       e->addItems(medlist);
-       if(!str.isNull()) {//see if it's already in the media list
-         bool found=false;
-         for(int i=0; i<e->count(); i++) {
-              if(str == e->itemText(i)){
-                found=true;
-                e->setCurrentIndex(i);
-                break;
-              }
-         }
-         if(!found) {
-              e->insertItem(0,str);
-              e->setCurrentIndex(0);
-         }
-       }
-       customFFTable->setCellWidget(row,col,e);
-   }
+    if(col == 0) {//just use default line editor if not in column 0
+        //qt3to4 -- BW
+        QString str;
+        //QString str = customFFTable->text(row,col);
+        if(customFFTable->item(row,col)) str = customFFTable->item(row,col)->text();
+        QStringList medlist=StrListToQStrList( listMedia ) ; //fill up a list of currently available media
+        QComboBox *e = new QComboBox;
+        e->addItems(medlist);
+        if(!str.isNull()) {//see if it's already in the media list
+            bool found=false;
+            for(int i=0; i<e->count(); i++) {
+                if(str == e->itemText(i)) {
+                    found=true;
+                    e->setCurrentIndex(i);
+                    break;
+                }
+            }
+            if(!found) {
+                e->insertItem(0,str);
+                e->setCurrentIndex(0);
+            }
+        }
+        customFFTable->setCellWidget(row,col,e);
+    }
 }
 void inputRZImpl::customFFTable_singleclicked( int row, int col) {
-   if(col == 0) {
-     QWidget *editor = customFFTable->cellWidget( row, col );
-     if(!editor) {//protect any text already there
-       //qt3to4 -- BW
-       QTableWidgetItem* w =  customFFTable->item(row,col);
-       if(w) {
-          QString str = w->text();
-          customFFTable->setItem(row,col,new QTableWidgetItem(str));
-       }
-       //QString str = customFFTable->text(row,col);
-       //customFFTable->setItem(row,col,new Q3TableItem(customFFTable,Q3TableItem::Never,str));
-     }
-   }
-
-   //if we click away from a comboBox, freeze it and just display the text
-   for(int irow =0; irow < customFFTable->rowCount(); irow++) {
-     if(row != irow || col !=0) {
-       QWidget *editor = customFFTable->cellWidget( irow, 0 );
-       if(editor) {
-        if(string(editor->metaObject()->className())=="QComboBox"){
-          QComboBox* cb = (QComboBox*)editor;
-          QString str = cb->currentText();
-          customFFTable->removeCellWidget(irow,0);
-          customFFTable->setItem(irow,0,new QTableWidgetItem(str));
+    if(col == 0) {
+        QWidget *editor = customFFTable->cellWidget( row, col );
+        if(!editor) {//protect any text already there
+            //qt3to4 -- BW
+            QTableWidgetItem* w =  customFFTable->item(row,col);
+            if(w) {
+                QString str = w->text();
+                customFFTable->setItem(row,col,new QTableWidgetItem(str));
+            }
+            //QString str = customFFTable->text(row,col);
+            //customFFTable->setItem(row,col,new Q3TableItem(customFFTable,Q3TableItem::Never,str));
         }
-      }
-     }
-   }
+    }
+
+    //if we click away from a comboBox, freeze it and just display the text
+    for(int irow =0; irow < customFFTable->rowCount(); irow++) {
+        if(row != irow || col !=0) {
+            QWidget *editor = customFFTable->cellWidget( irow, 0 );
+            if(editor) {
+                if(string(editor->metaObject()->className())=="QComboBox") {
+                    QComboBox* cb = (QComboBox*)editor;
+                    QString str = cb->currentText();
+                    customFFTable->removeCellWidget(irow,0);
+                    customFFTable->setItem(irow,0,new QTableWidgetItem(str));
+                }
+            }
+        }
+    }
 }
 
 
 //stuff for PEGSless implementation
 void inputRZImpl::GetMDfile()
 {
-   QString tmpDir;
-   //qt3to4 -- BW
-   //char s = QDir::separator();
-   char s = QDir::separator().toAscii();
-   //try EGS_HOME/pegs4/data, then HEN_HOUSE/pegs4/data then $HOME/pegs4/data
-   tmpDir = GetCurrentDir( "pegs4/data", EGS_HOME, HEN_HOUSE );
-   QDir d(tmpDir);
-   //qt3to4 -- BW
-   //QString f = Q3FileDialog::getOpenFileName( tmpDir, "material data file (*)", this );
-   QString f = QFileDialog::getOpenFileName( this,"",tmpDir, "material data file (*)" );
-   if ( !f.isEmpty() ) {
-      Ppgls->matdatafile = f;
-      MDFEdit->setText(Ppgls->matdatafile);
-      //update list of available media
-      listMedia = getPEGSLESSMedia();
-      updateMediaLists();
-   }
+    QString tmpDir;
+    //qt3to4 -- BW
+    //char s = QDir::separator();
+    char s = QDir::separator().toAscii();
+    //try EGS_HOME/pegs4/data, then HEN_HOUSE/pegs4/data then $HOME/pegs4/data
+    tmpDir = GetCurrentDir( "pegs4/data", EGS_HOME, HEN_HOUSE );
+    QDir d(tmpDir);
+    //qt3to4 -- BW
+    //QString f = Q3FileDialog::getOpenFileName( tmpDir, "material data file (*)", this );
+    QString f = QFileDialog::getOpenFileName( this,"",tmpDir, "material data file (*)" );
+    if ( !f.isEmpty() ) {
+        Ppgls->matdatafile = f;
+        MDFEdit->setText(Ppgls->matdatafile);
+        //update list of available media
+        listMedia = getPEGSLESSMedia();
+        updateMediaLists();
+    }
 }
 
 void inputRZImpl::GetDFfile()
 {
-   QString tmpDir;
-   //qt3to4 -- BW
-   //char s = QDir::separator();
-   char s = QDir::separator().toAscii();
-   //browse from HEN_HOUSE/pegs4/density_corrections
-   tmpDir = ironIt(HEN_HOUSE + s + "pegs4" + s + "density_corrections" + s);
-   QDir d(tmpDir);
-   //qt3to4 -- BW
-   //QString f = Q3FileDialog::getOpenFileName( this,"",tmpDir, "density correction file (*.density);; all files (*)");
-   QString f = QFileDialog::getOpenFileName( this, "",tmpDir, "density correction file (*.density);; all files (*)");
-   if ( !f.isEmpty() ) {
-      //check if the user has selected a .density file from the HEN_HOUSE/pegs4/data/elements or
-      //HEN_HOUSE/pegs4/data/compounds directories
-      if ( (f.indexOf(tmpDir + "elements",0) >=0  || f.indexOf(tmpDir + "compounds",0) >=0 ) &&
-           f.indexOf(".density",1)>=0) {
-         //remove directory name
-         f.remove( 0, f.lastIndexOf(s,-1)+1);
-         //remove ".density" extension
-         f.remove(f.indexOf(".density",1),8);
-      }
-      Ppgls->dffile[Ppgls->inpmedind] = f;
-      DFEdit->setText(Ppgls->dffile[Ppgls->inpmedind]);
-   }
+    QString tmpDir;
+    //qt3to4 -- BW
+    //char s = QDir::separator();
+    char s = QDir::separator().toAscii();
+    //browse from HEN_HOUSE/pegs4/density_corrections
+    tmpDir = ironIt(HEN_HOUSE + s + "pegs4" + s + "density_corrections" + s);
+    QDir d(tmpDir);
+    //qt3to4 -- BW
+    //QString f = Q3FileDialog::getOpenFileName( this,"",tmpDir, "density correction file (*.density);; all files (*)");
+    QString f = QFileDialog::getOpenFileName( this, "",tmpDir, "density correction file (*.density);; all files (*)");
+    if ( !f.isEmpty() ) {
+        //check if the user has selected a .density file from the HEN_HOUSE/pegs4/data/elements or
+        //HEN_HOUSE/pegs4/data/compounds directories
+        if ( (f.indexOf(tmpDir + "elements",0) >=0  || f.indexOf(tmpDir + "compounds",0) >=0 ) &&
+                f.indexOf(".density",1)>=0) {
+            //remove directory name
+            f.remove( 0, f.lastIndexOf(s,-1)+1);
+            //remove ".density" extension
+            f.remove(f.indexOf(".density",1),8);
+        }
+        Ppgls->dffile[Ppgls->inpmedind] = f;
+        DFEdit->setText(Ppgls->dffile[Ppgls->inpmedind]);
+    }
 }
 
 void inputRZImpl::set_table_header_noa()
 {
-   //qt3to4 -- BW
-   pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("no. of atoms"));
+    //qt3to4 -- BW
+    pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("no. of atoms"));
 }
 
 void inputRZImpl::set_table_header_pbw()
 {
-   //qt3to4 -- BW
-   //pz_or_rhozTable->horizontalHeader()->setLabel(1,"mass fractions");
-   pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("mass fractions"));
+    //qt3to4 -- BW
+    //pz_or_rhozTable->horizontalHeader()->setLabel(1,"mass fractions");
+    pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("mass fractions"));
 }
 
 v_string inputRZImpl::getPEGSLESSMedia( )
@@ -815,30 +815,30 @@ v_string inputRZImpl::getPEGSLESSMedia( )
 
     if(fname != "") {
 
-       QFile f( fname );
-       if ( f.open( QIODevice::ReadOnly ) ) {
+        QFile f( fname );
+        if ( f.open( QIODevice::ReadOnly ) ) {
 
-          //qt3to4 -- BW
-          //Q3TextStream ts( &f );
-          QTextStream ts( &f );
-          QString     t;
-          int         i;
+            //qt3to4 -- BW
+            //Q3TextStream ts( &f );
+            QTextStream ts( &f );
+            QString     t;
+            int         i;
 
-          do {
-            t = ts.readLine();
-            i = t.indexOf( "MEDIUM=", 0, Qt::CaseInsensitive );
-            if ( i > -1 ) { //found medium
-               t.simplified();
-               t.remove( 0, i + 7 );
-               t.trimmed();
-               lmed2.push_back( t.toStdString() );
-            }
-          //qt3to4 -- BW
-          //} while ( !ts.eof() );
-          } while ( !ts.atEnd() );
+            do {
+                t = ts.readLine();
+                i = t.indexOf( "MEDIUM=", 0, Qt::CaseInsensitive );
+                if ( i > -1 ) { //found medium
+                    t.simplified();
+                    t.remove( 0, i + 7 );
+                    t.trimmed();
+                    lmed2.push_back( t.toStdString() );
+                }
+                //qt3to4 -- BW
+                //} while ( !ts.eof() );
+            } while ( !ts.atEnd() );
 
-          f.close();
-       }
+            f.close();
+        }
     }
 
     //now add media to be specified in .egsinp file if there are no
@@ -846,16 +846,16 @@ v_string inputRZImpl::getPEGSLESSMedia( )
 
     int k;
     for (int i=0; i<Ppgls->ninpmedia; i++) {
-       k=0;
-       for (int j=0; j<lmed2.size(); j++) {
-         //qt3to4 -- BW
-         // if(Ppgls->inpmedium[i]==lmed2[j]) break;
-          if(Ppgls->inpmedium[i]==QString::fromStdString(lmed2[j])) break;
-          k++;
-       }
-       //qt3to4 -- BW
-       //if(k==lmed2.size()) lmed2.push_back(Ppgls->inpmedium[i]);
-       if(k==lmed2.size()) lmed2.push_back(Ppgls->inpmedium[i].toStdString());
+        k=0;
+        for (int j=0; j<lmed2.size(); j++) {
+            //qt3to4 -- BW
+            // if(Ppgls->inpmedium[i]==lmed2[j]) break;
+            if(Ppgls->inpmedium[i]==QString::fromStdString(lmed2[j])) break;
+            k++;
+        }
+        //qt3to4 -- BW
+        //if(k==lmed2.size()) lmed2.push_back(Ppgls->inpmedium[i]);
+        if(k==lmed2.size()) lmed2.push_back(Ppgls->inpmedium[i].toStdString());
     }
 
     if ( !lmed2.empty() ) return lmed2;
@@ -866,17 +866,18 @@ v_string inputRZImpl::getPEGSLESSMedia( )
 bool inputRZImpl::pegsless_is_ok()
 {
 
-    pegsErrors = ""; v_string med;
+    pegsErrors = "";
+    v_string med;
 
     if (!cavityRadioButton->isChecked())
         med = getMediaFromTable();
     else {
         //MCAVInputs* EGScav = GetCAV();
         med.push_back(wallmaterialComboBox->currentText().toStdString());
-       //qt3to4 -- BW
-       //if (EGScav->electr_rad > 0.0)
-       if (electradEdit->text().toFloat() > 0.0)
-           med.push_back(electrmatComboBox->currentText().toStdString());
+        //qt3to4 -- BW
+        //if (EGScav->electr_rad > 0.0)
+        if (electradEdit->text().toFloat() > 0.0)
+            med.push_back(electrmatComboBox->currentText().toStdString());
     }
 
     med = del_element( med, string("VACUUM"));
@@ -886,68 +887,69 @@ bool inputRZImpl::pegsless_is_ok()
 
     if(Ppgls->matdatafile!="") {
 
-    QFile f1( Ppgls->matdatafile);
-    if ( !f1.open( QIODevice::ReadOnly ) ) {
-        pegsErrors += "<b>Could not open material data file:</b><br><i>" + Ppgls->matdatafile +
-                      "</i><br>";
-        return false;
-    }
-    //qt3to4 -- BW
-    //Q3TextStream ts( &f1 );
-    QTextStream ts( &f1 );
+        QFile f1( Ppgls->matdatafile);
+        if ( !f1.open( QIODevice::ReadOnly ) ) {
+            pegsErrors += "<b>Could not open material data file:</b><br><i>" + Ppgls->matdatafile +
+                          "</i><br>";
+            return false;
+        }
+        //qt3to4 -- BW
+        //Q3TextStream ts( &f1 );
+        QTextStream ts( &f1 );
 
-    std::vector<string>::iterator iter(med.begin());
-    QString t;
-    while ( iter != med.end() ) {
-       bool found = false;
-       QString strmed = (*iter).c_str();
-       QString strsought1 = "MEDIUM=";
-       QString strsought2 = strmed;
-       do {
-            t = ts.readLine();
-            int i = t.indexOf( strsought1, 0, Qt::CaseInsensitive );
-            int j = t.indexOf(strsought2, 0 );
-            if ( i > -1 && j > i) {
-                   found = true;
-                   break;
+        std::vector<string>::iterator iter(med.begin());
+        QString t;
+        while ( iter != med.end() ) {
+            bool found = false;
+            QString strmed = (*iter).c_str();
+            QString strsought1 = "MEDIUM=";
+            QString strsought2 = strmed;
+            do {
+                t = ts.readLine();
+                int i = t.indexOf( strsought1, 0, Qt::CaseInsensitive );
+                int j = t.indexOf(strsought2, 0 );
+                if ( i > -1 && j > i) {
+                    found = true;
+                    break;
+                }
+                //qt3to4 -- BW
+                //} while ( !ts.eof() );
+            } while ( !ts.atEnd() );
+
+            if (!found) {//check media defined in input file
+                for (int i=0; i<Ppgls->ninpmedia; i++) {
+                    if(strmed==Ppgls->inpmedium[i]) {
+                        found=true;
+                        break;
+                    }
+                }
             }
-       //qt3to4 -- BW
-       //} while ( !ts.eof() );
-       } while ( !ts.atEnd() );
+            error += (*iter).c_str() + QString("<br>");
+            f1.close();
+            f1.open(QIODevice::ReadOnly);
+            iter++;
+            PegslessOk = PegslessOk && found;
+        }
 
-       if (!found) {//check media defined in input file
-           for (int i=0; i<Ppgls->ninpmedia; i++) {
-              if(strmed==Ppgls->inpmedium[i]) {
-                 found=true;
-                 break;
-              }
-           }
-       }
-       error += (*iter).c_str() + QString("<br>");
-       f1.close(); f1.open(QIODevice::ReadOnly);
-       iter++;
-       PegslessOk = PegslessOk && found;
-    }
-
-    f1.close();
+        f1.close();
     }  else {
 
-    //look through media defined in .egsinp file
+        //look through media defined in .egsinp file
 
-      std::vector<string>::iterator iter(med.begin());
-      while ( iter != med.end() ) {
-        bool found = false;
-        QString strmed = (*iter).c_str();
-        for (int i=0; i<Ppgls->ninpmedia; i++) {
-           if(strmed==Ppgls->inpmedium[i]) {
-             found=true;
-             break;
-           }
+        std::vector<string>::iterator iter(med.begin());
+        while ( iter != med.end() ) {
+            bool found = false;
+            QString strmed = (*iter).c_str();
+            for (int i=0; i<Ppgls->ninpmedia; i++) {
+                if(strmed==Ppgls->inpmedium[i]) {
+                    found=true;
+                    break;
+                }
+            }
+            error += (*iter).c_str() + QString("<br>");
+            iter++;
+            PegslessOk=PegslessOk && found;
         }
-        error += (*iter).c_str() + QString("<br>");
-        iter++;
-        PegslessOk=PegslessOk && found;
-      }
     }
 
     error += "<i>Please, define media in .egsinp file or select the correct material data file <br>";
@@ -961,35 +963,35 @@ bool inputRZImpl::pegsless_is_ok()
 
 void inputRZImpl::updateMediaLists()
 {
- //not really specific to PEGSLESS implementation
+//not really specific to PEGSLESS implementation
 //but wanted to avoid typing this over and over
-        QString tmpText;
-         tmpText = wallmaterialComboBox->currentText();
-         wallmaterialComboBox->clear();
-         wallmaterialComboBox->addItems( StrListToQStrList( listMedia ) );
-         wallmaterialComboBox->setEditText ( tmpText );
+    QString tmpText;
+    tmpText = wallmaterialComboBox->currentText();
+    wallmaterialComboBox->clear();
+    wallmaterialComboBox->addItems( StrListToQStrList( listMedia ) );
+    wallmaterialComboBox->setEditText ( tmpText );
 
-          tmpText = electrmatComboBox->currentText();
-          electrmatComboBox->clear();
-          electrmatComboBox->addItems( StrListToQStrList( listMedia ) );
-          electrmatComboBox->setEditText ( tmpText );
+    tmpText = electrmatComboBox->currentText();
+    electrmatComboBox->clear();
+    electrmatComboBox->addItems( StrListToQStrList( listMedia ) );
+    electrmatComboBox->setEditText ( tmpText );
 
-         reset_mediaTable();
-         reset_customFFTable();
+    reset_mediaTable();
+    reset_customFFTable();
 
-        checkExecutionAbility(); //put this in here for now
+    checkExecutionAbility(); //put this in here for now
 }
 
 void inputRZImpl::enable_gaspEdit()
 {
 //enable gaspEdit edit box if isGasCheckBox is checked
 //disable it if it is unchecked
-    if (isGasCheckBox->isChecked()){
+    if (isGasCheckBox->isChecked()) {
         gaspLabel->setEnabled( true );
         gaspEdit->setEnabled( true );
         gaspUnits->setEnabled( true );
     }
-    else{
+    else {
         gaspLabel->setEnabled( false );
         gaspEdit->setEnabled( false );
         gaspUnits->setEnabled( false );
@@ -1019,40 +1021,40 @@ void inputRZImpl::GetPEGSfile()
     char s = QDir::separator().toAscii();
     QDir d(tmpDir);
     if ( !d.exists() ) {
-       tmpDir = GetCurrentDir( "pegs4/data", EGS_HOME, HEN_HOUSE );
+        tmpDir = GetCurrentDir( "pegs4/data", EGS_HOME, HEN_HOUSE );
     }
     //qt3to4 -- BW
     //QString f = Q3FileDialog::getOpenFileName( tmpDir, "PEGS data files (*.pegs4dat)", this );
     QString f = QFileDialog::getOpenFileName( this,"",tmpDir, "PEGS data files (*.pegs4dat)" );
     if ( !f.isEmpty() ) {
-       PEGSfileName = f;
-       QFileInfo fi( PEGSfileName );
-       tmpDir = fi.path() + s;
-       PEGSfileName.remove( 0, tmpDir.length() );
+        PEGSfileName = f;
+        QFileInfo fi( PEGSfileName );
+        tmpDir = fi.path() + s;
+        PEGSfileName.remove( 0, tmpDir.length() );
 
-       if ( tmpDir != ironIt(HEN_HOUSE + s + (QString)"pegs4" + s + "data" + s)  &&
-            tmpDir != ironIt(EGS_HOME    + s + (QString)"pegs4" + s + "data" + s )  )
-          The_Other_PEGS = tmpDir;
+        if ( tmpDir != ironIt(HEN_HOUSE + s + (QString)"pegs4" + s + "data" + s)  &&
+                tmpDir != ironIt(EGS_HOME    + s + (QString)"pegs4" + s + "data" + s )  )
+            The_Other_PEGS = tmpDir;
 
-       if ( tmpDir != PEGSdir) {
-	   PEGSdir = tmpDir;
-	   pegs_dir_changed = true;
-       }
-       else  pegs_dir_changed = false;
+        if ( tmpDir != PEGSdir) {
+            PEGSdir = tmpDir;
+            pegs_dir_changed = true;
+        }
+        else  pegs_dir_changed = false;
 
-       if ( !PEGSfileName.isNull() ) {
+        if ( !PEGSfileName.isNull() ) {
 
-          //checkErrors();
-          checkExecutionAbility();
+            //checkErrors();
+            checkExecutionAbility();
 
-         pegs4ComboBox->setEditText ( PEGSfileName );
-         Add_New_Item( PEGSfileName.toLatin1().data(), pegs4ComboBox );
+            pegs4ComboBox->setEditText ( PEGSfileName );
+            Add_New_Item( PEGSfileName.toLatin1().data(), pegs4ComboBox );
 
-          listMedia	 = getPEGSMedia( PEGSdir + PEGSfileName );
+            listMedia	 = getPEGSMedia( PEGSdir + PEGSfileName );
 
-          update_from_data_area();
+            update_from_data_area();
 
-       }
+        }
     }
 
 }
@@ -1063,13 +1065,13 @@ void inputRZImpl::getCONFFile()
                        QString("specs") + QDir::separator() );
     //qt3to4 -- BW
     QString f = ironIt(
-                //Q3FileDialog::getOpenFileName( d,
-                QFileDialog::getOpenFileName( this,"",d,
-                             "configuration files (*.conf)")
+                    //Q3FileDialog::getOpenFileName( d,
+                    QFileDialog::getOpenFileName( this,"",d,
+                            "configuration files (*.conf)")
                 );
-    if (!f.isEmpty()){
-      f.remove(0, 1+ ironIt(f).lastIndexOf( QDir::separator()) );
-      CONFcomboBox->setEditText(f);
+    if (!f.isEmpty()) {
+        f.remove(0, 1+ ironIt(f).lastIndexOf( QDir::separator()) );
+        CONFcomboBox->setEditText(f);
     }
 }
 
@@ -1084,19 +1086,19 @@ void inputRZImpl::GetSPECfile()
     QStringList flst;
     if ( fd->exec() == QDialog::Accepted )
         flst = fd->selectedFiles();
-        if(!flst.isEmpty())  f=flst[0];
+    if(!flst.isEmpty())  f=flst[0];
 
 
     if ( !f.isEmpty() ) {
-       QString spe_file = f;
-       QFileInfo fi( spe_file );
-       SPECdir = ironIt(fi.path() + "/");
-       spe_file.remove( 0, SPECdir.length() );
+        QString spe_file = f;
+        QFileInfo fi( spe_file );
+        SPECdir = ironIt(fi.path() + "/");
+        spe_file.remove( 0, SPECdir.length() );
 
-       if ( !spe_file.isNull() ) {
-          specfnameComboBox->setEditText ( spe_file );
-          Add_New_Item( spe_file.toLatin1().data(), specfnameComboBox );
-       }
+        if ( !spe_file.isNull() ) {
+            specfnameComboBox->setEditText ( spe_file );
+            Add_New_Item( spe_file.toLatin1().data(), specfnameComboBox );
+        }
     }
 
     update_files( SPECdir, specfnameComboBox, "*.spectrum *.ensrc" );
@@ -1108,15 +1110,15 @@ void inputRZImpl::GetRDISTfile()
     RDISTdir = GetCurrentDir( usercodename, EGS_HOME, HEN_HOUSE );
     QString f = QFileDialog::getOpenFileName( this,"",RDISTdir, QString());
     if ( !f.isEmpty() ) {
-       QString dist_file = f;
-       QFileInfo fi( dist_file );
-       RDISTdir = fi.path() + "/";
-       dist_file.remove( 0, RDISTdir.length() );
+        QString dist_file = f;
+        QFileInfo fi( dist_file );
+        RDISTdir = fi.path() + "/";
+        dist_file.remove( 0, RDISTdir.length() );
 
-       if ( !dist_file.isNull() ) {
-           raddistfnameComboBox->setEditText ( dist_file );
-           Add_New_Item( dist_file.toLatin1().data(), raddistfnameComboBox );
-       }
+        if ( !dist_file.isNull() ) {
+            raddistfnameComboBox->setEditText ( dist_file );
+            Add_New_Item( dist_file.toLatin1().data(), raddistfnameComboBox );
+        }
     }
 
     update_files( RDISTdir, raddistfnameComboBox, "*.*" );
@@ -1127,57 +1129,57 @@ void inputRZImpl::GetPHSPfile()
 {
     PHSPdir  = PHSPdir.isEmpty()? GetCurrentDir( "", EGS_HOME, HEN_HOUSE ):PHSPdir;
     QString f = QFileDialog::getOpenFileName( this,"",PHSPdir,
-                             "Phase-space files (*.egsphsp1 *.IAEAphsp);;Any files (*)");
+                "Phase-space files (*.egsphsp1 *.IAEAphsp);;Any files (*)");
     //QString f = QFileDialog::getOpenFileName( PHSPdir, QString::null, this );
     if ( !f.isEmpty() ) {
-       QString phsp_file = f;
-       QFileInfo fi( phsp_file );
-       PHSPdir = fi.path() + "/";
-       phsp_file.remove( 0, PHSPdir.length() );
+        QString phsp_file = f;
+        QFileInfo fi( phsp_file );
+        PHSPdir = fi.path() + "/";
+        phsp_file.remove( 0, PHSPdir.length() );
 
-       if ( !phsp_file.isNull() ) {
-          phasespaceComboBox->setEditText ( phsp_file );
-          Add_New_Item( phsp_file.toLatin1().data(), phasespaceComboBox );
-       }
+        if ( !phsp_file.isNull() ) {
+            phasespaceComboBox->setEditText ( phsp_file );
+            Add_New_Item( phsp_file.toLatin1().data(), phasespaceComboBox );
+        }
     }
     update_files( PHSPdir, phasespaceComboBox, "*.egsphsp1 *.IAEAphsp" );
 }
 
 void inputRZImpl::open()
-{// input values from a file. If a value is not found,
- // previous (default) defined value is used instead.
+{   // input values from a file. If a value is not found,
+// previous (default) defined value is used instead.
 
-	std::ifstream inp;
-	inp.open( (EGSdir + EGSfileName).toLatin1().data() );
-	if (false == inp.is_open()){
-	    QString error = "<b>Input file </b><i>" + EGSdir +
-                            EGSfileName  + "</i> not found.<br>";
-                  openErrors = error;
-	    QMessageBox::warning ( this, "Beware", error, 1, 0, 0 );
-	    return;
-	}
+    std::ifstream inp;
+    inp.open( (EGSdir + EGSfileName).toLatin1().data() );
+    if (false == inp.is_open()) {
+        QString error = "<b>Input file </b><i>" + EGSdir +
+                        EGSfileName  + "</i> not found.<br>";
+        openErrors = error;
+        QMessageBox::warning ( this, "Beware", error, 1, 0, 0 );
+        return;
+    }
 
- 	openErrors = "";
- 	geoErrors  = "";
+    openErrors = "";
+    geoErrors  = "";
 
-	usercode = GetUserCode();
+    usercode = GetUserCode();
 
-	MInputRZ* Input =  new MInputRZ;
-	Input->SetUserCode( usercode );
-	inp >> Input;
+    MInputRZ* Input =  new MInputRZ;
+    Input->SetUserCode( usercode );
+    inp >> Input;
 
-	//if ( !Input->errors.isEmpty() )
-	if ( Input->gotErrors() ) {
-         openErrors = QString(WARNING_DEFAULTS) + Input->getErrors() +
-                      openErrors;
-	}
-        geoErrors  = Input->getGEOErrors();
+    //if ( !Input->errors.isEmpty() )
+    if ( Input->gotErrors() ) {
+        openErrors = QString(WARNING_DEFAULTS) + Input->getErrors() +
+                     openErrors;
+    }
+    geoErrors  = Input->getGEOErrors();
 
-        UpDateInputRZForm( Input );
-        inp.close();
+    UpDateInputRZForm( Input );
+    inp.close();
 
-        //delete Input;
-        zap(Input);
+    //delete Input;
+    zap(Input);
 
 }
 
@@ -1201,10 +1203,10 @@ bool inputRZImpl::pegs_is_ok( QString fname )
     else {
         //MCAVInputs* EGScav = GetCAV();
         med.push_back(wallmaterialComboBox->currentText().toStdString());
-       //qt3to4 -- BW
-       //if (EGScav->electr_rad > 0.0)
-       if (electradEdit->text().toFloat() > 0.0)
-           med.push_back(electrmatComboBox->currentText().toStdString());
+        //qt3to4 -- BW
+        //if (EGScav->electr_rad > 0.0)
+        if (electradEdit->text().toFloat() > 0.0)
+            med.push_back(electrmatComboBox->currentText().toStdString());
     }
 
     med = del_element( med, string("VACUUM"));
@@ -1212,7 +1214,7 @@ bool inputRZImpl::pegs_is_ok( QString fname )
     bool PegsOk = true;
     QString error =  "<b>Selected pegs4 data file:</b><br><i>" + fname +
                      "</i><br>";
-            error += "Following media were not found in pegs4 data file:<br>";
+    error += "Following media were not found in pegs4 data file:<br>";
 
     QFile f1( fname );
     if ( !f1.open( QIODevice::ReadOnly ) ) {
@@ -1237,29 +1239,30 @@ bool inputRZImpl::pegs_is_ok( QString fname )
     int progress_count = 0;
     QString t;
     while ( iter != med.end() ) {
-       progress_count++;
-       qApp->processEvents();
-       if ( dialog->wasCanceled() )
-          return false;
-       bool found = false;
-       QString strmed = (*iter).c_str();
-       QString strsought = "MEDIUM=" + strmed + " ";
-       do {
-	    t = ts.readLine();
-	    int i = t.indexOf( strsought, 0, Qt::CaseSensitive );
-    	    if ( i > -1 ) {
-		   found = true;
-		   break;
-	    }
-       //qt3to4 -- BW
-       //} while ( !ts.eof() );
-       } while ( !ts.atEnd() );
+        progress_count++;
+        qApp->processEvents();
+        if ( dialog->wasCanceled() )
+            return false;
+        bool found = false;
+        QString strmed = (*iter).c_str();
+        QString strsought = "MEDIUM=" + strmed + " ";
+        do {
+            t = ts.readLine();
+            int i = t.indexOf( strsought, 0, Qt::CaseSensitive );
+            if ( i > -1 ) {
+                found = true;
+                break;
+            }
+            //qt3to4 -- BW
+            //} while ( !ts.eof() );
+        } while ( !ts.atEnd() );
 
-       if (!found) error += (*iter).c_str() + QString("<br>");
-       f1.close(); f1.open(QIODevice::ReadOnly);
-       PegsOk = PegsOk && found;
-       iter++;
-       dialog->setValue( progress_count );
+        if (!found) error += (*iter).c_str() + QString("<br>");
+        f1.close();
+        f1.open(QIODevice::ReadOnly);
+        PegsOk = PegsOk && found;
+        iter++;
+        dialog->setValue( progress_count );
     }
 
     f1.close();
@@ -1284,9 +1287,9 @@ UserCodeType inputRZImpl::GetUserCode()
 
     QFile f1( EGSdir + EGSfileName );
     if ( !f1.open( QIODevice::ReadOnly ) ) {
-     openErrors += "<b>Error reading file</b><i>" +
-                   EGSdir + EGSfileName +
-                   "</i> doesn't exist !!!<br>";
+        openErrors += "<b>Error reading file</b><i>" +
+                      EGSdir + EGSfileName +
+                      "</i> doesn't exist !!!<br>";
         return usr;
     }
     //qt3to4 -- BW
@@ -1294,26 +1297,38 @@ UserCodeType inputRZImpl::GetUserCode()
     QTextStream ts( &f1 );
 
     do { // while blank or comment line
-     t = ts.readLine();
-     i = t.indexOf( "cavity",0,Qt::CaseInsensitive );
-     if ( i > -1 ) {usr = cavrznrc;break;}
-     i = t.indexOf( "spr output",0,Qt::CaseInsensitive  );
-     if ( i > -1 ) {usr = sprrznrc;break;}
-     i = t.indexOf( "dose zbound",0,Qt::CaseInsensitive );
-     if ( i > -1 ) {usr = dosrznrc;break;}
-     i = t.indexOf( "print fluence spectra",0,Qt::CaseInsensitive );
-     if ( i > -1 ) {usr = flurznrc;break;}
-    //qt3to4 -- BW
-    //}while ( i == -1 && !ts.eof() );
-    }while ( i == -1 && !ts.atEnd() );
+        t = ts.readLine();
+        i = t.indexOf( "cavity",0,Qt::CaseInsensitive );
+        if ( i > -1 ) {
+            usr = cavrznrc;
+            break;
+        }
+        i = t.indexOf( "spr output",0,Qt::CaseInsensitive  );
+        if ( i > -1 ) {
+            usr = sprrznrc;
+            break;
+        }
+        i = t.indexOf( "dose zbound",0,Qt::CaseInsensitive );
+        if ( i > -1 ) {
+            usr = dosrznrc;
+            break;
+        }
+        i = t.indexOf( "print fluence spectra",0,Qt::CaseInsensitive );
+        if ( i > -1 ) {
+            usr = flurznrc;
+            break;
+        }
+        //qt3to4 -- BW
+        //}while ( i == -1 && !ts.eof() );
+    } while ( i == -1 && !ts.atEnd() );
 
     if ( i == -1 ) {
-	    //QString error = WARNING_USER;
-	    //QMessageBox::warning ( this, "Attention!", error, 1, 0, 0 );
-      openErrors += "<b>Couldn't guess user code from </b><i>" +
-                    EGSdir + EGSfileName + "<br>";
-    //openErrors += "</i><br><b>using CAVRZNRC as default !!!</b><br>";
-    //openErrors += "</i><br><b>using DOSRZNRC as default !!!</b><br>";
+        //QString error = WARNING_USER;
+        //QMessageBox::warning ( this, "Attention!", error, 1, 0, 0 );
+        openErrors += "<b>Couldn't guess user code from </b><i>" +
+                      EGSdir + EGSfileName + "<br>";
+        //openErrors += "</i><br><b>using CAVRZNRC as default !!!</b><br>";
+        //openErrors += "</i><br><b>using DOSRZNRC as default !!!</b><br>";
     }
     f1.close();
     return usr;
@@ -1337,26 +1352,26 @@ v_string inputRZImpl::getPEGSMedia( const QString& fname )
     int         i;
 
     do {
-       t = ts.readLine();
-       i = t.indexOf( "MEDIUM=", 0 );
-  	   if ( i > -1 ) { //found medium
-          //cout << t.toStdString() << endl;
-          //cout << "MEDIUM starts at " << i << endl;
-          t.simplified();
-          t.remove( 0, i + 7 );
-          //cout << t << endl;
+        t = ts.readLine();
+        i = t.indexOf( "MEDIUM=", 0 );
+        if ( i > -1 ) { //found medium
+            //cout << t.toStdString() << endl;
+            //cout << "MEDIUM starts at " << i << endl;
+            t.simplified();
+            t.remove( 0, i + 7 );
+            //cout << t << endl;
 
-          i = t.indexOf( " ", 0 );
-  	      if ( i > -1 ) { //found medium
-             //cout << "STERNCID starts at " << i << endl;
-             t.truncate( i );
-             t.trimmed();
-             //cout << t << endl;
-             lmed2.push_back( t.toStdString() );
-          }
-       }
-    //qt3to4 -- BW
-    //} while ( !ts.eof() );
+            i = t.indexOf( " ", 0 );
+            if ( i > -1 ) { //found medium
+                //cout << "STERNCID starts at " << i << endl;
+                t.truncate( i );
+                t.trimmed();
+                //cout << t << endl;
+                lmed2.push_back( t.toStdString() );
+            }
+        }
+        //qt3to4 -- BW
+        //} while ( !ts.eof() );
     } while ( !ts.atEnd() );
 
     f.close();

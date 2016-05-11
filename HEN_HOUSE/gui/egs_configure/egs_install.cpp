@@ -42,48 +42,51 @@
 #endif
 
 QInstallPage::QInstallPage(QWidget * parent, MCompiler *a_m, MCompiler *a_f,
-                                              MCompiler *a_c, MCompiler *a_cpp)
-             : QWizardPage(parent), ft(0),ct(0), fc(a_f), cc(a_c), cpp(a_cpp), make(a_m),
-               config_file(0), procInstall(0), ntasks(0), n_config_steps(0), i_config_steps(0), n_beam_steps(0),
-               egs_c_utils_ok(false), installing_beam(false), user_aborted(false), skip_config(false)
+                           MCompiler *a_c, MCompiler *a_cpp)
+    : QWizardPage(parent), ft(0),ct(0), fc(a_f), cc(a_c), cpp(a_cpp), make(a_m),
+      config_file(0), procInstall(0), ntasks(0), n_config_steps(0), i_config_steps(0), n_beam_steps(0),
+      egs_c_utils_ok(false), installing_beam(false), user_aborted(false), skip_config(false)
 {
 
     setTitle("EGSnrc Installation Page");
     setSubTitle("Configuring EGSnrc core system");
 
-     // the page layout
-     QVBoxLayout *topl = new QVBoxLayout(this);
-     progressBar = new QProgressBar(this);
-     topl->addWidget(progressBar);
-     screen = new QTextEdit();screen->setReadOnly(true);screen->ensureCursorVisible();
-     topl->addWidget(screen);
-     installButton    = new QPushButton("&Install", this);
+    // the page layout
+    QVBoxLayout *topl = new QVBoxLayout(this);
+    progressBar = new QProgressBar(this);
+    topl->addWidget(progressBar);
+    screen = new QTextEdit();
+    screen->setReadOnly(true);
+    screen->ensureCursorVisible();
+    topl->addWidget(screen);
+    installButton    = new QPushButton("&Install", this);
 
-     QHBoxLayout *hl = new QHBoxLayout;
+    QHBoxLayout *hl = new QHBoxLayout;
 
-     QGridLayout *checksLayout = new QGridLayout;
+    QGridLayout *checksLayout = new QGridLayout;
 
-     envCheckBox      = new QCheckBox("&Set environment",this);
-     envCheckBox->setToolTip(QString(SET_ENV));
-     shortcutCheckBox = new QCheckBox("&Desktop shortcuts",this);
-/*     ucCheckBox   = new QCheckBox("&Copy user-codes",this); ucCheckBox->setChecked(true);
-     ucCheckBox->setToolTip("Copies tutorials, RZ, and C++ user codes as well as BEAMnrc examples to working area.\n"
-                            "BEWARE of overwriting previously modified user codes !!!");*/
-/*     beamCheckBox = new QCheckBox("&BEAMnrc install",this); beamCheckBox->setChecked(true);
-     beamCheckBox->setToolTip("Configures and builds BEAMnrc system.");*/
+    envCheckBox      = new QCheckBox("&Set environment",this);
+    envCheckBox->setToolTip(QString(SET_ENV));
+    shortcutCheckBox = new QCheckBox("&Desktop shortcuts",this);
+    /*     ucCheckBox   = new QCheckBox("&Copy user-codes",this); ucCheckBox->setChecked(true);
+         ucCheckBox->setToolTip("Copies tutorials, RZ, and C++ user codes as well as BEAMnrc examples to working area.\n"
+                                "BEWARE of overwriting previously modified user codes !!!");*/
+    /*     beamCheckBox = new QCheckBox("&BEAMnrc install",this); beamCheckBox->setChecked(true);
+         beamCheckBox->setToolTip("Configures and builds BEAMnrc system.");*/
 
-     checksLayout->addWidget( envCheckBox, 0, 0); checksLayout->addWidget( shortcutCheckBox, 0, 1);
-     //checksLayout->addWidget( ucCheckBox,  0, 2); //checksLayout->addWidget( beamCheckBox,     1, 1);
+    checksLayout->addWidget( envCheckBox, 0, 0);
+    checksLayout->addWidget( shortcutCheckBox, 0, 1);
+    //checksLayout->addWidget( ucCheckBox,  0, 2); //checksLayout->addWidget( beamCheckBox,     1, 1);
 
-     hl->addLayout(checksLayout);
+    hl->addLayout(checksLayout);
 
-     hl->addStretch(5);
-     hl->addWidget(installButton);
+    hl->addStretch(5);
+    hl->addWidget(installButton);
 
-     topl->addLayout(hl);
+    topl->addLayout(hl);
 
 
-     connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
+    connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
 
     initializeConnections();
 
@@ -99,7 +102,7 @@ QInstallPage::QInstallPage(QWidget * parent, MCompiler *a_m, MCompiler *a_f,
     // NUMBER_OF_STEPS is last element of the enum BuildSteps in egs_install.h
     //----------------------------------------------------------------------
     buildOK = new bool[NUMBER_OF_STEPS ];
-    for ( ushort i2 = 0; i2 < NUMBER_OF_STEPS; i2++){
+    for ( ushort i2 = 0; i2 < NUMBER_OF_STEPS; i2++) {
         buildOK[i2] = true;
     }
 
@@ -112,7 +115,8 @@ void QInstallPage::initializeConnections()
     /* MTest processes: Tests to find system specific functions */
 
     connect( this, SIGNAL( egsCUtilsCreated() ),
-             this, SLOT( test_c_utils() ) ); n_config_steps += 25;
+             this, SLOT( test_c_utils() ) );
+    n_config_steps += 25;
     connect( this, SIGNAL( egsCUtilsTested() ),
              this, SLOT( test_load_beamlib() ) );
     connect( this, SIGNAL( egsCUtilsEnded() ),
@@ -131,7 +135,7 @@ void QInstallPage::initializeConnections()
     connect( this, SIGNAL( cppSystemCreated( ushort ) ),
              this, SLOT( buildEGSnrc( ushort ) ) );
 
-  /* Environment Configuration */
+    /* Environment Configuration */
     connect( this, SIGNAL( cppBuildFinalized() ),
              this, SLOT( copy_user_codes() ) );
     connect( this, SIGNAL( userCodesCopied() ),
@@ -154,98 +158,108 @@ void QInstallPage::initializePage()
 
     wizard()->button(QWizard::FinishButton)->setEnabled(false);
 
-    screen->clear(); progressBar->reset(); progressBar->hide();
+    screen->clear();
+    progressBar->reset();
+    progressBar->hide();
 
-    createDirs(); installButton->setEnabled(true);
+    createDirs();
+    installButton->setEnabled(true);
 
     createLogFile(installationDir);
 }
 
-void QInstallPage::cleanupPage(){
-     switch2EGSnrc();
-     procStop();
-     if (config_file){
-       config_file->close();
-       delete config_file; config_file = 0;
+void QInstallPage::cleanupPage() {
+    switch2EGSnrc();
+    procStop();
+    if (config_file) {
+        config_file->close();
+        delete config_file;
+        config_file = 0;
     }
 }
 
-void QInstallPage::start(){
-  setSubTitle("Configuring EGSnrc core system");
-  progressBar->show(); progressBar->reset(); screen->clear();
-  wizard()->button(QWizard::BackButton)->setEnabled(false);
-  wizard()->button(QWizard::FinishButton)->setEnabled(false);
-  installButton->setEnabled(false);
-  the_time.start();
-  buildEGSnrc(corespec);
+void QInstallPage::start() {
+    setSubTitle("Configuring EGSnrc core system");
+    progressBar->show();
+    progressBar->reset();
+    screen->clear();
+    wizard()->button(QWizard::BackButton)->setEnabled(false);
+    wizard()->button(QWizard::FinishButton)->setEnabled(false);
+    installButton->setEnabled(false);
+    the_time.start();
+    buildEGSnrc(corespec);
 }
 
-void QInstallPage::abort(){
-     user_aborted = true;
-     progressBar->hide();
-     if (ft) ft->stop();
-     if (ct) ct->stop();
-     procStop();
-     disconnect(installButton,SIGNAL(clicked()),this,SLOT(abort()));
-     wizard()->button(QWizard::BackButton)->setEnabled(true);
-     wizard()->button(QWizard::FinishButton)->setEnabled(true);
-     installButton->setText("&Install");
-     connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
-     if (installing_beam){
-         installing_beam = false;
-         switch2EGSnrc();
-     }
+void QInstallPage::abort() {
+    user_aborted = true;
+    progressBar->hide();
+    if (ft) ft->stop();
+    if (ct) ct->stop();
+    procStop();
+    disconnect(installButton,SIGNAL(clicked()),this,SLOT(abort()));
+    wizard()->button(QWizard::BackButton)->setEnabled(true);
+    wizard()->button(QWizard::FinishButton)->setEnabled(true);
+    installButton->setText("&Install");
+    connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
+    if (installing_beam) {
+        installing_beam = false;
+        switch2EGSnrc();
+    }
 }
 
-void QInstallPage::switch2EGSnrc(){
-     disconnect( this, SIGNAL( nextBuildStep( ushort )),
-                 this, SLOT( buildBEAMnrc( ushort )) );
-        connect( this, SIGNAL( nextBuildStep( ushort )),
-                 this, SLOT( buildEGSnrc( ushort )) );
+void QInstallPage::switch2EGSnrc() {
+    disconnect( this, SIGNAL( nextBuildStep( ushort )),
+                this, SLOT( buildBEAMnrc( ushort )) );
+    connect( this, SIGNAL( nextBuildStep( ushort )),
+             this, SLOT( buildEGSnrc( ushort )) );
 }
 
-void QInstallPage::procStop(){
-     if ( procInstall && procInstall->state() == QProcess::Running ){
+void QInstallPage::procStop() {
+    if ( procInstall && procInstall->state() == QProcess::Running ) {
         procInstall->waitForFinished(-1);
         //procInstall->terminate();
         //QTimer::singleShot( 20, procInstall, SLOT( kill() ) );
         //procInstall->kill();
-     }
+    }
 }
-void QInstallPage::resetPage(){
-     wizard()->button(QWizard::BackButton)->setEnabled(true);
-     wizard()->button(QWizard::FinishButton)->setEnabled(true);
-     //installButton->setText("&Install");
-     installButton->setEnabled(true);
-     progressBar->setValue( progressBar->maximum() );
-     //connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
-     //qDebug("Total steps = %d",i_config_steps);
-     timeStamp();
-}
-
-void QInstallPage::resetProgressBar(const int &nsteps){
-     progressBar->setRange( 0, nsteps );
-     istep = 0; progressBar->setValue( istep );
+void QInstallPage::resetPage() {
+    wizard()->button(QWizard::BackButton)->setEnabled(true);
+    wizard()->button(QWizard::FinishButton)->setEnabled(true);
+    //installButton->setText("&Install");
+    installButton->setEnabled(true);
+    progressBar->setValue( progressBar->maximum() );
+    //connect(installButton,SIGNAL(clicked()),this,SLOT(start()));
+    //qDebug("Total steps = %d",i_config_steps);
+    timeStamp();
 }
 
-void QInstallPage::updateProgress(){progressBar->setValue( ++istep);i_config_steps++;}
+void QInstallPage::resetProgressBar(const int &nsteps) {
+    progressBar->setRange( 0, nsteps );
+    istep = 0;
+    progressBar->setValue( istep );
+}
 
-QString QInstallPage::henHouse(){
-  QString the_hen = field("hen_house").toString();
+void QInstallPage::updateProgress() {
+    progressBar->setValue( ++istep);
+    i_config_steps++;
+}
+
+QString QInstallPage::henHouse() {
+    QString the_hen = field("hen_house").toString();
 #ifndef WIN32
     if (!the_hen.startsWith(QDir::separator())) the_hen.prepend(QDir::separator());
 #endif
     if (!the_hen.endsWith(QDir::separator()))   the_hen.append(QDir::separator());
-  return the_hen;
+    return the_hen;
 }
 
-QString QInstallPage::egsHome(){
-  QString the_home = field("egs_home").toString();
+QString QInstallPage::egsHome() {
+    QString the_home = field("egs_home").toString();
 #ifndef WIN32
     if (!the_home.startsWith(QDir::separator())) the_home.prepend(QDir::separator());
 #endif
     if (!the_home.endsWith(QDir::separator()))   the_home.append(QDir::separator());
-  return the_home;
+    return the_home;
 }
 
 /*
@@ -254,23 +268,23 @@ QString QInstallPage::egsHome(){
 */
 void QInstallPage::printProgress( const QString& message, bool new_line )
 {
-  if ( config_file->isOpen() ){
+    if ( config_file->isOpen() ) {
+        if (new_line)
+            config_log << message << endl;
+        else
+            config_log << message;
+        config_file->flush();
+    }
+    // The code below does not work. A new line is always added! :-(
     if (new_line)
-       config_log << message << endl;
-    else
-       config_log << message;
-    config_file->flush();
-  }
-  // The code below does not work. A new line is always added! :-(
-  if (new_line)
-     screen->append( message );
-  else{
-     screen->insertPlainText(message);
-  }
+        screen->append( message );
+    else {
+        screen->insertPlainText(message);
+    }
 
-  qApp->processEvents();
+    qApp->processEvents();
 
-  screen->ensureCursorVisible();
+    screen->ensureCursorVisible();
 }
 //************************************************************************
 
@@ -278,20 +292,20 @@ void QInstallPage::printProgress( const QString& message, bool new_line )
  * the installation process.
    This log file is created in $HEN_HOUSE/install_status
 */
-void QInstallPage::createLogFile(const QString & dir){
-  if (!config_file){
-    config_file = new QFile( dir + tr("config_") + my_machine() + tr(".log"));
-    if (!config_file->open( QIODevice::WriteOnly | QIODevice::Text ) ){
-       QMessageBox::critical(this, tr("Error creating configuration log file"),
-                               tr("Check whether you have write permissions in :\n")+
-                               dir + tr("\n and start the installation again!"));
-       return;
+void QInstallPage::createLogFile(const QString & dir) {
+    if (!config_file) {
+        config_file = new QFile( dir + tr("config_") + my_machine() + tr(".log"));
+        if (!config_file->open( QIODevice::WriteOnly | QIODevice::Text ) ) {
+            QMessageBox::critical(this, tr("Error creating configuration log file"),
+                                  tr("Check whether you have write permissions in :\n")+
+                                  dir + tr("\n and start the installation again!"));
+            return;
+        }
+        config_log.setDevice ( config_file );//connects a QTextStream to log file
     }
-    config_log.setDevice ( config_file );//connects a QTextStream to log file
- }
 }
 
-void QInstallPage::createDirs(){
+void QInstallPage::createDirs() {
     QChar s = QDir::separator();
     /* Set installation status directory if not there already */
     //installationDir = henHouse() + tr("install_status") + s;
@@ -319,26 +333,26 @@ void QInstallPage::createDirs(){
     createDir(dsoDir,true);
 }
 
-void QInstallPage::createDir( QString &dir, bool critical, const QString & def){
-    if (! QDir().mkpath(dir) ){
-       if (critical)
-          QMessageBox::critical(this, tr("Error creating ") + dir,
-                                      tr("Check whether you have proper permissions!\n")+
-                                      tr("Fix this issue before proceeding with install!"));
-       else{
-          QMessageBox::warning(this, tr("Error creating ") + dir,
-                                      tr("Check whether you have proper permissions!\n")+
-                                      tr("Fix this issue before proceeding with install!"));
-          if (!def.isEmpty()) dir = def;
-       }
+void QInstallPage::createDir( QString &dir, bool critical, const QString & def) {
+    if (! QDir().mkpath(dir) ) {
+        if (critical)
+            QMessageBox::critical(this, tr("Error creating ") + dir,
+                                  tr("Check whether you have proper permissions!\n")+
+                                  tr("Fix this issue before proceeding with install!"));
+        else {
+            QMessageBox::warning(this, tr("Error creating ") + dir,
+                                 tr("Check whether you have proper permissions!\n")+
+                                 tr("Fix this issue before proceeding with install!"));
+            if (!def.isEmpty()) dir = def;
+        }
 
     }
 }
 
 QString QInstallPage::readFile2QString( const QString& fname,
-                                          const QString& err ){
+                                        const QString& err ) {
     QFile* the_file = new QFile( fname  );
-    if ( ! the_file->open( QIODevice::ReadOnly  ) ){
+    if ( ! the_file->open( QIODevice::ReadOnly  ) ) {
         printProgress( err );
         return QString::null;
     }
@@ -351,9 +365,9 @@ QString QInstallPage::readFile2QString( const QString& fname,
 }
 
 bool QInstallPage::writeQString2File( const QString& the_string,
-                                        const QString& fname ){
+                                      const QString& fname ) {
     QFile* the_file = new QFile( fname  );
-    if ( ! the_file->open( QIODevice::WriteOnly ) ){
+    if ( ! the_file->open( QIODevice::WriteOnly ) ) {
         printProgress( (QString)"Error opening file " + fname + " for writing \n" );
         printProgress( (QString)"Check that it exists or could be created ..." );
         return false;
@@ -365,10 +379,10 @@ bool QInstallPage::writeQString2File( const QString& the_string,
     return true;
 }
 
-bool QInstallPage::appendQString2File( const QString& the_string, const QString& fname ){
+bool QInstallPage::appendQString2File( const QString& the_string, const QString& fname ) {
     QFile* the_file = new QFile( fname  );
     if ( ! the_file->open(QIODevice::WriteOnly | QIODevice::Append ))
-       return false;
+        return false;
     QTextStream the_stream;
     the_stream.setDevice( the_file );
     the_stream << the_string << endl;

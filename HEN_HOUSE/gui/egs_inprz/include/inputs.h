@@ -54,40 +54,42 @@
 class MInputRZ
 {
 public:
-	MInputRZ();
-	~MInputRZ();
-	QString GetInputMethod() const;
-	QString GetIFULL() const;
-	void    SetInputMethod( const QString& rInpMeth );
+    MInputRZ();
+    ~MInputRZ();
+    QString GetInputMethod() const;
+    QString GetIFULL() const;
+    void    SetInputMethod( const QString& rInpMeth );
     void    SetUserCode( const UserCodeType& rUC );
-	UserCodeType GetUserCode() const { return usercode; }
+    UserCodeType GetUserCode() const {
+        return usercode;
+    }
     bool    gotErrors();
     QString getErrors();
     QString getGEOErrors();
 
-     friend  std::ifstream & operator >> ( std::ifstream & in, MInputRZ * r );
-     //friend  Q3TextStream   & operator << ( Q3TextStream &    t, MInputRZ * r );
-     //qt3to4 -- BW
-     friend  QTextStream   & operator << ( QTextStream &    t, MInputRZ * r );
+    friend  std::ifstream & operator >> ( std::ifstream & in, MInputRZ * r );
+    //friend  Q3TextStream   & operator << ( Q3TextStream &    t, MInputRZ * r );
+    //qt3to4 -- BW
+    friend  QTextStream   & operator << ( QTextStream &    t, MInputRZ * r );
 
-	MTitle*      mTitle;
-	MIOInputs*   mIO;
-	MMCInputs*   mMC;
-	MPHDInputs*  mPHD;
-	MGEOInputs*  mGEO;
-	MCAVInputs*  mCAV;
-	MSRCInputs*  mSRC;
-	MMCPInputs*  mMCP;
-        PEGSLESSInputs* mPGLS;
-	MVARInputs*  mVAR;
-	MPLOTInputs* mPLOT;
+    MTitle*      mTitle;
+    MIOInputs*   mIO;
+    MMCInputs*   mMC;
+    MPHDInputs*  mPHD;
+    MGEOInputs*  mGEO;
+    MCAVInputs*  mCAV;
+    MSRCInputs*  mSRC;
+    MMCPInputs*  mMCP;
+    PEGSLESSInputs* mPGLS;
+    MVARInputs*  mVAR;
+    MPLOTInputs* mPLOT;
     QString errors;
 
 private:
-	bool phdON;
-	bool cavON;
-	bool plotON;
-	UserCodeType usercode;
+    bool phdON;
+    bool cavON;
+    bool plotON;
+    UserCodeType usercode;
 };
 
 std::ifstream & operator >> ( std::ifstream & in, MInputRZ*  rZ );

@@ -30,28 +30,28 @@
 
 ### check that there is at least one argument
 if [ $# -lt 1 ]
-then
+    then
     echo "Usage: `basename $0` {directory name}"
     exit
-fi
+    fi
 
 
 ### recursively call for each file, if there are many files
-if [ $# -gt 1 ]
-then
-    # loop over all files
-    for arg in $@
-    do
-        # self-call for each file
-        echo; echo Building $arg...
-        ./`basename $0` $arg
-    done
-    exit
+    if [ $# -gt 1 ]
+        then
+# loop over all files
+        for arg in $@
+        do
+# self-call for each file
+            echo; echo Building $arg...
+./`basename $0` $arg
+done
+exit
 fi
 
 
 ### get base name of document, make sure there is no slash
-doc=${1%/*}
+doc=$ {1%/*}
 
 
 ### change directory, if the directory exists

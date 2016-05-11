@@ -42,27 +42,27 @@
 class MSRCInputs : public MInputBlock
 {
 public:
-	MSRCInputs();
-	~MSRCInputs();
+    MSRCInputs();
+    ~MSRCInputs();
 
-	QString iniparticle;
- 	QString isource;
- 	v_float srcopt;
- 	QString modein;
- 	QString nrdist;
- 	v_float rdistf;
- 	v_float rpdf;
- 	QString rdistiout;
- 	QString dist_file;
- 	QString phsp_file;
- 	QString typenergy;
- 	QString inienergy;
- 	QString spe_file;
- 	QString speciout;
-        QString beam_code;
-        QString inp_file;
-        QString pegs_file;
-        v_float weight_win;
+    QString iniparticle;
+    QString isource;
+    v_float srcopt;
+    QString modein;
+    QString nrdist;
+    v_float rdistf;
+    v_float rpdf;
+    QString rdistiout;
+    QString dist_file;
+    QString phsp_file;
+    QString typenergy;
+    QString inienergy;
+    QString spe_file;
+    QString speciout;
+    QString beam_code;
+    QString inp_file;
+    QString pegs_file;
+    v_float weight_win;
 };
 std::ifstream & operator >> ( std::ifstream & in, MSRCInputs * rSRC );
 //Q3TextStream   & operator << ( Q3TextStream & t, MSRCInputs * rSRC );

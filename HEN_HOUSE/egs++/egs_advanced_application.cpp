@@ -709,7 +709,7 @@ int EGS_AdvancedApplication::helpInit(EGS_Input *transportp, bool do_hatch) {
         the_emf->Bx=bfield_v[0];
         the_emf->By=bfield_v[1];
         the_emf->Bz=bfield_v[2];
-       //the_emf->Bx_new=bfield_v[0];  the_emf->By_new=bfield_v[1];  the_emf->Bz_new=bfield_v[2];
+        //the_emf->Bx_new=bfield_v[0];  the_emf->By_new=bfield_v[1];  the_emf->Bz_new=bfield_v[2];
     }
     if (efield.size()==3 || bfield.size()==3) {
         estepem.info(nc);
@@ -1041,10 +1041,13 @@ void EGS_AdvancedApplication::startNewParticle() {
         the_emf->By_new = the_emf->By;
         the_emf->Bz_new = the_emf->Bz;
     }
-    else{
-        the_emf->Bx = the_emf->BxIN; the_emf->Bx_new = the_emf->Bx;
-        the_emf->By = the_emf->ByIN; the_emf->By_new = the_emf->By;
-        the_emf->Bz = the_emf->BzIN; the_emf->Bz_new = the_emf->Bz;
+    else {
+        the_emf->Bx = the_emf->BxIN;
+        the_emf->Bx_new = the_emf->Bx;
+        the_emf->By = the_emf->ByIN;
+        the_emf->By_new = the_emf->By;
+        the_emf->Bz = the_emf->BzIN;
+        the_emf->Bz_new = the_emf->Bz;
     }
 }
 
@@ -1068,10 +1071,10 @@ void EGS_AdvancedApplication::enterNewRegion() {
             the_emf->Bz_new = bf*the_emf->BzIN;
         }
     }
-    else{
-            the_emf->Bx_new = the_emf->BxIN;
-            the_emf->By_new = the_emf->ByIN;
-            the_emf->Bz_new = the_emf->BzIN;
+    else {
+        the_emf->Bx_new = the_emf->BxIN;
+        the_emf->By_new = the_emf->ByIN;
+        the_emf->Bz_new = the_emf->BzIN;
     }
 }
 

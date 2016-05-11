@@ -43,22 +43,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_ELLIPSE_DLL
-        #define EGS_ELLIPSE_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_ELLIPSE_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_ELLIPSE_LOCAL
+#ifdef BUILD_ELLIPSE_DLL
+#define EGS_ELLIPSE_EXPORT __declspec(dllexport)
+#else
+#define EGS_ELLIPSE_EXPORT __declspec(dllimport)
+#endif
+#define EGS_ELLIPSE_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_ELLIPSE_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_ELLIPSE_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_ELLIPSE_EXPORT
-        #define EGS_ELLIPSE_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_ELLIPSE_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_ELLIPSE_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_ELLIPSE_EXPORT
+#define EGS_ELLIPSE_LOCAL
+#endif
 
 #endif
 

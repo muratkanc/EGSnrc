@@ -51,11 +51,11 @@ EGS_Splitter::EGS_Splitter(EGS_Input* inp, const int& n_p,
                            const int& v_x,
                            const int& v_y,
                            const int& v_z):
-warming(true),
+    warming(true),
 //px(p_x),Px(256),
-vx(v_x),vy(v_y),vz(v_z),
-Vx(16), Vy(16), Vz(16), latch(1),
-Nmin(10), Nmax(1000), Np(n_p), Nv_score(0),Nscore(0), Nt(0)
+    vx(v_x),vy(v_y),vz(v_z),
+    Vx(16), Vy(16), Vz(16), latch(1),
+    Nmin(10), Nmax(1000), Np(n_p), Nv_score(0),Nscore(0), Nt(0)
 {
 
     /* get splitter resolution */
@@ -80,101 +80,125 @@ Nmin(10), Nmax(1000), Np(n_p), Nv_score(0),Nscore(0), Nt(0)
     if( itype == 0 ) latch=0;// set to 1 by default
 
     /* get splitter geometry */
-    err0 = 0; vector<int> phantom;
+    err0 = 0;
+    vector<int> phantom;
     err0 = inp->getInput("splitter geometry",phantom);
     if( err0 || (phantom.size() != 1 && phantom.size() != 3) )
-      egsFatal("\n\n***  Wrong/missing 'splitter geometry' input\n"
-               "    This is a fatal error\n\n");
-    if( phantom.size() == 1){Vx=phantom[0];Vy=Vx;Vz=Vx;}
-    if( phantom.size() == 3){Vx=phantom[0];Vy=phantom[1];Vz=phantom[2];}
-    if (vx<Vx){
-       egsFatal("\n********\n"
-                "Splitter geometry (Nx=%d) can't have more regions"
-                " than actual geometry (nx=%d)!!! Aborting ....\n",
-                Vx,vx);
+        egsFatal("\n\n***  Wrong/missing 'splitter geometry' input\n"
+                 "    This is a fatal error\n\n");
+    if( phantom.size() == 1) {
+        Vx=phantom[0];
+        Vy=Vx;
+        Vz=Vx;
     }
-    if (vy<Vy){
-       egsFatal("\n********\n"
-                "Splitter geometry (Ny=%d) can't have more regions"
-                " than actual geometry (ny=%d)!!! Aborting ....\n",
-                Vy,vy);
+    if( phantom.size() == 3) {
+        Vx=phantom[0];
+        Vy=phantom[1];
+        Vz=phantom[2];
     }
-    if (vz<Vz){
-       egsFatal("\n********\n"
-                "Splitter geometry (Nz=%d) can't have more regions"
-                " than actual geometry (nz=%d)!!! Aborting ....\n",
-                Vz,vz);
+    if (vx<Vx) {
+        egsFatal("\n********\n"
+                 "Splitter geometry (Nx=%d) can't have more regions"
+                 " than actual geometry (nx=%d)!!! Aborting ....\n",
+                 Vx,vx);
     }
-    if (vx%Vx){
-       egsFatal("\n********\n"
-                "# of regions in splitter geometry (Nx=%d) must be "
-                "a factor of # of regions in actual geometry (nx=%d)!!!"
-                "\n Aborting ....\n********\n",
-                Vx,vx);
+    if (vy<Vy) {
+        egsFatal("\n********\n"
+                 "Splitter geometry (Ny=%d) can't have more regions"
+                 " than actual geometry (ny=%d)!!! Aborting ....\n",
+                 Vy,vy);
     }
-    if (vy%Vy){
-       egsFatal("\n********\n"
-                "# of regions in splitter geometry (Ny=%d) must be "
-                "a factor of # of regions in actual geometry (ny=%d)!!!"
-                "\n Aborting ....\n********\n",
-                Vy,vy);
+    if (vz<Vz) {
+        egsFatal("\n********\n"
+                 "Splitter geometry (Nz=%d) can't have more regions"
+                 " than actual geometry (nz=%d)!!! Aborting ....\n",
+                 Vz,vz);
     }
-    if (vz%Vz){
-       egsFatal("\n********\n"
-                "# of regions in splitter geometry (Nz=%d) must be "
-                "a factor of # of regions in actual geometry (nz=%d)!!!"
-                "\n Aborting ....\n********\n",
-                Vz,vz);
+    if (vx%Vx) {
+        egsFatal("\n********\n"
+                 "# of regions in splitter geometry (Nx=%d) must be "
+                 "a factor of # of regions in actual geometry (nx=%d)!!!"
+                 "\n Aborting ....\n********\n",
+                 Vx,vx);
+    }
+    if (vy%Vy) {
+        egsFatal("\n********\n"
+                 "# of regions in splitter geometry (Ny=%d) must be "
+                 "a factor of # of regions in actual geometry (ny=%d)!!!"
+                 "\n Aborting ....\n********\n",
+                 Vy,vy);
+    }
+    if (vz%Vz) {
+        egsFatal("\n********\n"
+                 "# of regions in splitter geometry (Nz=%d) must be "
+                 "a factor of # of regions in actual geometry (nz=%d)!!!"
+                 "\n Aborting ....\n********\n",
+                 Vz,vz);
     }
     Nv = Vx*Vy*Vz;
-    K = new EGS_Float[Nv]; C = new EGS_Float[Nv];
-    Nscore = new EGS_Float[Nv]; voxel = new int[Nv];
-    for (int i=0; i<Nv;i++){K[i] = 0.0;C[i]=1;Nscore[i]=0;voxel[i]=-1;}
+    K = new EGS_Float[Nv];
+    C = new EGS_Float[Nv];
+    Nscore = new EGS_Float[Nv];
+    voxel = new int[Nv];
+    for (int i=0; i<Nv; i++) {
+        K[i] = 0.0;
+        C[i]=1;
+        Nscore[i]=0;
+        voxel[i]=-1;
+    }
     //for (int i=0; i<Nv;i++){K[i] = 0.0;C[i]=Np;Nscore[i]=0;voxel[i]=-1;}
-    vxy = vx*vy; Vxy = Vx*Vy; //mpx = px/Px;// Not in use!!!!
+    vxy = vx*vy;
+    Vxy = Vx*Vy; //mpx = px/Px;// Not in use!!!!
     mvx = vx/Vx, mvy = vy/Vy, mvz = vz/Vz;
 
     /* get maximum and minimum splitting */
-    err0 = 0; int nspl = 0;
+    err0 = 0;
+    int nspl = 0;
     err0 = inp->getInput("minimum splitting",nspl);
     if( !err0 && nspl>0) Nmin = nspl;
-    err0 = 0; nspl = 0;
+    err0 = 0;
+    nspl = 0;
     err0 = inp->getInput("maximum splitting",nspl);
     if( !err0 && nspl>0) Nmax = nspl;
     if (Nmax <= Nmin)
-      egsFatal("****** Splitter object ERORR: Maximum splitting smaller than the minimum splitting number!!!\n");
+        egsFatal("****** Splitter object ERORR: Maximum splitting smaller than the minimum splitting number!!!\n");
     /* get maximum and minimum imortances */
     Cmin = EGS_Float(Nmin)/EGS_Float(Np);
     Cmax = EGS_Float(Nmax)/EGS_Float(Np);
 
     /* Make a list assigning a splitting voxel to
        each geometrical region */
-    int Ngeom = vx*vy*vz; index = new int[Ngeom];
-    for (int j=0; j<Ngeom; j++){index[j] = findVoxel(j);}
+    int Ngeom = vx*vy*vz;
+    index = new int[Ngeom];
+    for (int j=0; j<Ngeom; j++) {
+        index[j] = findVoxel(j);
+    }
 
 }
 
-EGS_Splitter::~EGS_Splitter(){
-  delete [] K; delete [] C; delete [] Nscore;
+EGS_Splitter::~EGS_Splitter() {
+    delete [] K;
+    delete [] C;
+    delete [] Nscore;
 }
 
-void EGS_Splitter::describeIt(){
+void EGS_Splitter::describeIt() {
 
-   egsInformation("================\n"
-                  "Splitter Info:\n"
-                  "================\n");
-   egsInformation("%d X %d X %d splitter phantom with %d regions\n",
-                  Vx,Vy,Vz,Nv);
-   egsInformation("%d X %d X %d real phantom\n",
-                  vx,vy,vz);
-   egsInformation("phantom multiplicities: mvx = %d mvy = %d mvz = %d\n",
-                  mvx,mvy,mvz);
-   //egsInformation("=> screen multiplicities: mpx = %d\n", mpx);
-   egsInformation("Nmin = %d Nmax = %d Np = %d\n", Nmin, Nmax, Np);
-   string signal = "Using ";
-   if (latch==0) signal += "attenuated";
-   else signal += "scattered";
-   egsInformation("%s signal to compute importances\n",signal.c_str());
+    egsInformation("================\n"
+                   "Splitter Info:\n"
+                   "================\n");
+    egsInformation("%d X %d X %d splitter phantom with %d regions\n",
+                   Vx,Vy,Vz,Nv);
+    egsInformation("%d X %d X %d real phantom\n",
+                   vx,vy,vz);
+    egsInformation("phantom multiplicities: mvx = %d mvy = %d mvz = %d\n",
+                   mvx,mvy,mvz);
+    //egsInformation("=> screen multiplicities: mpx = %d\n", mpx);
+    egsInformation("Nmin = %d Nmax = %d Np = %d\n", Nmin, Nmax, Np);
+    string signal = "Using ";
+    if (latch==0) signal += "attenuated";
+    else signal += "scattered";
+    egsInformation("%s signal to compute importances\n",signal.c_str());
 }
 
 // EGS_Float EGS_Splitter::averageSplitting(){
@@ -199,59 +223,60 @@ void EGS_Splitter::describeIt(){
    Nj => # of particles scoring from region j
    Np => user-requested average splitting
 *************************************************/
-EGS_Float EGS_Splitter::averageSplitting(){
-  EGS_Float Nav=0;
-  for (int i = 0; i < Nv_score; i++){
-      int j = voxel[i];
-      Nav += C[j]*Nscore[j];
-  }
-  return EGS_Float(Np)*Nav/Nt;
+EGS_Float EGS_Splitter::averageSplitting() {
+    EGS_Float Nav=0;
+    for (int i = 0; i < Nv_score; i++) {
+        int j = voxel[i];
+        Nav += C[j]*Nscore[j];
+    }
+    return EGS_Float(Np)*Nav/Nt;
 }
 
-void EGS_Splitter::printStatus(){
-   egsInformation("================\n"
-                  "Splitter Status:\n");
-   egsInformation("<Nsplit> = %g ",averageSplitting());
-   if (latch)
-    egsInformation("Kt = %g ",Kt);
-   else
-    egsInformation("<Katt> = %g ",Kt);
-   egsInformation("voxels scoring: %d",
+void EGS_Splitter::printStatus() {
+    egsInformation("================\n"
+                   "Splitter Status:\n");
+    egsInformation("<Nsplit> = %g ",averageSplitting());
+    if (latch)
+        egsInformation("Kt = %g ",Kt);
+    else
+        egsInformation("<Katt> = %g ",Kt);
+    egsInformation("voxels scoring: %d",
                    Nv_score);
-   egsInformation("\n================\n");
+    egsInformation("\n================\n");
 }
 
-void EGS_Splitter::printImportances(const string& fname){
+void EGS_Splitter::printImportances(const string& fname) {
 
-   ofstream fout(fname.c_str());
-   fout << "Geometrical importances\n"
-        << "=======================\n\n"
-        << " ix     iy    iz     importance     Ni        Ki        <Ki> \n"
-        << "------------------------------------------------------------\n";
-   char buf[8192]; string str="";
+    ofstream fout(fname.c_str());
+    fout << "Geometrical importances\n"
+         << "=======================\n\n"
+         << " ix     iy    iz     importance     Ni        Ki        <Ki> \n"
+         << "------------------------------------------------------------\n";
+    char buf[8192];
+    string str="";
 
-   for (int ix=0; ix<Vx; ix++){
-     for(int iy=0; iy<Vy; iy++){
-       for(int iz=0; iz<Vz; iz++){
-         int ir = ix + iy*Vx + iz*Vxy;
-         if(Nscore[ir])
-           sprintf(buf," %-6d %-6d  %-6d %-10.2f %-10d %-13.3g %-13.3g\n",
-                ix,iy,iz,C[ir],Nscore[ir],K[ir],K[ir]/Nscore[ir]);
-         else
-           sprintf(buf," %-6d %-6d  %-6d %-10.2f %-10d %-13.3g %-13.3g\n",
-                ix,iy,iz,C[ir],Nscore[ir],K[ir],Nscore[ir]);
-         str += buf;
-       }
-     }
-   }
-/*   for (int ir=0; ir<Nv; ir++){
-        int iz = ir/Vxy, imod = ir - iz*Vxy,
-            iy = imod/Vx,
-            ix = imod - iy*Vx;
-        sprintf(buf," %-10d %-6d %-6d %-6d %-10.2f\n",ir,iz,iy,ix,C[ir]);
-        str += buf;
-   }*/
-   fout << str.c_str();
+    for (int ix=0; ix<Vx; ix++) {
+        for(int iy=0; iy<Vy; iy++) {
+            for(int iz=0; iz<Vz; iz++) {
+                int ir = ix + iy*Vx + iz*Vxy;
+                if(Nscore[ir])
+                    sprintf(buf," %-6d %-6d  %-6d %-10.2f %-10d %-13.3g %-13.3g\n",
+                            ix,iy,iz,C[ir],Nscore[ir],K[ir],K[ir]/Nscore[ir]);
+                else
+                    sprintf(buf," %-6d %-6d  %-6d %-10.2f %-10d %-13.3g %-13.3g\n",
+                            ix,iy,iz,C[ir],Nscore[ir],K[ir],Nscore[ir]);
+                str += buf;
+            }
+        }
+    }
+    /*   for (int ir=0; ir<Nv; ir++){
+            int iz = ir/Vxy, imod = ir - iz*Vxy,
+                iy = imod/Vx,
+                ix = imod - iy*Vx;
+            sprintf(buf," %-10d %-6d %-6d %-6d %-10.2f\n",ir,iz,iy,ix,C[ir]);
+            str += buf;
+       }*/
+    fout << str.c_str();
 }
 
 // EGS_Float* EGS_Splitter::getImportances(int& nreg){

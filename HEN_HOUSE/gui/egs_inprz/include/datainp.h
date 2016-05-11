@@ -90,9 +90,9 @@ typedef std::vector<string> v_string;
 QString parseStr( std::ifstream & in, const QString & id );
 // defined in inputblock.cpp:
 QString getIt( string &code,
-              QString def,
-              QString & error,
-              DE_Parser *p );
+               QString def,
+               QString & error,
+               DE_Parser *p );
 //qt3to4 -- BW
 void print_delimeter( const QString& boundary,
                       const QString& section,
@@ -142,9 +142,10 @@ std::vector<X> getThemAll( string &code, std::vector<X> mydef,
     X def = mydef[0];
     if ( p->get_input( code, result ) )
     {
-         error += "value sought not found for " ;
-         error += code.c_str(); error += "<br>";
-         return mydef;
+        error += "value sought not found for " ;
+        error += code.c_str();
+        error += "<br>";
+        return mydef;
     }
     else return result;
 }
@@ -157,9 +158,10 @@ std::vector<X> getThem( string &code, X min, X max, std::vector<X> mydef,
     X def = mydef[0];
     if ( p->get_input( code, result, min, max, def ) )
     {
-         error += "value sought not found for " ;
-         error += code.c_str(); error += "<br>";
-         return mydef;
+        error += "value sought not found for " ;
+        error += code.c_str();
+        error += "<br>";
+        return mydef;
     }
     else return result;
 }
@@ -171,49 +173,50 @@ template <class X>
 X getItsafe( string &code, X xmin, X xmax, X xdef,
              QString & error, DE_Parser *p )
 {
-	X res;
-	res = p->get_input( code, xmin, xmax, xdef );
-	if ( res == xdef )
-    	{
-	    error += "wrong value sought or not found for " ;
-            error += code.c_str(); error += "<br>";
-	}
-	return res;
+    X res;
+    res = p->get_input( code, xmin, xmax, xdef );
+    if ( res == xdef )
+    {
+        error += "wrong value sought or not found for " ;
+        error += code.c_str();
+        error += "<br>";
+    }
+    return res;
 }
 
 template <class X>
 int delete_element( std::vector<X> * x, X e )
 {
-     int i =0;
-     //std::vector<X>::iterator iter(x->begin());
-     typename vector<X>::iterator iter = x->begin();
-     while ( iter < x->end() ) {
-         if ( *iter == e ) {     // item detected
-              x->erase(iter);    // delete item
-              return i;           // return position
-         }
-         iter++;              // advance to next different item
-         i++;
-      }
+    int i =0;
+    //std::vector<X>::iterator iter(x->begin());
+    typename vector<X>::iterator iter = x->begin();
+    while ( iter < x->end() ) {
+        if ( *iter == e ) {     // item detected
+            x->erase(iter);    // delete item
+            return i;           // return position
+        }
+        iter++;              // advance to next different item
+        i++;
+    }
     return x->size()+1; // no item detected;
-                        // set vacuum position outside vector range
- }
+    // set vacuum position outside vector range
+}
 
 template <class X>
 std::vector<X> del_element( std::vector<X> v, X e )
 {
-     std::vector<X> x = v;
-     //std::vector<X>::iterator iter(x.begin());
-     typename vector<X>::iterator iter = x.begin();
-     while ( iter < x.end() ) {
-         if ( *iter == e ) {     // item detected
-              x.erase(iter);        // delete item
-         }
-         iter++;              // advance to next different item
-      }
+    std::vector<X> x = v;
+    //std::vector<X>::iterator iter(x.begin());
+    typename vector<X>::iterator iter = x.begin();
+    while ( iter < x.end() ) {
+        if ( *iter == e ) {     // item detected
+            x.erase(iter);        // delete item
+        }
+        iter++;              // advance to next different item
+    }
 
-     return x;
- }
+    return x;
+}
 
 template <class X>
 std::vector<X> strip_repetitions( std::vector<X> v )
@@ -256,8 +259,8 @@ void get_col_content( const int &col, QTableWidget* t, std::vector<X> &result)
     result.clear(); // reseting values, so clear before
     //qt3to4 -- BW
     //for ( int i = 0; i < t->numRows(); i++ ){
-        //str = t->text(i,col);
-     for ( int i = 0; i < t->rowCount(); i++ ){
+    //str = t->text(i,col);
+    for ( int i = 0; i < t->rowCount(); i++ ) {
         QTableWidgetItem *qtwi = t->item(i,col);
         QString str;
         if (qtwi) str = qtwi->text();
@@ -269,7 +272,7 @@ void get_col_content( const int &col, QTableWidget* t, std::vector<X> &result)
             ts >> val;
             result.push_back( val );
         }
-        else{// got empty cell
+        else { // got empty cell
             //result.push_back( val );
         }
     }
@@ -292,8 +295,8 @@ void get_col_explicit( const int &col, QTableWidget* t, std::vector<X> &result, 
     result.clear(); // reseting values, so clear before
     //qt3to4 -- BW
     //for ( int i = 0; i < t->numRows(); i++ ){
-        //str = t->text(i,col);
-    for ( int i = 0; i < t->rowCount(); i++ ){
+    //str = t->text(i,col);
+    for ( int i = 0; i < t->rowCount(); i++ ) {
         QTableWidgetItem *qtwi = t->item(i,col);
         QString str;
         if (qtwi) str = qtwi->text();
@@ -304,7 +307,7 @@ void get_col_explicit( const int &col, QTableWidget* t, std::vector<X> &result, 
             ts >> val;
             result.push_back( val );
         }
-        else{// got empty cell
+        else { // got empty cell
             result.push_back( def );
         }
     }
@@ -331,8 +334,8 @@ void update_table(std::vector<X> *v, int ini, int count, QTableWidget* t)
 
     //qt3to4 -- BW
     //for ( i = 0; i < t->numRows(); i++){
-    for ( i = 0; i < t->rowCount(); i++){
-        for ( int j = ini; j < count; j++ ){
+    for ( i = 0; i < t->rowCount(); i++) {
+        for ( int j = ini; j < count; j++ ) {
             //qt3to4 -- BW
             //t->clearCell( i, j );
             t->setItem(i,j,0);

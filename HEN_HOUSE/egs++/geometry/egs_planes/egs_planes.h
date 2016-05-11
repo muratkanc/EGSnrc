@@ -46,22 +46,22 @@ using std::vector;
 
 #ifdef WIN32
 
-    #ifdef BUILD_PLANES_DLL
-        #define EGS_PLANES_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_PLANES_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_PLANES_LOCAL
+#ifdef BUILD_PLANES_DLL
+#define EGS_PLANES_EXPORT __declspec(dllexport)
+#else
+#define EGS_PLANES_EXPORT __declspec(dllimport)
+#endif
+#define EGS_PLANES_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_PLANES_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_PLANES_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_PLANES_EXPORT
-        #define EGS_PLANES_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_PLANES_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_PLANES_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_PLANES_EXPORT
+#define EGS_PLANES_LOCAL
+#endif
 
 #endif
 

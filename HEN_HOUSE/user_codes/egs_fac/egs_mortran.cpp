@@ -40,13 +40,13 @@ F77_OBJ_(select_photon_mfp,SELECT_PHOTON_MFP)(EGS_Float *dpmfp) {
     EGS_Application *a = EGS_Application::activeApplication();
     EGS_FACApplication *app = dynamic_cast<EGS_FACApplication *>(a);
     if( !app ) egsFatal("select_photon_mfp called with active application "
-            " not being of type EGS_FACApplication!\n");
+                            " not being of type EGS_FACApplication!\n");
     app->selectPhotonMFP(*dpmfp);
 }
 
 extern __extc__ void F77_OBJ_(range_discard,RANGE_DISCARD)(
-        const EGS_Float *tperp, const EGS_Float *range) {
+    const EGS_Float *tperp, const EGS_Float *range) {
     EGS_FACApplication *app = dynamic_cast<EGS_FACApplication *>(
-            EGS_Application::activeApplication());
+                                  EGS_Application::activeApplication());
     the_epcont->idisc = app->rangeDiscard(*tperp,*range);
 }

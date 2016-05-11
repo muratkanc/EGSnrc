@@ -36,7 +36,7 @@
 //qt3to4 -- BW
 MyRichText::MyRichText( QWidget *parent, const char *name )
 //    : Q3VBox( parent, name )
-      : QWidget(parent)
+    : QWidget(parent)
 {
     //setMargin( 5 );
 
@@ -64,5 +64,5 @@ MyRichText::MyRichText( QWidget *parent, const char *name )
 
 MyRichText::~MyRichText()
 {
-   zap(view);
+    zap(view);
 }

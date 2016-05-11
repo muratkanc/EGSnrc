@@ -52,47 +52,47 @@ class EGS_ConfigReader;
 class EGS_MainWidget : public QWidget
 {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  EGS_MainWidget(QWidget * parent = 0, Qt::WFlags f = 0);
-  ~EGS_MainWidget(){}
+    EGS_MainWidget(QWidget * parent = 0, Qt::WFlags f = 0);
+    ~EGS_MainWidget() {}
 public slots:
 
-  void exitGUI();
+    void exitGUI();
 
-  void changePage(QListWidgetItem *,QListWidgetItem *);
+    void changePage(QListWidgetItem *,QListWidgetItem *);
 
-  void changeEgsHome(const QString &);
-  void changeHenHouse(const QString &);
-  void changeUserCode(const QString &);
-  void aboutEGSGui();
-  void aboutQt();
-  void getHelp();
+    void changeEgsHome(const QString &);
+    void changeHenHouse(const QString &);
+    void changeUserCode(const QString &);
+    void aboutEGSGui();
+    void aboutQt();
+    void getHelp();
 
 signals:
 
-  void quit();
-  void userCodeChanged(const QString &);
+    void quit();
+    void userCodeChanged(const QString &);
 
 private:
 
-  void addUserCodes(const QString &);
-  void updateUserCodeList();
+    void addUserCodes(const QString &);
+    void updateUserCodeList();
 
-  QListWidget             *control;
-  QStackedWidget          *work_area;
+    QListWidget             *control;
+    QStackedWidget          *work_area;
 
-  EGS_CompilePage         *compile_page;
-  EGS_PegsPage            *pegs_page;
-  EGS_RunPage             *run_page;
-  EGS_ConfigurationPage   *conf_page;
-  QComboBox               *user_code;
-  EGS_ConfigReader        *config_reader;
+    EGS_CompilePage         *compile_page;
+    EGS_PegsPage            *pegs_page;
+    EGS_RunPage             *run_page;
+    EGS_ConfigurationPage   *conf_page;
+    QComboBox               *user_code;
+    EGS_ConfigReader        *config_reader;
 
-  QString  egs_home;
-  QString  hen_house;
+    QString  egs_home;
+    QString  hen_house;
 
 };
 

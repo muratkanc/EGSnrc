@@ -41,22 +41,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_SPHERES_DLL
-        #define EGS_SPHERES_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_SPHERES_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_SPHERES_LOCAL
+#ifdef BUILD_SPHERES_DLL
+#define EGS_SPHERES_EXPORT __declspec(dllexport)
+#else
+#define EGS_SPHERES_EXPORT __declspec(dllimport)
+#endif
+#define EGS_SPHERES_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_SPHERES_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_SPHERES_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_SPHERES_EXPORT
-        #define EGS_SPHERES_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_SPHERES_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_SPHERES_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_SPHERES_EXPORT
+#define EGS_SPHERES_LOCAL
+#endif
 
 #endif
 

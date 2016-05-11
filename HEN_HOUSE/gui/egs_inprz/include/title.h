@@ -40,10 +40,10 @@
 
 class MTitle  : public MInputBlock
 {
-   public:
-     MTitle();
-     ~MTitle();
-     QString str;
+public:
+    MTitle();
+    ~MTitle();
+    QString str;
     //QString errors;
 
 };

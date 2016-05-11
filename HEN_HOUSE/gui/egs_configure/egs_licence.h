@@ -44,38 +44,40 @@ class QWizardPage;
 class QLicencePage : public QWizardPage
 {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  QLicencePage(QWidget * parent, const QString & year, const QString & version) :
-               QWizardPage(parent), the_year(year), the_version(version)
-  {
+    QLicencePage(QWidget * parent, const QString & year, const QString & version) :
+        QWizardPage(parent), the_year(year), the_version(version)
+    {
 
-    setTitle("EGSnrc distributed under the terms of the AGPL Licence");
-    setSubTitle("Press Next to proceed.");
-    QHBoxLayout *hl = new QHBoxLayout(this);
-    QScrollArea *scroll = new QScrollArea(this);
-    scroll->setBackgroundRole(QPalette::Base);
-    hl->addWidget(scroll);
-    lic = new QLabel(); lic->setOpenExternalLinks(true); lic->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    //lic->setText(QString(EGS_LICENCE).replace("the_year",year).replace("the_version",version));
-    //lic->setText(QString(EGS_LICENCE).replace("the_year",year));
-    lic->setText(
-    "<p>    Copyright (C) 2015 National Research Council Canada</p>"\
-    "<p>EGSnrc is free software: you can redistribute it and/or modify it under<br>"\
-    "the terms of the GNU Affero General Public License as published by the<br>"\
-    "Free Software Foundation, either version 3 of the License, or (at your<br>"\
-    "option) any later version.<br></p>"\
-    "<p>EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY<br>"\
-    "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS<br>"\
-    "FOR A PARTICULAR PURPOSE.  See the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> for<br>"\
-    "more details.<br></p>"
-    );
-    scroll->setWidget(lic);
+        setTitle("EGSnrc distributed under the terms of the AGPL Licence");
+        setSubTitle("Press Next to proceed.");
+        QHBoxLayout *hl = new QHBoxLayout(this);
+        QScrollArea *scroll = new QScrollArea(this);
+        scroll->setBackgroundRole(QPalette::Base);
+        hl->addWidget(scroll);
+        lic = new QLabel();
+        lic->setOpenExternalLinks(true);
+        lic->setTextInteractionFlags(Qt::TextBrowserInteraction);
+        //lic->setText(QString(EGS_LICENCE).replace("the_year",year).replace("the_version",version));
+        //lic->setText(QString(EGS_LICENCE).replace("the_year",year));
+        lic->setText(
+            "<p>    Copyright (C) 2015 National Research Council Canada</p>"\
+            "<p>EGSnrc is free software: you can redistribute it and/or modify it under<br>"\
+            "the terms of the GNU Affero General Public License as published by the<br>"\
+            "Free Software Foundation, either version 3 of the License, or (at your<br>"\
+            "option) any later version.<br></p>"\
+            "<p>EGSnrc is distributed in the hope that it will be useful, but WITHOUT ANY<br>"\
+            "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS<br>"\
+            "FOR A PARTICULAR PURPOSE.  See the <a href=\"http://www.gnu.org/licenses/agpl.html\">GNU Affero General Public License</a> for<br>"\
+            "more details.<br></p>"
+        );
+        scroll->setWidget(lic);
 
-  }
-  ~QLicencePage(){}
+    }
+    ~QLicencePage() {}
 
 public slots:
 
@@ -83,9 +85,9 @@ signals:
 
 private:
 
-  QLabel *lic;
-  QString the_year,
-          the_version;
+    QLabel *lic;
+    QString the_year,
+            the_version;
 
 };
 

@@ -50,11 +50,11 @@ class PEGS_RunOutput;
 class QTableWidget;
 
 struct Element {
-  int   Z;
-  std::string symbol;
- float  aw;
- float  Iev;
- float  rho;
+    int   Z;
+    std::string symbol;
+    float  aw;
+    float  Iev;
+    float  rho;
 };
 
 const int n_element = 100;
@@ -85,17 +85,20 @@ public:
                       const QModelIndex &index) const;
 
     void updateEditorGeometry(QWidget *editor,
-        const QStyleOptionViewItem &option, const QModelIndex &index) const;
+                              const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 class EGS_PegsPage: public QWidget, public Ui::EGS_PegsPage
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-EGS_PegsPage(QWidget* parent): QWidget(parent){setupUi(this);init();};
-~EGS_PegsPage(){}
+    EGS_PegsPage(QWidget* parent): QWidget(parent) {
+        setupUi(this);
+        init();
+    };
+    ~EGS_PegsPage() {}
 
 public slots:
 

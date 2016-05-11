@@ -92,7 +92,7 @@ It is defined using the following input
 */
 
 class EGS_FANO_SOURCE_EXPORT EGS_FanoSource :
-          public EGS_BaseSimpleSource {
+    public EGS_BaseSimpleSource {
 
 public:
 
@@ -102,12 +102,14 @@ public:
     and emitting particles from the shape \a Shape
     */
     EGS_FanoSource(int Q, EGS_BaseSpectrum *Spec, EGS_BaseShape *Shape,
-            EGS_BaseGeometry *geometry,
-            const string &Name="", EGS_ObjectFactory *f=0) :
-            EGS_BaseSimpleSource(Q,Spec,Name,f), shape(Shape),
-            min_theta(85.), max_theta(95.), min_phi(0), max_phi(2*M_PI),
-            buf_1(1), buf_2(-1),
-            geom(geometry), regions(0), nrs(0) { setUp(); };
+                   EGS_BaseGeometry *geometry,
+                   const string &Name="", EGS_ObjectFactory *f=0) :
+        EGS_BaseSimpleSource(Q,Spec,Name,f), shape(Shape),
+        min_theta(85.), max_theta(95.), min_phi(0), max_phi(2*M_PI),
+        buf_1(1), buf_2(-1),
+        geom(geometry), regions(0), nrs(0) {
+        setUp();
+    };
 
     /*! \brief Constructor
 
@@ -124,62 +126,73 @@ public:
     };
 
     void getPositionDirection(EGS_RandomGenerator *rndm,
-            EGS_Vector &x, EGS_Vector &u, EGS_Float &wt) {
-        bool ok = true, okfano = false; wt = 1;
+                              EGS_Vector &x, EGS_Vector &u, EGS_Float &wt) {
+        bool ok = true, okfano = false;
+        wt = 1;
         do {
-          do {
-            x = shape->getRandomPoint(rndm);
-            ok = geom->isInside(x);
-            if( ok )
-            {
-                if( rndm->getUniform()*max_mass_density > geom->getMediumRho(geom->medium(geom->isWhere(x))) )
-                    okfano = false;
-                else
-                    okfano = true;
+            do {
+                x = shape->getRandomPoint(rndm);
+                ok = geom->isInside(x);
+                if( ok )
+                {
+                    if( rndm->getUniform()*max_mass_density > geom->getMediumRho(geom->medium(geom->isWhere(x))) )
+                        okfano = false;
+                    else
+                        okfano = true;
 
-                /* Rather than rejecting, accept always and reduce weight accordingly */
-                //wt = wt * geom->getMediumRho(geom->medium(geom->isWhere(x)))/max_mass_density;
-                //real_count += wt;
-                //okfano = true;
-            }
-          } while ( !ok );
+                    /* Rather than rejecting, accept always and reduce weight accordingly */
+                    //wt = wt * geom->getMediumRho(geom->medium(geom->isWhere(x)))/max_mass_density;
+                    //real_count += wt;
+                    //okfano = true;
+                }
+            } while ( !ok );
         } while(!okfano);
         u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
         //u.z = 2*rndm->getUniform()-1;
         EGS_Float sinz = 1-u.z*u.z;
         if( sinz > 1e-15 ) {
-          sinz = sqrt(sinz); EGS_Float cphi, sphi;
-          EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
-          cphi = cos(phi); sphi = sin(phi);
-          u.x = sinz*cphi; u.y = sinz*sphi;
-        } else { u.x = 0; u.y = 0; }
+            sinz = sqrt(sinz);
+            EGS_Float cphi, sphi;
+            EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
+            cphi = cos(phi);
+            sphi = sin(phi);
+            u.x = sinz*cphi;
+            u.y = sinz*sphi;
+        } else {
+            u.x = 0;
+            u.y = 0;
+        }
     };
 
-    EGS_Float getFluence() const { return count; };
+    EGS_Float getFluence() const {
+        return count;
+    };
     //EGS_Float getFluence() const { return Fano_source ? real_count : count; };
-/*
-    bool storeFluenceState(ostream & data) const {
-         if (Fano_source) data << real_count;
-         return Fano_source ? data.good() : true;
-    };
+    /*
+        bool storeFluenceState(ostream & data) const {
+             if (Fano_source) data << real_count;
+             return Fano_source ? data.good() : true;
+        };
 
-    bool setFluenceState(istream & data) {
-      if (Fano_source) data >> real_count;
-      return Fano_source ? data.good() : true;
-    };
+        bool setFluenceState(istream & data) {
+          if (Fano_source) data >> real_count;
+          return Fano_source ? data.good() : true;
+        };
 
-    bool addFluenceData(istream &data) {
-         if (Fano_source){
-            EGS_Float tmp; data >> tmp;
-            if( !data.good() ) return false;
-            real_count += tmp;
-         }
-         return true;
-    };
+        bool addFluenceData(istream &data) {
+             if (Fano_source){
+                EGS_Float tmp; data >> tmp;
+                if( !data.good() ) return false;
+                real_count += tmp;
+             }
+             return true;
+        };
 
-    void resetFluenceCounter() {real_count = 0.0; };
-*/
-    bool isValid() const { return (s != 0 && shape != 0); };
+        void resetFluenceCounter() {real_count = 0.0; };
+    */
+    bool isValid() const {
+        return (s != 0 && shape != 0);
+    };
 
 protected:
 

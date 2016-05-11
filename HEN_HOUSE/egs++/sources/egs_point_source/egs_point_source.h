@@ -44,22 +44,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_POINT_SOURCE_DLL
-        #define EGS_POINT_SOURCE_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_POINT_SOURCE_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_POINT_SOURCE_LOCAL
+#ifdef BUILD_POINT_SOURCE_DLL
+#define EGS_POINT_SOURCE_EXPORT __declspec(dllexport)
+#else
+#define EGS_POINT_SOURCE_EXPORT __declspec(dllimport)
+#endif
+#define EGS_POINT_SOURCE_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_POINT_SOURCE_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_POINT_SOURCE_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_POINT_SOURCE_EXPORT
-        #define EGS_POINT_SOURCE_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_POINT_SOURCE_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_POINT_SOURCE_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_POINT_SOURCE_EXPORT
+#define EGS_POINT_SOURCE_LOCAL
+#endif
 
 #endif
 

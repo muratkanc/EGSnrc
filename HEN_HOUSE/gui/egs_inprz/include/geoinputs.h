@@ -45,24 +45,26 @@ class MGEOInputs : public MInputBlock
 public:
     MGEOInputs();
     ~MGEOInputs();
-    QString   GetInputMethod() const { return inp_meth; }
+    QString   GetInputMethod() const {
+        return inp_meth;
+    }
     QString   getErrors();
 
     int nslabs() const {
-     int n_slab = 0;
-     for (unsigned int j = 0; j < nslab.size(); j++) {
-          n_slab += nslab[j];
-      }
-      return n_slab;
+        int n_slab = 0;
+        for (unsigned int j = 0; j < nslab.size(); j++) {
+            n_slab += nslab[j];
+        }
+        return n_slab;
     };
-    int getR(const int& ir){
-      return (ir-2)/nslabs() + 1;
+    int getR(const int& ir) {
+        return (ir-2)/nslabs() + 1;
     };
-    int getZ(const int& ir){
-      return (ir-1) - nslabs()*(getR(ir)-1);
+    int getZ(const int& ir) {
+        return (ir-1) - nslabs()*(getR(ir)-1);
     };
-    int getIR(const int& z, const int& r){
-      return z + nslabs()*(r-1) + 1;
+    int getIR(const int& z, const int& r) {
+        return z + nslabs()*(r-1) + 1;
     };
 
     void mapRegions();

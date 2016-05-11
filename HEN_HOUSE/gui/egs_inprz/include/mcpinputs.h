@@ -41,59 +41,59 @@
 
 class MMCPInputs : public MInputBlock
 {
-  public:
-   MMCPInputs();
-  ~MMCPInputs();
+public:
+    MMCPInputs();
+    ~MMCPInputs();
 
-        v_string ff_media;
-        v_string ff_files;
+    v_string ff_media;
+    v_string ff_files;
 
-	v_float ECUT;
- 	v_int   ECUTstart;
- 	v_int   ECUTstop;
+    v_float ECUT;
+    v_int   ECUTstart;
+    v_int   ECUTstop;
 
- 	v_float PCUT;
- 	v_int   PCUTstart;
- 	v_int   PCUTstop;
+    v_float PCUT;
+    v_int   PCUTstart;
+    v_int   PCUTstop;
 
- 	v_float SMAX;
- 	v_int   SMAXstart;
- 	v_int   SMAXstop;
+    v_float SMAX;
+    v_int   SMAXstart;
+    v_int   SMAXstop;
 
- 	QString GECUT;
- 	QString GPCUT;
- 	QString GSMAX;
+    QString GECUT;
+    QString GPCUT;
+    QString GSMAX;
 
- 	bool SetPCUTbyRegion;
- 	bool SetECUTbyRegion;
- 	bool SetSMAXbyRegion;
+    bool SetPCUTbyRegion;
+    bool SetECUTbyRegion;
+    bool SetSMAXbyRegion;
 
- 	QString ESTEPE;
- 	QString XImax;
- 	QString SkinD;
- 	QString PairSampling;
- 	QString BremsSampling;
- 	QString BremsXSection;
- 	QString ESTEPAlg;
- 	QString BoundXAlg;
- 	QString PhotXSection;
- 	QString PhotXSectionOut;
- 	QString EIIXSection;
+    QString ESTEPE;
+    QString XImax;
+    QString SkinD;
+    QString PairSampling;
+    QString BremsSampling;
+    QString BremsXSection;
+    QString ESTEPAlg;
+    QString BoundXAlg;
+    QString PhotXSection;
+    QString PhotXSectionOut;
+    QString EIIXSection;
 
- 	QString Spin;
- 	QString BC;
- 	QString PE;
- 	QString RAY;
- 	QString RELAX;
+    QString Spin;
+    QString BC;
+    QString PE;
+    QString RAY;
+    QString RELAX;
 
- 	v_int BCstart;
- 	v_int BCstop;
- 	v_int PEstart;
- 	v_int PEstop;
- 	v_int RAYstart;
- 	v_int RAYstop;
- 	v_int RELAXstart;
- 	v_int RELAXstop;
+    v_int BCstart;
+    v_int BCstop;
+    v_int PEstart;
+    v_int PEstop;
+    v_int RAYstart;
+    v_int RAYstop;
+    v_int RELAXstart;
+    v_int RELAXstop;
 };
 std::ifstream & operator >> ( std::ifstream & in, MMCPInputs * rMCP );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MMCPInputs * rMCP );

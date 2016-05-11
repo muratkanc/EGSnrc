@@ -49,57 +49,57 @@ class EGS_ConfigReader;
 
 class EGS_CompilePage : public EGS_GUI_Widget {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  EGS_CompilePage(QWidget *parent = 0, const char * name = 0, Qt::WFlags f = 0);
-  EGS_CompilePage(EGS_ConfigReader *,
-          QWidget *parent = 0, const char * name = 0, Qt::WFlags f = 0);
-  ~EGS_CompilePage(){}
+    EGS_CompilePage(QWidget *parent = 0, const char * name = 0, Qt::WFlags f = 0);
+    EGS_CompilePage(EGS_ConfigReader *,
+                    QWidget *parent = 0, const char * name = 0, Qt::WFlags f = 0);
+    ~EGS_CompilePage() {}
 
-  void sendSignals();
+    void sendSignals();
 
 signals:
 
-  void targetChanged(const QString &);
+    void targetChanged(const QString &);
 
 public slots:
 
-  void startCompilation();
-  void stopCompilation();
-  void compilationFinished(int exitCode, QProcess::ExitStatus exitStatus);
-  void readProcessOut();
-  void readProcessErr();
-  //void showHideDetails();
-  void setUserCode(const QString &);
-  void changeTarget(int);
+    void startCompilation();
+    void stopCompilation();
+    void compilationFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void readProcessOut();
+    void readProcessErr();
+    //void showHideDetails();
+    void setUserCode(const QString &);
+    void changeTarget(int);
 
 private:
 
-  bool checkExeDir();
+    bool checkExeDir();
 
 private:
 
-  void make();
+    void make();
 
-  //QButtonGroup *c_option;
-  QButtonGroup *bg_coption;
-  QGroupBox *c_option;
-  QLineEdit *extra_f_options;
-  QLineEdit *extra_c_options;
+    //QButtonGroup *c_option;
+    QButtonGroup *bg_coption;
+    QGroupBox *c_option;
+    QLineEdit *extra_f_options;
+    QLineEdit *extra_c_options;
 
-  QPushButton *start_c;
-  QPushButton *stop_c;
+    QPushButton *start_c;
+    QPushButton *stop_c;
 
-  QProcess *c_process;
+    QProcess *c_process;
 
-  QTextEdit *c_text;
+    QTextEdit *c_text;
 
-  QString the_user_code;
+    QString the_user_code;
 
-  int  the_target;
-  bool is_running;
+    int  the_target;
+    bool is_running;
 };
 
 #endif

@@ -42,22 +42,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_IPLANES_DLL
-        #define EGS_IPLANES_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_IPLANES_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_IPLANES_LOCAL
+#ifdef BUILD_IPLANES_DLL
+#define EGS_IPLANES_EXPORT __declspec(dllexport)
+#else
+#define EGS_IPLANES_EXPORT __declspec(dllimport)
+#endif
+#define EGS_IPLANES_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_IPLANES_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_IPLANES_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_IPLANES_EXPORT
-        #define EGS_IPLANES_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_IPLANES_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_IPLANES_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_IPLANES_EXPORT
+#define EGS_IPLANES_LOCAL
+#endif
 
 #endif
 

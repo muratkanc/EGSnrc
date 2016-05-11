@@ -161,7 +161,7 @@ class APP_EXPORT Tutor7_Application : public EGS_AdvancedApplication {
     int              nph;       // number of pulse height objects.
     int              rr_flag;   // used for RR and radiative splitting
     EGS_Float        current_weight; // the weight of the initial particle that
-                                     // is currently being simulated
+    // is currently being simulated
     bool  deflect_brems;
     static string revision;    // the CVS revision number
 
@@ -185,7 +185,9 @@ public:
         if( gflu ) delete gflu;
         if( nph > 0 ) {
             for(int j=0; j<nph; j++) delete pheight[j];
-            delete [] pheight; delete [] ph_regions; delete [] ph_de;
+            delete [] pheight;
+            delete [] ph_regions;
+            delete [] ph_de;
         }
     };
 
@@ -257,7 +259,7 @@ public:
      reflected energy fraction as the single result of the simulation.
     */
     void getCurrentResult(double &sum, double &sum2, double &norm,
-            double &count);
+                          double &count);
 
 protected:
 
@@ -287,25 +289,26 @@ extern "C" void F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(const int *,const EGS_Floa
 extern "C" void F77_OBJ_(egs_scale_bc,EGS_SCALE_BC)(const int *,const EGS_Float *);
 
 void Tutor7_Application::describeUserCode() const {
-   egsInformation(
-     "\n               ***************************************************"
-     "\n               *                                                 *"
-     "\n               *                  tutor7pp                       *"
-     "\n               *                                                 *"
-     "\n               ***************************************************"
-     "\n\n");
-   egsInformation("This is Tutor7_Application %s based on\n"
-     "      EGS_AdvancedApplication %s\n\n",
-     egsSimplifyCVSKey(revision).c_str(),
-     egsSimplifyCVSKey(base_revision).c_str());
+    egsInformation(
+        "\n               ***************************************************"
+        "\n               *                                                 *"
+        "\n               *                  tutor7pp                       *"
+        "\n               *                                                 *"
+        "\n               ***************************************************"
+        "\n\n");
+    egsInformation("This is Tutor7_Application %s based on\n"
+                   "      EGS_AdvancedApplication %s\n\n",
+                   egsSimplifyCVSKey(revision).c_str(),
+                   egsSimplifyCVSKey(base_revision).c_str());
 }
 
 int Tutor7_Application::initScoring() {
     // Get the numner of regions in the geometry.
     nreg = geometry->regions();
     score = new EGS_ScoringArray(nreg+2);
-     //i.e. we always score energy fractions
-    eflu = new EGS_ScoringArray(200); gflu = new EGS_ScoringArray(200);
+    //i.e. we always score energy fractions
+    eflu = new EGS_ScoringArray(200);
+    gflu = new EGS_ScoringArray(200);
     EGS_Input *options = input->takeInputItem("scoring options");
     if( options ) {
 
@@ -339,7 +342,9 @@ int Tutor7_Application::initScoring() {
             delete scale;
         }
 
-        vector<string> choices; choices.push_back("no"); choices.push_back("yes");
+        vector<string> choices;
+        choices.push_back("no");
+        choices.push_back("yes");
         deflect_brems = options->getInput("deflect electron after brems",choices,0);
         if( deflect_brems ) {
             egsInformation("\n *** Using electron deflection in brems events\n\n");
@@ -368,9 +373,9 @@ int Tutor7_Application::initScoring() {
         int err1 = options->getInput("pulse height bins",nbins);
         if( !err && !err1 ) {
             if( regions.size() != nbins.size() && nbins.size() != 1 )
-                    egsWarning("initScoring(): you must input the same "
-                "number of 'regions' and 'bins' inputs or a single 'bins'"
-                " input\n");
+                egsWarning("initScoring(): you must input the same "
+                           "number of 'regions' and 'bins' inputs or a single 'bins'"
+                           " input\n");
             else {
                 EGS_ScoringArray **tmp = new EGS_ScoringArray* [nreg+2];
                 for(int i=0; i<nreg+2; i++) tmp[i] = 0;
@@ -380,11 +385,14 @@ int Tutor7_Application::initScoring() {
                         egsWarning("zero bins for region %d?\n",regions[j]);
                     if( regions[j] < 0 || regions[j] > nreg+1 )
                         egsWarning("invalid region index %d\n",regions[j]);
-                    if( nb > 0 && regions[j] >= 0 && regions[j] < nreg+2 ){
+                    if( nb > 0 && regions[j] >= 0 && regions[j] < nreg+2 ) {
                         int ij = regions[j];
                         if( tmp[ij] ) egsInformation("There is already a "
-                  "PHD object in region %d => ignoring it\n",ij);
-                        else { tmp[ij] = new EGS_ScoringArray(nb); ++nph; }
+                                                         "PHD object in region %d => ignoring it\n",ij);
+                        else {
+                            tmp[ij] = new EGS_ScoringArray(nb);
+                            ++nph;
+                        }
                     }
                 }
                 if( nph > 0 ) {
@@ -405,7 +413,7 @@ int Tutor7_Application::initScoring() {
                 delete [] tmp;
             }
         } else egsWarning("initScoring(): you must provide both, 'regions'"
-                   " and 'bins' input\n");
+                              " and 'bins' input\n");
         delete options;
     }
     return 0;
@@ -413,7 +421,8 @@ int Tutor7_Application::initScoring() {
 
 int Tutor7_Application::ausgab(int iarg) {
     if( iarg <= 4 ) {
-        int np = the_stack->np - 1; int ir = the_stack->ir[np]-1;
+        int np = the_stack->np - 1;
+        int ir = the_stack->ir[np]-1;
         if( ir == 0 && the_stack->w[np] > 0 ) ir = nreg+1;
         score->score(ir,the_epcont->edep*the_stack->wt[np]);
         // if( the_stack->iq[np] ) score->score(ir,the_epcont->edep*the_stack->wt[np]);
@@ -429,9 +438,11 @@ int Tutor7_Application::ausgab(int iarg) {
     }
     int np = the_stack->np-1;
     if( iarg == BeforeBrems || iarg == BeforeAnnihRest || iarg == BeforeAnnihFlight &&
-        the_stack->latch[np] > 0 ) {
-        the_stack->latch[np] = 0; rr_flag = 1;
-        the_egsvr->nbr_split = the_egsvr->i_do_rr; return 0;
+            the_stack->latch[np] > 0 ) {
+        the_stack->latch[np] = 0;
+        rr_flag = 1;
+        the_egsvr->nbr_split = the_egsvr->i_do_rr;
+        return 0;
     }
     if( iarg == AfterBrems && deflect_brems ) {
         EGS_Vector u(the_stack->u[np-1],the_stack->v[np-1],the_stack->w[np-1]);
@@ -441,8 +452,10 @@ int Tutor7_Application::ausgab(int iarg) {
         EGS_Float cost = (beta + eta)/(1 + beta*eta);
         EGS_Float sint = 1 - cost*cost;
         if( sint > 0 ) {
-            sint = sqrt(sint); EGS_Float cphi, sphi;
-            rndm->getAzimuth(cphi,sphi); u.rotate(cost,sint,cphi,sphi);
+            sint = sqrt(sint);
+            EGS_Float cphi, sphi;
+            rndm->getAzimuth(cphi,sphi);
+            u.rotate(cost,sint,cphi,sphi);
             the_stack->u[np-1] = u.x;
             the_stack->v[np-1] = u.y;
             the_stack->w[np-1] = u.z;
@@ -454,7 +467,8 @@ int Tutor7_Application::ausgab(int iarg) {
         if( iarg == AfterBrems && rr_flag ) {
             the_stack->latch[the_stack->npold-1] = 1;
         }
-        rr_flag = 0; return 0;
+        rr_flag = 0;
+        return 0;
     }
     /*
     if( iarg == FluorescentEvent && the_stack->latch[np] > 0 ) {
@@ -528,9 +542,11 @@ void Tutor7_Application::resetCounter() {
     // Reset everything in the base class
     EGS_AdvancedApplication::resetCounter();
     // Reset our own data to zero.
-    score->reset(); Etot = 0;
+    score->reset();
+    Etot = 0;
     for(int j=0; j<nph; j++) pheight[j]->reset();
-    eflu->reset(); gflu->reset();
+    eflu->reset();
+    gflu->reset();
 }
 
 int Tutor7_Application::addState(istream &data) {
@@ -540,7 +556,9 @@ int Tutor7_Application::addState(istream &data) {
     if( err ) return err;
     // Then read our own data to temporary variables and add to
     // our results.
-    double etot_tmp; data >> etot_tmp; Etot += etot_tmp;
+    double etot_tmp;
+    data >> etot_tmp;
+    Etot += etot_tmp;
     EGS_ScoringArray tmp(nreg+2);
     if( !tmp.setState(data) ) return 101;
     (*score) += tmp;
@@ -559,29 +577,30 @@ int Tutor7_Application::addState(istream &data) {
 
 void Tutor7_Application::outputResults() {
     egsInformation("\n\n last case = %d Etot = %g\n",
-            (int)current_case,Etot);
+                   (int)current_case,Etot);
     double norm = ((double)current_case)/Etot;
     score->reportResults(norm,
-            "Reflected/deposited/transmitted energy fraction",false,
-            "  %d  %12.6e +/- %12.6e %c\n");
+                         "Reflected/deposited/transmitted energy fraction",false,
+                         "  %d  %12.6e +/- %12.6e %c\n");
     if( nph > 0 ) {
         if( nph > 1 ) egsInformation("\n\n Pulse height distributions\n"
-                "==========================\n\n");
+                                         "==========================\n\n");
         else egsInformation("\n\n Pulse height distribution in region %d\n"
-                "==========================================\n\n",
-                ph_regions[0]);
+                                "==========================================\n\n",
+                                ph_regions[0]);
         for(int j=0; j<nph; j++) {
             if( nph > 1 ) egsInformation("Region %d\n"
-                    "----------------\n\n",ph_regions[j]);
+                                             "----------------\n\n",ph_regions[j]);
             double f,df;
             for(int i=0; i<pheight[j]->bins(); i++) {
                 pheight[j]->currentResult(i,f,df);
                 egsInformation("%g   %g   %g\n",ph_de[j]*(0.5+i),
-                        f/ph_de[j],df/ph_de[j]);
+                               f/ph_de[j],df/ph_de[j]);
             }
         }
     }
-    EGS_Float Rmax = 20; EGS_Float dr = Rmax/200;
+    EGS_Float Rmax = 20;
+    EGS_Float dr = Rmax/200;
     /*
     egsInformation("\n\n Electron/Photon fluence at back of geometry as a function of radial distance\n"
                         "============================================================================\n");

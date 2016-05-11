@@ -72,13 +72,13 @@ struct EGS_GeometryDebug {
     int   nstep;
 };
 extern __extc__ struct EGS_GeometryDebug
-                 F77_OBJ_(geometry_debug,GEOMETRY_DEBUG);
+F77_OBJ_(geometry_debug,GEOMETRY_DEBUG);
 struct EGS_GeometryDebug* the_geometry_debug =
-                &F77_OBJ_(geometry_debug,GEOMETRY_DEBUG);
+    &F77_OBJ_(geometry_debug,GEOMETRY_DEBUG);
 #endif
 
 extern __extc__ void F77_OBJ_(range_discard,RANGE_DISCARD)(
-        const EGS_Float *tperp, const EGS_Float *range);
+    const EGS_Float *tperp, const EGS_Float *range);
 
 #define calculatePhotonMFP F77_OBJ_(calculate_photon_mfp,CALCULATE_PHOTON_MFP)
 extern __extc__ void calculatePhotonMFP(EGS_Float *,EGS_Float *);
@@ -105,7 +105,7 @@ extern __extc__  void
 F77_OBJ_(select_photon_mfp,SELECT_PHOTON_MFP)(EGS_Float *dpmfp);
 
 extern __extc__ void F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(const int *,
-                                  const EGS_Float *);
+        const EGS_Float *);
 #define egsScaleXsection F77_OBJ_(egs_scale_photon_xsection,EGS_SCALE_PHOTON_XSECTION)
 extern __extc__ void egsScaleXsection(const int *imed, const EGS_Float *fac,
                                       const int *which);

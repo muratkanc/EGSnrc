@@ -39,7 +39,7 @@
 
 
 #ifdef VIEW_DEBUG
-    extern void (* egsWarning)(const char *, ...);
+extern void (* egsWarning)(const char *, ...);
 #endif
 
 SaveImage::SaveImage(QWidget *parent, const char *name)

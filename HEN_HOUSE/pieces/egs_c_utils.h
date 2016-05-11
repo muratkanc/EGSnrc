@@ -145,7 +145,7 @@ void C_CONVENTION EGS_REWIND_CONTROL_FILE__(int *status);
  */
 #define egsWriteControlFile F77_OBJ_(egs_write_control_file,EGS_WRITE_CONTROL_FILE)
 void egsWriteControlFile(const char *buf, const int *n,
-                                            int *status, int len);
+                         int *status, int len);
 #ifdef MAKE_WIN_DISTRIBUTION
 void C_CONVENTION egs_write_control_file_(const char *buf, const int *n, int *status, int len);
 void C_CONVENTION egs_write_control_file__(const char *buf, const int *n, int *status, int len);

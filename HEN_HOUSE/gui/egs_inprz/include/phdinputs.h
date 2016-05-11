@@ -42,13 +42,13 @@
 class MPHDInputs : public MInputBlock
 {
 public:
-	MPHDInputs();
-	~MPHDInputs();
+    MPHDInputs();
+    ~MPHDInputs();
 
-	QString slote;
- 	QString deltae;
- 	v_int   sreg;
-	v_float bintop;
+    QString slote;
+    QString deltae;
+    v_int   sreg;
+    v_float bintop;
 };
 std::ifstream & operator >> ( std::ifstream & in, MPHDInputs * rPHD );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MPHDInputs * rPHD );

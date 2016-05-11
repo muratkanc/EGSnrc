@@ -43,74 +43,77 @@ using namespace std;
 using namespace Qt;
 
 EGS_GUI_Widget::EGS_GUI_Widget(QWidget *parent, const char *name,WFlags f) :
-                               QWidget(parent,f), the_name(name)
+    QWidget(parent,f), the_name(name)
 {
-    config_reader = 0; killed = false;
+    config_reader = 0;
+    killed = false;
 }
 
 EGS_GUI_Widget::EGS_GUI_Widget(EGS_ConfigReader *cr, QWidget *parent, const char *name, WFlags f) :
-                                                     QWidget(parent,f), the_name(name)
+    QWidget(parent,f), the_name(name)
 {
-    config_reader = cr; killed = false;
+    config_reader = cr;
+    killed = false;
 }
 
 void EGS_GUI_Widget::changeConfiguration(const QString &new_config) {
-  if( new_config.isEmpty() ) {
+    if( new_config.isEmpty() ) {
 #ifdef IK_DEBUG
-    qDebug("EGS_GUI_Widget::changeConfiguration called with an empty string?");
+        qDebug("EGS_GUI_Widget::changeConfiguration called with an empty string?");
 #endif
-    return;
-  }
-  if( !config_reader ) config_reader = new EGS_ConfigReader(new_config);
-  else {
-      int res = config_reader->checkConfigFile(new_config);
-      bool use_it = ( res == 0 );
-      if ( res ) {
-          if( res == 1 ) QMessageBox::warning(this,"Error",
-            QString("Failed to open %1 for reading").arg(new_config),
-              QMessageBox::Ok,0,0);
-          else if( res == 2 ) {
-            int answer = QMessageBox::warning(this,"Error",
+        return;
+    }
+    if( !config_reader ) config_reader = new EGS_ConfigReader(new_config);
+    else {
+        int res = config_reader->checkConfigFile(new_config);
+        bool use_it = ( res == 0 );
+        if ( res ) {
+            if( res == 1 ) QMessageBox::warning(this,"Error",
+                                                    QString("Failed to open %1 for reading").arg(new_config),
+                                                    QMessageBox::Ok,0,0);
+            else if( res == 2 ) {
+                int answer = QMessageBox::warning(this,"Error",
 #ifdef WIN32
-              "This appears to be a Unix/Linux config file\n"
-              "Do you still want to use it ?",
+                                                  "This appears to be a Unix/Linux config file\n"
+                                                  "Do you still want to use it ?",
 #else
-              "This appears to be a Windows config file\n"
-              "Do you still want to use it ?",
+                                                  "This appears to be a Windows config file\n"
+                                                  "Do you still want to use it ?",
 #endif
-              QMessageBox::Ok,QMessageBox::Cancel,0);
-             if( answer == QMessageBox::Ok ) use_it = true;
-          }
-          else
-              QMessageBox::warning(this,"Error",
-                QString("Unknown error while reading %1").arg(new_config),
-                QMessageBox::Ok,0,0);
-      }
-      if( use_it) config_reader->setConfig(new_config);
-  }
-  QString hh = config_reader->getVariable("HEN_HOUSE",true);
-  emit henHouseChanged(hh);
+                                                  QMessageBox::Ok,QMessageBox::Cancel,0);
+                if( answer == QMessageBox::Ok ) use_it = true;
+            }
+            else
+                QMessageBox::warning(this,"Error",
+                                     QString("Unknown error while reading %1").arg(new_config),
+                                     QMessageBox::Ok,0,0);
+        }
+        if( use_it) config_reader->setConfig(new_config);
+    }
+    QString hh = config_reader->getVariable("HEN_HOUSE",true);
+    emit henHouseChanged(hh);
 }
 
 void EGS_GUI_Widget::setHenHouse(const QString &new_hh) {
-  QDir tmp(new_hh);
-  if( tmp.exists() ) {
-      QString hh = tmp.canonicalPath(); QChar junk = QDir::separator();
-      if( !hh.endsWith("/") && !hh.endsWith(junk) )
-          hh += QDir::separator();
-      if( !config_reader ) config_reader = new EGS_ConfigReader;
-      config_reader->setVariable("HEN_HOUSE",hh);
-      emit henHouseChanged(hh);
-  }
+    QDir tmp(new_hh);
+    if( tmp.exists() ) {
+        QString hh = tmp.canonicalPath();
+        QChar junk = QDir::separator();
+        if( !hh.endsWith("/") && !hh.endsWith(junk) )
+            hh += QDir::separator();
+        if( !config_reader ) config_reader = new EGS_ConfigReader;
+        config_reader->setVariable("HEN_HOUSE",hh);
+        emit henHouseChanged(hh);
+    }
 }
 
 void EGS_GUI_Widget::setEgsHome(const QString &new_eh) {
-  QDir tmp(new_eh);
-  if( tmp.exists() ) {
-      if( !config_reader ) config_reader = new EGS_ConfigReader;
-      config_reader->setVariable("EGS_HOME",new_eh);
-      emit egsHomeChanged(new_eh);
-  }
+    QDir tmp(new_eh);
+    if( tmp.exists() ) {
+        if( !config_reader ) config_reader = new EGS_ConfigReader;
+        config_reader->setVariable("EGS_HOME",new_eh);
+        emit egsHomeChanged(new_eh);
+    }
 }
 
 QString EGS_GUI_Widget::egsConfiguration() {
@@ -155,22 +158,22 @@ QString EGS_GUI_Widget::makeProgram() {
 
 bool EGS_GUI_Widget::checkVars() {
 #ifdef IK_DEBUG
-  qDebug("In EGS_GUI_Widget::checkVars()");
+    qDebug("In EGS_GUI_Widget::checkVars()");
 #endif
-  if( egsConfiguration().isEmpty() ) {
-    QMessageBox::critical(this,"Error",
-      "First define the configuration file on the configuration page",1,0,0);
-    return false;
-  }
-  if( henHouse().isEmpty() ) {
-    QMessageBox::critical(this,"Error",
-      "First define HEN_HOUSE on the configuration page",1,0,0);
-    return false;
-  }
-  if( egsHome().isEmpty() ) {
-    QMessageBox::critical(this,"Error",
-      "First define EGS_HOME on the configuration page",1,0,0);
-    return false;
-  }
-  return true;
+    if( egsConfiguration().isEmpty() ) {
+        QMessageBox::critical(this,"Error",
+                              "First define the configuration file on the configuration page",1,0,0);
+        return false;
+    }
+    if( henHouse().isEmpty() ) {
+        QMessageBox::critical(this,"Error",
+                              "First define HEN_HOUSE on the configuration page",1,0,0);
+        return false;
+    }
+    if( egsHome().isEmpty() ) {
+        QMessageBox::critical(this,"Error",
+                              "First define EGS_HOME on the configuration page",1,0,0);
+        return false;
+    }
+    return true;
 }

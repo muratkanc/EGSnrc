@@ -66,17 +66,17 @@ public:
     /*! \brief Perform range discard or Russian Roulette on e+/e-
     */
     RejectionAction rangeDiscard(int q,
-            const EGS_Vector &x, EGS_Float E, EGS_Float logE,
-            EGS_Float tperp, EGS_Float range, bool is_cav,
-            EGS_RandomGenerator *rndm, EGS_Float &wt) const;
+                                 const EGS_Vector &x, EGS_Float E, EGS_Float logE,
+                                 EGS_Float tperp, EGS_Float range, bool is_cav,
+                                 EGS_RandomGenerator *rndm, EGS_Float &wt) const;
 
     RejectionAction rangeDiscard(int np, EGS_Stack *stack,
-            EGS_Float tperp, EGS_Float range, bool is_cav,
-            EGS_Float logE, EGS_RandomGenerator *rndm) const;
+                                 EGS_Float tperp, EGS_Float range, bool is_cav,
+                                 EGS_Float logE, EGS_RandomGenerator *rndm) const;
 
     EGS_Float getRange(int q, EGS_Float elke) {
         return q == -1 ? erange.interpolateFast(elke) :
-                         prange.interpolateFast(elke);
+               prange.interpolateFast(elke);
     };
 
     bool canEnterCavity(int q, EGS_Float elke, const EGS_Vector &x) {
@@ -88,15 +88,25 @@ public:
         return range >= cgeom->hownear(-1,x);
     };
 
-    EGS_Float hownear(const EGS_Vector &x) { return cgeom->hownear(-1,x); };
+    EGS_Float hownear(const EGS_Vector &x) {
+        return cgeom->hownear(-1,x);
+    };
 
     static EGS_RangeRejection* getRangeRejection(EGS_Input *inp,
             EGS_Interpolator *i_ededx, EGS_Interpolator *i_pdedx);
 
-    RejectionType getType() const { return type; };
-    EGS_Float     getProbi() const { return probi; };
-    EGS_Float     getEsave() const { return Esave; };
-    EGS_BaseGeometry *getCavityGeometry() { return cgeom; };
+    RejectionType getType() const {
+        return type;
+    };
+    EGS_Float     getProbi() const {
+        return probi;
+    };
+    EGS_Float     getEsave() const {
+        return Esave;
+    };
+    EGS_BaseGeometry *getCavityGeometry() {
+        return cgeom;
+    };
 
 protected:
 

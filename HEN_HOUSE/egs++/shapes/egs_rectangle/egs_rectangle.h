@@ -42,22 +42,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_RECTANGLE_DLL
-        #define EGS_RECTANGLE_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_RECTANGLE_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_RECTANGLE_LOCAL
+#ifdef BUILD_RECTANGLE_DLL
+#define EGS_RECTANGLE_EXPORT __declspec(dllexport)
+#else
+#define EGS_RECTANGLE_EXPORT __declspec(dllimport)
+#endif
+#define EGS_RECTANGLE_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_RECTANGLE_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_RECTANGLE_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_RECTANGLE_EXPORT
-        #define EGS_RECTANGLE_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_RECTANGLE_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_RECTANGLE_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_RECTANGLE_EXPORT
+#define EGS_RECTANGLE_LOCAL
+#endif
 
 #endif
 

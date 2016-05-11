@@ -43,22 +43,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_PRISM_DLL
-        #define EGS_PRISM_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_PRISM_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_PRISM_LOCAL
+#ifdef BUILD_PRISM_DLL
+#define EGS_PRISM_EXPORT __declspec(dllexport)
+#else
+#define EGS_PRISM_EXPORT __declspec(dllimport)
+#endif
+#define EGS_PRISM_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_PRISM_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_PRISM_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_PRISM_EXPORT
-        #define EGS_PRISM_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_PRISM_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_PRISM_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_PRISM_EXPORT
+#define EGS_PRISM_LOCAL
+#endif
 
 #endif
 

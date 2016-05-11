@@ -44,81 +44,81 @@
 ExecutiondlgImpl::ExecutiondlgImpl( QWidget* parent, const char* name, bool modal, Qt::WFlags f )
 //qt3to4 -- BW
 //           : MExecutionDialog( parent, name, modal, f )
-             : QDialog(parent)
+    : QDialog(parent)
 {
 
-  //qt3to4 -- BW
-  setupUi(this);
-  the_command = name;
-  init();
+    //qt3to4 -- BW
+    setupUi(this);
+    the_command = name;
+    init();
 
-  //Q3WhatsThis::add ( interactiveRadioButton, RUN_STAND_ALONE );
-  interactiveRadioButton->setWhatsThis(RUN_STAND_ALONE );
-  interactiveRadioButton->setToolTip(RUN_STAND_ALONE );
+    //Q3WhatsThis::add ( interactiveRadioButton, RUN_STAND_ALONE );
+    interactiveRadioButton->setWhatsThis(RUN_STAND_ALONE );
+    interactiveRadioButton->setToolTip(RUN_STAND_ALONE );
 
-  //Q3WhatsThis::add (  batchRadioButton, RUN_PARALLEL );
-  batchRadioButton->setWhatsThis(RUN_PARALLEL );
-  batchRadioButton->setToolTip(RUN_PARALLEL );
+    //Q3WhatsThis::add (  batchRadioButton, RUN_PARALLEL );
+    batchRadioButton->setWhatsThis(RUN_PARALLEL );
+    batchRadioButton->setToolTip(RUN_PARALLEL );
 
-  //Q3WhatsThis::add (  NumJobSpinBox, NUMBER_OF_JOBS );
-  NumJobSpinBox->setWhatsThis(NUMBER_OF_JOBS );
-  NumJobSpinBox->setToolTip(NUMBER_OF_JOBS );
+    //Q3WhatsThis::add (  NumJobSpinBox, NUMBER_OF_JOBS );
+    NumJobSpinBox->setWhatsThis(NUMBER_OF_JOBS );
+    NumJobSpinBox->setToolTip(NUMBER_OF_JOBS );
 
-  //Q3WhatsThis::add (  QueueComboBox, QUEUE_TYPE );//      since it is implementation dependent
-                                                    //     i.e., the batch submission system being used
+    //Q3WhatsThis::add (  QueueComboBox, QUEUE_TYPE );//      since it is implementation dependent
+    //     i.e., the batch submission system being used
     QueueComboBox->setWhatsThis(QUEUE_TYPE );
     QueueComboBox->setToolTip(QUEUE_TYPE );
 //  QToolTip::add(  StartJobSpinBox, START_JOB );
 //  QWhatsThis::add (  StartJobSpinBox, START_JOB );
 
 // specify type of queue
-  QueueComboBox->clear();
-  for (uint i = 0; i < sizeof queue_type / sizeof(char *) ; i++)
-         QueueComboBox->addItem( queue_type[i] );
+    QueueComboBox->clear();
+    for (uint i = 0; i < sizeof queue_type / sizeof(char *) ; i++)
+        QueueComboBox->addItem( queue_type[i] );
 // For specific settings of the BATCH SUBMISSION SYSTEM
-   getQueueingSystemOptions();
+    getQueueingSystemOptions();
 
- // tool tip for ListBoxItems inside combo boxes
+// tool tip for ListBoxItems inside combo boxes
 // created from scratch since ListBoxItems ain't widgets
-  ctt = new ComboBoxToolTip( QueueComboBox, 0, queues, sizeof queues / sizeof(char *) );
+    ctt = new ComboBoxToolTip( QueueComboBox, 0, queues, sizeof queues / sizeof(char *) );
 
 }
 
 ExecutiondlgImpl::~ExecutiondlgImpl()
 {
- zap(ctt);
+    zap(ctt);
 }
 
 //qt3to4 -- BW
 void ExecutiondlgImpl::getQueueingSystemOptions() {
-  QString script_dir = the_hen_house + "scripts";
-  QDir dir(script_dir);
-  dir.setNameFilters(QStringList("batch_options.*"));
-  QStringList list = dir.entryList();
-  queueSystemcomboBox->clear();
-  for(QStringList::Iterator it=list.begin(); it != list.end(); ++it) {
-      QString aux = *it;
-      if( !aux.endsWith("~") && !aux.endsWith(".bak") ) {
-          aux.replace("batch_options.","");
-          queueSystemcomboBox->addItem(aux);
-      }
-  }
-  char *ebs = getenv("EGS_BATCH_SYSTEM");
-  if( ebs )
-      queueSystemcomboBox->setItemText(queueSystemcomboBox->currentIndex(),ebs);
+    QString script_dir = the_hen_house + "scripts";
+    QDir dir(script_dir);
+    dir.setNameFilters(QStringList("batch_options.*"));
+    QStringList list = dir.entryList();
+    queueSystemcomboBox->clear();
+    for(QStringList::Iterator it=list.begin(); it != list.end(); ++it) {
+        QString aux = *it;
+        if( !aux.endsWith("~") && !aux.endsWith(".bak") ) {
+            aux.replace("batch_options.","");
+            queueSystemcomboBox->addItem(aux);
+        }
+    }
+    char *ebs = getenv("EGS_BATCH_SYSTEM");
+    if( ebs )
+        queueSystemcomboBox->setItemText(queueSystemcomboBox->currentIndex(),ebs);
 }
 //qt3to4 -- BW
 void ExecutiondlgImpl::init()
 {
-  QStringList tmpExecStr = the_command.split(" ");
-   the_hen_house = tmpExecStr[0];
+    QStringList tmpExecStr = the_command.split(" ");
+    the_hen_house = tmpExecStr[0];
 }
 //qt3to4 -- BW
 void ExecutiondlgImpl::update_batch()
 {
-   if ( batchRadioButton->isChecked() )
-       batchGroupBox->setEnabled(true);
-   else
+    if ( batchRadioButton->isChecked() )
+        batchGroupBox->setEnabled(true);
+    else
         batchGroupBox->setEnabled(false);
 }
 
@@ -126,71 +126,75 @@ void ExecutiondlgImpl::update_batch()
 void ExecutiondlgImpl::run()
 {
 
-     QString exec_string = the_command;
+    QString exec_string = the_command;
 
-     QString msg = "\n\nINTERACTIVE RUN COMPLETED !!!";
+    QString msg = "\n\nINTERACTIVE RUN COMPLETED !!!";
 
-     //----------------------------
-     // exec_string contains :
-     //----------------------------
-     // HEN_HOUSE + user-code name + executable + input file name + data file name
-     //        0                          1                           2                          3                        4
-     QStringList tmpExecStr = exec_string.split(" ");
-     the_hen_house = tmpExecStr[0];
-     QString vTitle = "Running : " + tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4] ;
+    //----------------------------
+    // exec_string contains :
+    //----------------------------
+    // HEN_HOUSE + user-code name + executable + input file name + data file name
+    //        0                          1                           2                          3                        4
+    QStringList tmpExecStr = exec_string.split(" ");
+    the_hen_house = tmpExecStr[0];
+    QString vTitle = "Running : " + tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4] ;
 
-     QStringList args;
+    QStringList args;
 
 #ifdef  WIN32
 //---------------------------------------------------------------------------------
 //   ON WINDOWS WE RUN THE CODE INTERACTIVELY ONLY
 //---------------------------------------------------------------------------------
-      args.push_back(      tmpExecStr[2] );
-      args += "-i";args  += tmpExecStr[3];
-      if(tmpExecStr[4]!="pegsless") args += "-p";args += tmpExecStr[4];
+    args.push_back(      tmpExecStr[2] );
+    args += "-i";
+    args  += tmpExecStr[3];
+    if(tmpExecStr[4]!="pegsless") args += "-p";
+    args += tmpExecStr[4];
 //---------------------------------------------------------------------------------
 #else
-     QString egs_run       = tmpExecStr[2]; // default
-     QString snum_jobs = "";
-     QString queueSys    = "batch=";
-     QString queue          = "";
-     if ( batchRadioButton->isChecked() ){               // run remotely
+    QString egs_run       = tmpExecStr[2]; // default
+    QString snum_jobs = "";
+    QString queueSys    = "batch=";
+    QString queue          = "";
+    if ( batchRadioButton->isChecked() ) {              // run remotely
         egs_run = the_hen_house + "scripts/run_user_code_batch";
-        if (NumJobSpinBox->value() == 1 ){
-           //vTitle = "Sending remote job: " +  tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4] ;
-           vTitle = "Sending remote job: " +  tmpExecStr[1];
-           msg = "\n\nJOB SUBMITTED TO THE QUEUE !!!";
+        if (NumJobSpinBox->value() == 1 ) {
+            //vTitle = "Sending remote job: " +  tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4] ;
+            vTitle = "Sending remote job: " +  tmpExecStr[1];
+            msg = "\n\nJOB SUBMITTED TO THE QUEUE !!!";
         }
-       else{
-   vTitle = "Sending " + NumJobSpinBox->text() + " remote jobs";
-   //vTitle = "Sending" + NumJobSpinBox->text() + " remote jobs: " +
-          //tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4]  ;
-          snum_jobs = (QString)"p=" + NumJobSpinBox->text();
-           msg = "\n\nJOBS SUBMITTED TO THE QUEUE !!!";
+        else {
+            vTitle = "Sending " + NumJobSpinBox->text() + " remote jobs";
+            //vTitle = "Sending" + NumJobSpinBox->text() + " remote jobs: " +
+            //tmpExecStr[1] + " " + tmpExecStr[3] + " " + tmpExecStr[4]  ;
+            snum_jobs = (QString)"p=" + NumJobSpinBox->text();
+            msg = "\n\nJOBS SUBMITTED TO THE QUEUE !!!";
         }
-       queue          = QueueComboBox->currentText () ;
-       queueSys += queueSystemcomboBox->currentText () ;
+        queue          = QueueComboBox->currentText () ;
+        queueSys += queueSystemcomboBox->currentText () ;
 
-       args.push_back(egs_run);
-       args += tmpExecStr[1];
-       args += tmpExecStr[3];
-       args += tmpExecStr[4];
-       args += queue;
-       args += queueSys;
-       args += snum_jobs;
-     }
-     else{
-            args.push_back(egs_run);
-            args += "-i";args  += tmpExecStr[3];
-            if(tmpExecStr[4]!="pegsless") args += "-p";args += tmpExecStr[4];
-     }
+        args.push_back(egs_run);
+        args += tmpExecStr[1];
+        args += tmpExecStr[3];
+        args += tmpExecStr[4];
+        args += queue;
+        args += queueSys;
+        args += snum_jobs;
+    }
+    else {
+        args.push_back(egs_run);
+        args += "-i";
+        args  += tmpExecStr[3];
+        if(tmpExecStr[4]!="pegsless") args += "-p";
+        args += tmpExecStr[4];
+    }
 
 #endif
 
- //    QMessageBox::information( this, " INFO",args.join(", "), QMessageBox::Ok );
+//    QMessageBox::information( this, " INFO",args.join(", "), QMessageBox::Ok );
 
     CommandManager* run_egs = new CommandManager( 0, vTitle.toLatin1().data(), args );
-                    run_egs->setEndMessage( msg );
+    run_egs->setEndMessage( msg );
     //run_egs->exec(); //runs modal
     run_egs->show(); //runs modeless
 

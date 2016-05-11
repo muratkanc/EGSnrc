@@ -52,22 +52,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_DOSE_SCORING_DLL
-        #define BEAM_DOSE_SCORING_EXPORT __declspec(dllexport)
-    #else
-        #define BEAM_DOSE_SCORING_EXPORT __declspec(dllimport)
-    #endif
-    #define BEAM_DOSE_SCORING_LOCAL
+#ifdef BUILD_DOSE_SCORING_DLL
+#define BEAM_DOSE_SCORING_EXPORT __declspec(dllexport)
+#else
+#define BEAM_DOSE_SCORING_EXPORT __declspec(dllimport)
+#endif
+#define BEAM_DOSE_SCORING_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define BEAM_DOSE_SCORING_EXPORT __attribute__ ((visibility ("default")))
-        #define BEAM_DOSE_SCORING_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define BEAM_DOSE_SCORING_EXPORT
-        #define BEAM_DOSE_SCORING_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define BEAM_DOSE_SCORING_EXPORT __attribute__ ((visibility ("default")))
+#define BEAM_DOSE_SCORING_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define BEAM_DOSE_SCORING_EXPORT
+#define BEAM_DOSE_SCORING_LOCAL
+#endif
 
 #endif
 

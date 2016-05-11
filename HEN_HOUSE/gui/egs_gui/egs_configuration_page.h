@@ -43,29 +43,29 @@ class EGS_ConfigReader;
 
 class EGS_ConfigurationPage : public EGS_GUI_Widget {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  EGS_ConfigurationPage(QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
-  EGS_ConfigurationPage(EGS_ConfigReader *cr,
-          QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
-  ~EGS_ConfigurationPage(){}
+    EGS_ConfigurationPage(QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
+    EGS_ConfigurationPage(EGS_ConfigReader *cr,
+                          QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
+    ~EGS_ConfigurationPage() {}
 public slots:
 
-  void selectConfigurationFile();
-  void selectHenHouse();
-  void selectEgsHome();
-  void setHenHouseField(const QString &);
-  void queueTypeChanged(int);
+    void selectConfigurationFile();
+    void selectHenHouse();
+    void selectEgsHome();
+    void setHenHouseField(const QString &);
+    void queueTypeChanged(int);
 
 private:
 
-  void make();
+    void make();
 
-  QLineEdit  *le_egshome;
-  QLineEdit  *le_henhouse;
-  QLineEdit  *le_configuration;
+    QLineEdit  *le_egshome;
+    QLineEdit  *le_henhouse;
+    QLineEdit  *le_configuration;
 
 };
 

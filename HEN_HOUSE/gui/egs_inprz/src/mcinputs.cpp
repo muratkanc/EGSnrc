@@ -37,59 +37,59 @@
 
 MMCInputs::MMCInputs()
 {
-  ncase   = "20000";
-	rnd.push_back( 1 );
-	rnd.push_back( 33 );
-	maxcpu  = "60";
-	ifull   = "dose and stoppers";
-	stat    = "0.1";
-	kerma   = "no";
-	photreg = "no";
+    ncase   = "20000";
+    rnd.push_back( 1 );
+    rnd.push_back( 33 );
+    maxcpu  = "60";
+    ifull   = "dose and stoppers";
+    stat    = "0.1";
+    kerma   = "no";
+    photreg = "no";
 }
 
 MMCInputs::~MMCInputs()
 {
-	//free anything created in the constructor here
+    //free anything created in the constructor here
 }
 
 std::ifstream & operator >> ( std::ifstream & in, MMCInputs*  rMC )
 {
-	std::vector<string> codes;
-	codes.push_back("NUMBER OF HISTORIES");
-	codes.push_back("MAX CPU HOURS ALLOWED");
-	codes.push_back("IFULL");
-	codes.push_back("STATISTICAL ACCURACY SOUGHT");
-	codes.push_back("SCORE KERMA");
-	codes.push_back("PHOTON REGENERATION");
-	codes.push_back("INITIAL RANDOM NO. SEEDS");
+    std::vector<string> codes;
+    codes.push_back("NUMBER OF HISTORIES");
+    codes.push_back("MAX CPU HOURS ALLOWED");
+    codes.push_back("IFULL");
+    codes.push_back("STATISTICAL ACCURACY SOUGHT");
+    codes.push_back("SCORE KERMA");
+    codes.push_back("PHOTON REGENERATION");
+    codes.push_back("INITIAL RANDOM NO. SEEDS");
 
-	DE_Parser *p = new DE_Parser(codes,0,"Monte Carlo inputs", in, false);
+    DE_Parser *p = new DE_Parser(codes,0,"Monte Carlo inputs", in, false);
 
-	rMC->ncase   = getIt( codes[0] , "20000", rMC->errors, p ) ;
-	rMC->maxcpu  = getIt( codes[1] , "60", rMC->errors, p ) ;
-  	if ( ( rMC->gusercode() != sprrznrc ) && ( rMC->gusercode() != flurznrc ) ){
-		rMC->ifull   = getIt( codes[2] , "dose and stoppers", rMC->errors, p ) ;
-		rMC->stat    = getIt( codes[3] , "0.1", rMC->errors, p ) ;
-	}
-	if ( rMC->gusercode() == dosrznrc) {
-		rMC->kerma   = getIt( codes[4] , "no", rMC->errors, p ) ;
-	}
-	else if ( rMC->gusercode() != flurznrc ) {
-        	rMC->photreg = getIt( codes[5] , "no", rMC->errors, p ) ;
-	}
+    rMC->ncase   = getIt( codes[0] , "20000", rMC->errors, p ) ;
+    rMC->maxcpu  = getIt( codes[1] , "60", rMC->errors, p ) ;
+    if ( ( rMC->gusercode() != sprrznrc ) && ( rMC->gusercode() != flurznrc ) ) {
+        rMC->ifull   = getIt( codes[2] , "dose and stoppers", rMC->errors, p ) ;
+        rMC->stat    = getIt( codes[3] , "0.1", rMC->errors, p ) ;
+    }
+    if ( rMC->gusercode() == dosrznrc) {
+        rMC->kerma   = getIt( codes[4] , "no", rMC->errors, p ) ;
+    }
+    else if ( rMC->gusercode() != flurznrc ) {
+        rMC->photreg = getIt( codes[5] , "no", rMC->errors, p ) ;
+    }
 
-	rMC->rnd   = getThem( codes[6], 1, 1073741824, rMC->rnd, rMC->errors, p ) ;
+    rMC->rnd   = getThem( codes[6], 1, 1073741824, rMC->rnd, rMC->errors, p ) ;
 //	if ( rMC->rnd[0] > 4 ) {
 //		rMC->rnd[0] = 1;
 //		rMC->errors += "wrong random luxury level, default to 1 ! <br>";
 //	}
-	if ( !rMC->errors.isEmpty() ) {
-	   rMC->errors = "***  MC Inputs block *** <br>" + rMC->errors + "<br>";
-	}
+    if ( !rMC->errors.isEmpty() ) {
+        rMC->errors = "***  MC Inputs block *** <br>" + rMC->errors + "<br>";
+    }
 
-	delete p;
+    delete p;
 
-	return in;
+    return in;
 }
 
 /*
@@ -121,26 +121,26 @@ Q3TextStream & operator << ( Q3TextStream & t, MMCInputs * rMC )
 //qt3to4 -- BW
 QTextStream & operator << ( QTextStream & t, MMCInputs * rMC )
 {
-        print_delimeter( "start" , "Monte Carlo inputs", t);
+    print_delimeter( "start" , "Monte Carlo inputs", t);
 
-        t << "NUMBER OF HISTORIES= "      << rMC->ncase  << "\n";
-        t << "INITIAL RANDOM NO. SEEDS= " << rMC->rnd    << "\n";
-        t << "MAX CPU HOURS ALLOWED= "    << rMC->maxcpu << "\n";
-        if ( ( rMC->gusercode() != sprrznrc) ||
-             ( rMC->gusercode() != flurznrc) ){
-         t << "IFULL= "                      << rMC->ifull << "\n";
-         t << "STATISTICAL ACCURACY SOUGHT= " << rMC->stat << "\n";
-        }
-        if ( rMC->gusercode() == dosrznrc ) {
-           t << "SCORE KERMA= " << rMC->kerma << "\n";
-        }
-        else if ( rMC->gusercode() != flurznrc ) {
-           t << "PHOTON REGENERATION= " << rMC->photreg << "\n";
-        }
+    t << "NUMBER OF HISTORIES= "      << rMC->ncase  << "\n";
+    t << "INITIAL RANDOM NO. SEEDS= " << rMC->rnd    << "\n";
+    t << "MAX CPU HOURS ALLOWED= "    << rMC->maxcpu << "\n";
+    if ( ( rMC->gusercode() != sprrznrc) ||
+            ( rMC->gusercode() != flurznrc) ) {
+        t << "IFULL= "                      << rMC->ifull << "\n";
+        t << "STATISTICAL ACCURACY SOUGHT= " << rMC->stat << "\n";
+    }
+    if ( rMC->gusercode() == dosrznrc ) {
+        t << "SCORE KERMA= " << rMC->kerma << "\n";
+    }
+    else if ( rMC->gusercode() != flurznrc ) {
+        t << "PHOTON REGENERATION= " << rMC->photreg << "\n";
+    }
 
-        print_delimeter( "stop" , "Monte Carlo inputs", t);
+    print_delimeter( "stop" , "Monte Carlo inputs", t);
 
-        return t;
+    return t;
 }
 
 

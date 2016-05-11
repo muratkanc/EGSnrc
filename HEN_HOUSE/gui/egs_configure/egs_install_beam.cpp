@@ -38,124 +38,124 @@
 #endif
 
 static const char* progs_dir[] = {
-             "addphsp",
-             "beamdp",
-             "ctcreate",
-             "readphsp",
-             "statdose"
+    "addphsp",
+    "beamdp",
+    "ctcreate",
+    "readphsp",
+    "statdose"
 #ifndef WIN32
-             ,"dosxyz_show"
+    ,"dosxyz_show"
 #endif
 };
 
 void QInstallPage::beamInstall()
 {
-     /*if (!beamCheckBox->isChecked()){
-         emit beamDone();
-         return;
-     }*/
-     resetProgressBar( NUMBER_OF_STEPS - beamBuild );
-     setSubTitle("Configuring BEAMnrc");
+    /*if (!beamCheckBox->isChecked()){
+        emit beamDone();
+        return;
+    }*/
+    resetProgressBar( NUMBER_OF_STEPS - beamBuild );
+    setSubTitle("Configuring BEAMnrc");
 
-     disconnect( this, SIGNAL( nextBuildStep( ushort )),
-                 this, SLOT( buildEGSnrc( ushort )) );
-        connect( this, SIGNAL( nextBuildStep( ushort )),
-                 this, SLOT( buildBEAMnrc( ushort )) );
-        connect( this, SIGNAL( exampleModulesCopied() ),
-                 this, SLOT( finalize_beam_setup() ) );
+    disconnect( this, SIGNAL( nextBuildStep( ushort )),
+                this, SLOT( buildEGSnrc( ushort )) );
+    connect( this, SIGNAL( nextBuildStep( ushort )),
+             this, SLOT( buildBEAMnrc( ushort )) );
+    connect( this, SIGNAL( exampleModulesCopied() ),
+             this, SLOT( finalize_beam_setup() ) );
 
-     installing_beam = true;
+    installing_beam = true;
 
-     buildBEAMnrc( beamBuild );
+    buildBEAMnrc( beamBuild );
 }
 
 void QInstallPage::buildBEAMnrc( ushort code )
 {
-  switch( code ){
+    switch( code ) {
     case beamBuild:
-         updateProgress();
-         buildFlag = addPhSp;
-         printProgress("\n\n => Compiling tool to create BEAMnrc user codes ...\n\n");
-         buildEGSCode( henHouse() + "omega/beamnrc/tools/" );
-         break;
+        updateProgress();
+        buildFlag = addPhSp;
+        printProgress("\n\n => Compiling tool to create BEAMnrc user codes ...\n\n");
+        buildEGSCode( henHouse() + "omega/beamnrc/tools/" );
+        break;
     case addPhSp:
-         updateProgress();
-         buildFlag = beamDP;
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[0])                 +
-                       tr(" ...\n\n")
-                 );
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[0]) + QDir::separator() );
-         break;
+        updateProgress();
+        buildFlag = beamDP;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[0])                 +
+                      tr(" ...\n\n")
+                     );
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[0]) + QDir::separator() );
+        break;
     case beamDP:
-         updateProgress();
-         buildFlag = ctCreate;
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[1])                 +
-                       tr(" ...\n\n")
-                 );
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[1]) + QDir::separator() );
-         break;
+        updateProgress();
+        buildFlag = ctCreate;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[1])                 +
+                      tr(" ...\n\n")
+                     );
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[1]) + QDir::separator() );
+        break;
     case ctCreate:
-         updateProgress();
-         buildFlag = readPhSp;
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[2])                 +
-                       tr(" ...\n\n")
-                 );
-         delete_files(henHouse() + tr("omega/progs/") + QString(progs_dir[2]) + QDir::separator(),"*.o;*.obj");
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[2]) + QDir::separator() );
-         break;
+        updateProgress();
+        buildFlag = readPhSp;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[2])                 +
+                      tr(" ...\n\n")
+                     );
+        delete_files(henHouse() + tr("omega/progs/") + QString(progs_dir[2]) + QDir::separator(),"*.o;*.obj");
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[2]) + QDir::separator() );
+        break;
     case readPhSp:
-         updateProgress();
-         buildFlag = statDose;
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[3])                 +
-                       tr(" ...\n\n")
-                 );
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[3]) + QDir::separator() );
-         break;
+        updateProgress();
+        buildFlag = statDose;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[3])                 +
+                      tr(" ...\n\n")
+                     );
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[3]) + QDir::separator() );
+        break;
     case statDose:
-         updateProgress();
+        updateProgress();
 #ifndef WIN32
-         buildFlag = DOSxyzShow;
+        buildFlag = DOSxyzShow;
 #else
-         buildFlag = buildDOSXYZnrc;
+        buildFlag = buildDOSXYZnrc;
 #endif
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[4])                 +
-                       tr(" ...\n\n")
-                 );
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[4]) + QDir::separator() );
-         break;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[4])                 +
+                      tr(" ...\n\n")
+                     );
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[4]) + QDir::separator() );
+        break;
 #ifndef WIN32
     case DOSxyzShow:
-         updateProgress();
-         buildFlag = buildDOSXYZnrc;
-         printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
-                       QString(progs_dir[5])                 +
-                       tr(" ...\n\n")
-                 );
-         buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[5]) + QDir::separator() );
-         break;
+        updateProgress();
+        buildFlag = buildDOSXYZnrc;
+        printProgress(tr("\n\n => Compiling BEAMnrc tool ") +
+                      QString(progs_dir[5])                 +
+                      tr(" ...\n\n")
+                     );
+        buildEGSCode( henHouse() + tr("omega/progs/") + QString(progs_dir[5]) + QDir::separator() );
+        break;
 #endif
     case buildDOSXYZnrc:
-         updateProgress();
-         buildFlag = exampleModules;
-         printProgress("\n\n => Compiling DOSXYZnrc(in-phantom dose calculation tool)...\n\n");
-         buildEGSCode( egsHome() + "dosxyznrc" );
-         break;
+        updateProgress();
+        buildFlag = exampleModules;
+        printProgress("\n\n => Compiling DOSXYZnrc(in-phantom dose calculation tool)...\n\n");
+        buildEGSCode( egsHome() + "dosxyznrc" );
+        break;
     case exampleModules:
-         updateProgress();
-         //if ( ucCheckBox->isChecked() )
-         if ( needsUCs())
+        updateProgress();
+        //if ( ucCheckBox->isChecked() )
+        if ( needsUCs())
             copy_example_modules();
-         emit beamDone();
-         break;
+        emit beamDone();
+        break;
     default:
-          emit AllDone();
-          break;
-  }
+        emit AllDone();
+        break;
+    }
 }
 
 /*
@@ -164,33 +164,34 @@ void QInstallPage::buildBEAMnrc( ushort code )
           to EGSnrcMP user area.
 *****************************************************************
 */
-void QInstallPage::copy_example_modules(){
+void QInstallPage::copy_example_modules() {
 
-   printProgress(
-   (QString)"\n => Copying example accelerators to user area ....\n\n");
+    printProgress(
+        (QString)"\n => Copying example accelerators to user area ....\n\n");
 
-   QString eh = egsHome(); eh.chop(1);
-   QString source = henHouse() + tr("omega/beamnrc/BEAMnrc_examples");
-   if ( ! copyRecursively( source, eh ) ){
-     printProgress( tr("\nError copying example accelerator files from ")   +
-                    henHouse() + tr("omega/beamnrc/BEAMnrc_examples/ to ") +
-                    egsHome());
-   }
+    QString eh = egsHome();
+    eh.chop(1);
+    QString source = henHouse() + tr("omega/beamnrc/BEAMnrc_examples");
+    if ( ! copyRecursively( source, eh ) ) {
+        printProgress( tr("\nError copying example accelerator files from ")   +
+                       henHouse() + tr("omega/beamnrc/BEAMnrc_examples/ to ") +
+                       egsHome());
+    }
 
-   // Copy the example modules to EGS_HOME/beamnrc/spec_modules
-   createDir( egsHome() + tr("beamnrc") );
-   createDir( egsHome() + tr("beamnrc/spec_modules") );
-   QString target = egsHome() + tr("beamnrc/spec_modules");
-   if ( ! copyFilesRecursively( source, target, QString("*.module") ) ){
-     printProgress( tr("\nError copying example accelerator modules from ")   +
-                    henHouse() + tr("omega/beamnrc/BEAMnrc_examples to ") +
-                    egsHome() + tr("beamnrc/spec_modules\n") );
-   }
+    // Copy the example modules to EGS_HOME/beamnrc/spec_modules
+    createDir( egsHome() + tr("beamnrc") );
+    createDir( egsHome() + tr("beamnrc/spec_modules") );
+    QString target = egsHome() + tr("beamnrc/spec_modules");
+    if ( ! copyFilesRecursively( source, target, QString("*.module") ) ) {
+        printProgress( tr("\nError copying example accelerator modules from ")   +
+                       henHouse() + tr("omega/beamnrc/BEAMnrc_examples to ") +
+                       egsHome() + tr("beamnrc/spec_modules\n") );
+    }
 
-   foreach (const QString &dirName, QDir(egsHome()).entryList( QDir::Dirs | QDir::NoDotAndDotDot)) {
-           if (dirName.startsWith("EX"))
-              QDir(egsHome() + dirName).rename(egsHome()+dirName, egsHome()+"BEAM_" + dirName);
-   }
+    foreach (const QString &dirName, QDir(egsHome()).entryList( QDir::Dirs | QDir::NoDotAndDotDot)) {
+        if (dirName.startsWith("EX"))
+            QDir(egsHome() + dirName).rename(egsHome()+dirName, egsHome()+"BEAM_" + dirName);
+    }
 
 }
 
@@ -199,7 +200,7 @@ void QInstallPage::copy_example_modules(){
   STEP 5. Create shortcuts, show final message, create README file
 ******************************************************************
 */
-void QInstallPage::finalize_beam_setup(){
+void QInstallPage::finalize_beam_setup() {
 
     emit beamDone();
 }

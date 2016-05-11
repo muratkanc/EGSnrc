@@ -42,25 +42,25 @@
 class MPLOTInputs : public MInputBlock
 {
 public:
-	MPLOTInputs();
-	~MPLOTInputs();
+    MPLOTInputs();
+    ~MPLOTInputs();
 
-	  QString Plotting; //both
-  	QString LinePrnOut; // dosrz
-  	QString ExtPlotOut; // dosrz
-  	QString ExtPlotType;// both
+    QString Plotting; //both
+    QString LinePrnOut; // dosrz
+    QString ExtPlotOut; // dosrz
+    QString ExtPlotType;// both
 
-  	v_int   PlotIX;     // both
-  	v_int   PlotIZ;     // both
+    v_int   PlotIX;     // both
+    v_int   PlotIZ;     // both
 
-  	QString DrawFluPlot; // flurz
-  	QString eminusPlot;  // flurz
-  	QString eplusPlot;   // flurz
-  	QString ePlot;       // flurz
-  	QString gPlot;       // flurz
+    QString DrawFluPlot; // flurz
+    QString eminusPlot;  // flurz
+    QString eplusPlot;   // flurz
+    QString ePlot;       // flurz
+    QString gPlot;       // flurz
 
-  	v_int SpecPlotStart; // flurz
-  	v_int SpecPlotStop;  // flurz
+    v_int SpecPlotStart; // flurz
+    v_int SpecPlotStop;  // flurz
 };
 std::ifstream & operator >> ( std::ifstream & in, MPLOTInputs * rPLOT );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MPLOTInputs * rPLOT );

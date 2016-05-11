@@ -38,64 +38,64 @@
 
 MCAVInputs::MCAVInputs()
 {
-	ncavreg = "1";
- 	cav_reg.push_back( 2 );
- 	wall_thick = "0.1";
-	cav_rad    = "1.5";
-	cav_len    = "0.2";
-	electr_rad = "0.15";
-	wall_mat   = "GRAPHITE";
-	electr_mat = "GRAPHITE";
+    ncavreg = "1";
+    cav_reg.push_back( 2 );
+    wall_thick = "0.1";
+    cav_rad    = "1.5";
+    cav_len    = "0.2";
+    electr_rad = "0.15";
+    wall_mat   = "GRAPHITE";
+    electr_mat = "GRAPHITE";
 }
 
 MCAVInputs::~MCAVInputs()
 {
-	//free anything created in the constructor here
+    //free anything created in the constructor here
 }
 
 void MCAVInputs::SetInputMethod( const QString& rInpMeth )
 {
-	inp_meth = rInpMeth;
+    inp_meth = rInpMeth;
 }
 
 std::ifstream & operator >> ( std::ifstream & in, MCAVInputs*  rCAV )
 {
 
-	std::vector<string> codes;
-	codes.push_back("NUMBER OF CAVITY REGIONS");
-	codes.push_back("REGION NUMBERS OF THE CAVITY");
+    std::vector<string> codes;
+    codes.push_back("NUMBER OF CAVITY REGIONS");
+    codes.push_back("REGION NUMBERS OF THE CAVITY");
 
-	codes.push_back("WALL THICKNESS");
-	codes.push_back("CAVITY RADIUS");
-	codes.push_back("CAVITY LENGTH");
-	codes.push_back("ELECTRODE RADIUS");
-	codes.push_back("WALL MATERIAL");
-	codes.push_back("ELECTRODE MATERIAL");
+    codes.push_back("WALL THICKNESS");
+    codes.push_back("CAVITY RADIUS");
+    codes.push_back("CAVITY LENGTH");
+    codes.push_back("ELECTRODE RADIUS");
+    codes.push_back("WALL MATERIAL");
+    codes.push_back("ELECTRODE MATERIAL");
 
-	DE_Parser *p = new DE_Parser(codes,0,"cavity inputs", in, false);
+    DE_Parser *p = new DE_Parser(codes,0,"cavity inputs", in, false);
 
-	if ( rCAV->inp_meth.toLower() != "cavity information" ) {
-	   rCAV->ncavreg = getIt( codes[0] , "1", rCAV->errors, p ) ;
-	   rCAV->cav_reg = getThem( codes[1], 0, 1000, rCAV->cav_reg, rCAV->errors, p ) ;
+    if ( rCAV->inp_meth.toLower() != "cavity information" ) {
+        rCAV->ncavreg = getIt( codes[0] , "1", rCAV->errors, p ) ;
+        rCAV->cav_reg = getThem( codes[1], 0, 1000, rCAV->cav_reg, rCAV->errors, p ) ;
 
-	}
-	else {
-	   rCAV->wall_thick = getIt( codes[2] , "0.10", rCAV->errors, p );
-	   rCAV->cav_rad    = getIt( codes[3] , "1.50", rCAV->errors, p );
-	   rCAV->cav_len    = getIt( codes[4] , "0.10", rCAV->errors, p );
-	   rCAV->electr_rad = getIt( codes[5] , "0.15", rCAV->errors, p );
-	   rCAV->wall_mat   = getIt( codes[6] , "GRAPHITE", rCAV->errors, p );
-	   rCAV->electr_mat = getIt( codes[7] , "GRAPHITE", rCAV->errors, p );
+    }
+    else {
+        rCAV->wall_thick = getIt( codes[2] , "0.10", rCAV->errors, p );
+        rCAV->cav_rad    = getIt( codes[3] , "1.50", rCAV->errors, p );
+        rCAV->cav_len    = getIt( codes[4] , "0.10", rCAV->errors, p );
+        rCAV->electr_rad = getIt( codes[5] , "0.15", rCAV->errors, p );
+        rCAV->wall_mat   = getIt( codes[6] , "GRAPHITE", rCAV->errors, p );
+        rCAV->electr_mat = getIt( codes[7] , "GRAPHITE", rCAV->errors, p );
 
-	}
+    }
 
-	if ( ! rCAV->errors.isEmpty() ) {
-	    rCAV->errors = "***  CAVITY Inputs block *** <br>" +  rCAV->errors + "<br>";
-	}
+    if ( ! rCAV->errors.isEmpty() ) {
+        rCAV->errors = "***  CAVITY Inputs block *** <br>" +  rCAV->errors + "<br>";
+    }
 
-	delete p;
+    delete p;
 
-	return in;
+    return in;
 }
 
 /*
@@ -128,24 +128,24 @@ Q3TextStream & operator << ( Q3TextStream & t, MCAVInputs * rCAV )
 QTextStream & operator << ( QTextStream & t, MCAVInputs * rCAV )
 {
 
-  print_delimeter( "start" , "cavity inputs", t);
-        if ( rCAV->inp_meth != "cavity information" ) {
-           t << "NUMBER OF CAVITY REGIONS= " << rCAV->ncavreg << "\n";
-           t << "REGION NUMBERS OF THE CAVITY= " << rCAV->cav_reg << "\n";
-        }
-        else {
-           t << "WALL THICKNESS= "     << rCAV->wall_thick << "\n";
-           t << "CAVITY RADIUS= "      << rCAV->cav_rad << "\n";
-           t << "CAVITY LENGTH= "      << rCAV->cav_len << "\n";
-           t << "ELECTRODE RADIUS= "   << rCAV->electr_rad << "\n";
-           t << "WALL MATERIAL= "      << rCAV->wall_mat << "\n" ;
-           if ( rCAV->electr_rad.toFloat(0) > 0.0f )
-              t << "ELECTRODE MATERIAL= " << rCAV->electr_mat << "\n";
-        }
+    print_delimeter( "start" , "cavity inputs", t);
+    if ( rCAV->inp_meth != "cavity information" ) {
+        t << "NUMBER OF CAVITY REGIONS= " << rCAV->ncavreg << "\n";
+        t << "REGION NUMBERS OF THE CAVITY= " << rCAV->cav_reg << "\n";
+    }
+    else {
+        t << "WALL THICKNESS= "     << rCAV->wall_thick << "\n";
+        t << "CAVITY RADIUS= "      << rCAV->cav_rad << "\n";
+        t << "CAVITY LENGTH= "      << rCAV->cav_len << "\n";
+        t << "ELECTRODE RADIUS= "   << rCAV->electr_rad << "\n";
+        t << "WALL MATERIAL= "      << rCAV->wall_mat << "\n" ;
+        if ( rCAV->electr_rad.toFloat(0) > 0.0f )
+            t << "ELECTRODE MATERIAL= " << rCAV->electr_mat << "\n";
+    }
 
-  print_delimeter( "stop" , "cavity inputs", t);
+    print_delimeter( "stop" , "cavity inputs", t);
 
-  return t;
+    return t;
 
 }
 

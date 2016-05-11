@@ -33,15 +33,15 @@
 #define QUEUEDEF_H
 
 static const char* queue_type[] = {
-"long",
-"medium",
-"short"
+    "long",
+    "medium",
+    "short"
 };
 
 static const char* queues[] = {
-"40 days (default)",
-"2 hours",
-"20 minutes"
+    "40 days (default)",
+    "2 hours",
+    "20 minutes"
 };
 
 #endif	// QUEUEDEF_H

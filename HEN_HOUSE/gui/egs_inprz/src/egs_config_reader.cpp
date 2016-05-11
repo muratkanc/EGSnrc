@@ -75,11 +75,14 @@ QString EGS_ConfigReader::getConfig() const {
 
 QString EGS_PrivateConfigReader::ironIt(const QString &v) {
     //cout << "ironIt: " << v.latin1() << endl;
-    QString aux = "/+|"; aux += "\\\\"; aux += "+";
+    QString aux = "/+|";
+    aux += "\\\\";
+    aux += "+";
     QRegExp re(aux);
     //QStringList list = QStringList::split(re,v);
     QStringList list = v.split(re,QString::SkipEmptyParts);
-    QString res; if( v.startsWith("/") ) res = "/";
+    QString res;
+    if( v.startsWith("/") ) res = "/";
     for(QStringList::iterator it=list.begin(); it != list.end(); it++) {
         //cout << "next: " << (*it).latin1() << endl;
         if( it != list.begin() ) res += QDir::separator();
@@ -101,10 +104,14 @@ EGS_PrivateConfigReader::EGS_PrivateConfigReader(const QString &file) {
 QString EGS_PrivateConfigReader::simplify(const QString &value,bool ironit) {
     QString junk = "\\$\\((\\w+)\\)";
     QRegExp re(junk);
-    QString res; int pos = 0;
+    QString res;
+    int pos = 0;
     while(1) {
         int pos1 = re.indexIn(value,pos);
-        if( pos1 < 0 ) { res += value.mid(pos); break; }
+        if( pos1 < 0 ) {
+            res += value.mid(pos);
+            break;
+        }
         res += value.mid(pos,pos1-pos);
         res += getVariable(re.cap(1),ironit);
         pos = pos1 + re.matchedLength();
@@ -113,7 +120,7 @@ QString EGS_PrivateConfigReader::simplify(const QString &value,bool ironit) {
     return res;
 }
 
-void EGS_ConfigReader::setVariable(const QString &key, const QString &v){
+void EGS_ConfigReader::setVariable(const QString &key, const QString &v) {
     p->map.insert(key,v);
 }
 
@@ -133,7 +140,7 @@ QString EGS_PrivateConfigReader::getVariable(const QString &key, bool ironit) {
 void EGS_PrivateConfigReader::setConfig(const QString &file) {
 #ifdef CR_DEBUG
     cr_debug << "EGS_PrivateConfigReader::setConfig: "
-        << file.toStdString() << endl;
+             << file.toStdString() << endl;
 #endif
     the_config = file; //map.clear();
     addFile(file);
@@ -142,7 +149,8 @@ void EGS_PrivateConfigReader::setConfig(const QString &file) {
 int EGS_PrivateConfigReader::checkConfigFile(const QString &file) {
     QFile f(file);
     if( !f.open(QIODevice::ReadOnly) ) return 1;
-    QTextStream ts(&f); QString the_line;
+    QTextStream ts(&f);
+    QString the_line;
     int res = 0;
     while( !ts.atEnd() ) {
         QString line = ts.readLine();
@@ -152,7 +160,10 @@ int EGS_PrivateConfigReader::checkConfigFile(const QString &file) {
 #else
             int pos = line.indexOf("windows.spec");
 #endif
-            if( pos >= 0 ) { res = 2; break; }
+            if( pos >= 0 ) {
+                res = 2;
+                break;
+            }
         }
     }
     return res;
@@ -164,7 +175,8 @@ void EGS_PrivateConfigReader::addFile(const QString &file) {
 #endif
     QFile f(file);
     if( !f.open(QIODevice::ReadOnly) ) return;
-    QTextStream ts(&f); QString the_line;
+    QTextStream ts(&f);
+    QString the_line;
     while( !ts.atEnd() ) {
         QString line = ts.readLine();
         if( line.startsWith("#") ) continue;
@@ -173,13 +185,15 @@ void EGS_PrivateConfigReader::addFile(const QString &file) {
         if( !line1.endsWith("\\\\") && line1.endsWith("\\") ) {
             //qt3to4 -- BW
             //line1.at(line1.length()-1) = ' '; the_line += line1;
-            line1.insert(line1.length()-1,' '); the_line += line1;
+            line1.insert(line1.length()-1,' ');
+            the_line += line1;
             continue;
         }
         the_line += line;
         if( the_line.startsWith("include") ) {
             QStringList list = the_line.split(" ");
-            list.pop_front(); QString inc = list.join(" ");
+            list.pop_front();
+            QString inc = list.join(" ");
             addFile(simplify(inc,true));
             the_line = "";
         }
@@ -189,8 +203,8 @@ void EGS_PrivateConfigReader::addFile(const QString &file) {
             if( pos >=0 ) {
 #ifdef CR_DEBUG
                 cr_debug << "inserting <" << rx.cap(1).toStdString()
-                    << "> <" << the_line.mid(pos+rx.matchedLength()).toStdString()
-                    << ">\n";
+                         << "> <" << the_line.mid(pos+rx.matchedLength()).toStdString()
+                         << ">\n";
 #endif
 
                 map.insert(rx.cap(1),the_line.mid(pos+rx.matchedLength()));
@@ -207,7 +221,7 @@ void EGS_PrivateConfigReader::addFile(const QString &file) {
                     else val = simplify(aux,false);
 #ifdef CR_DEBUG
                     cr_debug << "inserting <" <<
-                        rx1.cap(1).toStdString() << "> <" << val.toStdString() << ">\n";
+                             rx1.cap(1).toStdString() << "> <" << val.toStdString() << ">\n";
 #endif
                     map.insert(rx1.cap(1),val);
                 }
@@ -242,7 +256,9 @@ QString EGS_ConfigReader::getVariable(const QString &key,bool ironit) {
     return p->getVariable(key,ironit);
 }
 
-EGS_ConfigReader::~EGS_ConfigReader() { delete p; }
+EGS_ConfigReader::~EGS_ConfigReader() {
+    delete p;
+}
 
 int EGS_ConfigReader::checkConfigFile(const QString &file) {
     return p->checkConfigFile(file);

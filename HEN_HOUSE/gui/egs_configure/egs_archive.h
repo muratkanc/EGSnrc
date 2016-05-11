@@ -44,27 +44,27 @@ class EGS_Archive {
 
 public:
 
-  EGS_Archive(QWidget* o = 0);
-  EGS_Archive(QMutex *m = 0, QWidget* o = 0, const int &totS = 100);
-  ~EGS_Archive();
+    EGS_Archive(QWidget* o = 0);
+    EGS_Archive(QMutex *m = 0, QWidget* o = 0, const int &totS = 100);
+    ~EGS_Archive();
 
-  void addOutput(const char *, int type);
-  void closeOutput(const char *);
-  void addFile(const char *);
-  void clearFiles();
-  void setIODevice( QTextEdit*  io_dev );
-  void stop();
+    void addOutput(const char *, int type);
+    void closeOutput(const char *);
+    void addFile(const char *);
+    void clearFiles();
+    void setIODevice( QTextEdit*  io_dev );
+    void stop();
 
-  int  make();
-  int extract(const char *archive, const char *start_dir=0) const;
-  int listFiles(const char *archive) const;
+    int  make();
+    int extract(const char *archive, const char *start_dir=0) const;
+    int listFiles(const char *archive) const;
 
-  bool isZipFile(const char *archive) const;
+    bool isZipFile(const char *archive) const;
 
 private:
 
-  PrivateArchive *p;
-  QWidget* receiver;
+    PrivateArchive *p;
+    QWidget* receiver;
 };
 
 // Define your custom event identifier
@@ -76,56 +76,68 @@ const QEvent::Type CustomEventFloat  = static_cast<QEvent::Type>(12347);
 // Define your custom event subclass
 class EGSCustomEvent : public QEvent
 {
-    public:
-        EGSCustomEvent(const QString strData):
-            QEvent(CustomEventString),
-            m_strData(strData)
-        { }
+public:
+    EGSCustomEvent(const QString strData):
+        QEvent(CustomEventString),
+        m_strData(strData)
+    { }
 
-        QString getStrData() const { return m_strData; }
+    QString getStrData() const {
+        return m_strData;
+    }
 
-        EGSCustomEvent(const int intData):
-            QEvent(CustomEventInt),
-            m_intData(intData)
-        { }
+    EGSCustomEvent(const int intData):
+        QEvent(CustomEventInt),
+        m_intData(intData)
+    { }
 
-        int getIntData() const { return m_intData; }
+    int getIntData() const {
+        return m_intData;
+    }
 
-        EGSCustomEvent(const float floatData):
-            QEvent(CustomEventFloat),
-            m_floatData(floatData)
-        { }
+    EGSCustomEvent(const float floatData):
+        QEvent(CustomEventFloat),
+        m_floatData(floatData)
+    { }
 
-        float getFloatData() const { return m_floatData; }
+    float getFloatData() const {
+        return m_floatData;
+    }
 
-    private:
-        QString m_strData;
-        int     m_intData;
-        float   m_floatData;
+private:
+    QString m_strData;
+    int     m_intData;
+    float   m_floatData;
 };
 
 class EGSThread : public QThread {
 
-    public:
-        EGSThread( const QString& archi, const QString& rdir );
-        EGSThread( QWidget* o, const QString& archi, const QString& rdir );
-        EGSThread();
-        virtual void run();
-        void setArchive(const QString& archi, const QString& rdir ){
-         archive = archi; dir = rdir;
-        };
-        int extract( const QString& archi, const QString& rdir );
-       int    getStatus(){ return status;};
-       void stop(){ m_exit = true; if ( ar ) ar->stop(); };
+public:
+    EGSThread( const QString& archi, const QString& rdir );
+    EGSThread( QWidget* o, const QString& archi, const QString& rdir );
+    EGSThread();
+    virtual void run();
+    void setArchive(const QString& archi, const QString& rdir ) {
+        archive = archi;
+        dir = rdir;
+    };
+    int extract( const QString& archi, const QString& rdir );
+    int    getStatus() {
+        return status;
+    };
+    void stop() {
+        m_exit = true;
+        if ( ar ) ar->stop();
+    };
 
-    private:
-        EGS_Archive* ar;
-        QMutex *mutex;
-        QString archive;
-        QString dir;
-        uint status;
-        bool m_exit;
-        QWidget* receiver;
+private:
+    EGS_Archive* ar;
+    QMutex *mutex;
+    QString archive;
+    QString dir;
+    uint status;
+    bool m_exit;
+    QWidget* receiver;
 
 };
 

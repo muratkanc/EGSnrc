@@ -63,8 +63,8 @@ void EGS_UnionGeometry::setBScaling(int start, int end, EGS_Float bf) {
 
 void EGS_UnionGeometry::setBScaling(EGS_Input *) {
     egsWarning("EGS_UnionGeometry::setBScaling(): don't use this method. "
-       "Use the\n setBScaling() methods of the geometry objects that make "
-       "up this geometry\n");
+               "Use the\n setBScaling() methods of the geometry objects that make "
+               "up this geometry\n");
 }
 
 EGS_UnionGeometry::EGS_UnionGeometry(const vector<EGS_BaseGeometry *> &geoms,
@@ -131,7 +131,9 @@ EGS_UnionGeometry::EGS_UnionGeometry(const vector<EGS_BaseGeometry *> &geoms,
     for(j=0; j<ng; j++) {
         int i = order[j];
         g[i] = geoms[j];
-        g[i]->ref(); int n = g[i]->regions(); if( n > nmax ) nmax = n;
+        g[i]->ref();
+        int n = g[i]->regions();
+        if( n > nmax ) nmax = n;
         if( !has_B_scaling ) has_B_scaling = g[i]->hasBScaling();
     }
     delete [] order;

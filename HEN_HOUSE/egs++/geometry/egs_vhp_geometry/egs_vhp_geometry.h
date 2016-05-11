@@ -54,22 +54,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_VHP_DLL
-        #define EGS_VHP_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_VHP_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_VHP_LOCAL
+#ifdef BUILD_VHP_DLL
+#define EGS_VHP_EXPORT __declspec(dllexport)
+#else
+#define EGS_VHP_EXPORT __declspec(dllimport)
+#endif
+#define EGS_VHP_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_VHP_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_VHP_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_VHP_EXPORT
-        #define EGS_VHP_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_VHP_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_VHP_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_VHP_EXPORT
+#define EGS_VHP_LOCAL
+#endif
 
 #endif
 

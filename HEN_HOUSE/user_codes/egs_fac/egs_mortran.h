@@ -68,10 +68,10 @@ extern __extc__  void
 F77_OBJ_(select_photon_mfp,SELECT_PHOTON_MFP)(EGS_Float *dpmfp);
 
 extern __extc__ void F77_OBJ_(range_discard,RANGE_DISCARD)(
-        const EGS_Float *tperp, const EGS_Float *range);
+    const EGS_Float *tperp, const EGS_Float *range);
 
 extern __extc__ void F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(const int *,
-                                  const EGS_Float *);
+        const EGS_Float *);
 
 #define egsScaleXsection F77_OBJ_(egs_scale_photon_xsection,EGS_SCALE_PHOTON_XSECTION)
 extern __extc__ void egsScaleXsection(const int *imed, const EGS_Float *fac,
@@ -79,5 +79,5 @@ extern __extc__ void egsScaleXsection(const int *imed, const EGS_Float *fac,
 
 #define computeRange F77_OBJ_(compute_range,COMPUTE_RANGE)
 extern __extc__ void computeRange(const EGS_Float *eke, const EGS_Float *elke,
-        const EGS_I32 *medium, const EGS_I32 *lelec, EGS_Float *range);
+                                  const EGS_I32 *medium, const EGS_I32 *lelec, EGS_Float *range);
 #endif

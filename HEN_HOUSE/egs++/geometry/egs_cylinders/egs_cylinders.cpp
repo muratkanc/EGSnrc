@@ -38,10 +38,10 @@
 #include "egs_input.h"
 
 #ifndef SKIP_DOXYGEN
-    string XProjector::type = "EGS_Xcylinders";
-    string YProjector::type = "EGS_Ycylinders";
-    string ZProjector::type = "EGS_Zcylinders";
-    string Projector::type = "EGS_cylinders";
+string XProjector::type = "EGS_Xcylinders";
+string YProjector::type = "EGS_Ycylinders";
+string ZProjector::type = "EGS_Zcylinders";
+string Projector::type = "EGS_cylinders";
 #endif
 
 extern "C" {

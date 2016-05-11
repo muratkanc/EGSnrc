@@ -46,130 +46,130 @@ typedef enum buffer_type {F_IN=3,F_OUT=4,ANG=5};
 class fluence_field
 {
 protected:
-   fluence_field_type type;
-   int trFbins;
-   int scoFbins;
-   int totalFbins;
-   double trFieldSize;
-   double scoFieldSize;
-   double F[BUFSIZE][3];
+    fluence_field_type type;
+    int trFbins;
+    int scoFbins;
+    int totalFbins;
+    double trFieldSize;
+    double scoFieldSize;
+    double F[BUFSIZE][3];
 public:
-   fluence_field( fluence_field_type t, int trn, int scon, double trf, double scof) {
-      type = t;
-      trFbins = trn;
-      scoFbins = scon;
-      totalFbins = trn + scon;
-      trFieldSize = trf;
-      scoFieldSize = scof;
-   }
-   int get_type( void ) {
-      return type;
-   }
-   int get_bins( void ) {
-      return totalFbins;
-   }
-   int get_trFbins( void ) {
-      return trFbins;
-   }
-   int get_scoFbins( void ) {
-      return scoFbins;
-   }
-   double get_trFieldSize( void ) {
-      return trFieldSize;
-   }
-   double get_scoFieldSize( void ) {
-      return scoFieldSize;
-   }
-   void put_Fvalue( double value, int i, int j ) {
-     if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < 2)))
-	F[i][j] = value;
-     else
-	cout << "Error writing fluence value!\n";
-   }
-   double get_Fvalue( int i, int j ) {
-     if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < 3)))
-	return F[i][j];
-     else {
-	cout << "Error reading fluence value!\n";
-	return 0.0;
-      }
-   }
+    fluence_field( fluence_field_type t, int trn, int scon, double trf, double scof) {
+        type = t;
+        trFbins = trn;
+        scoFbins = scon;
+        totalFbins = trn + scon;
+        trFieldSize = trf;
+        scoFieldSize = scof;
+    }
+    int get_type( void ) {
+        return type;
+    }
+    int get_bins( void ) {
+        return totalFbins;
+    }
+    int get_trFbins( void ) {
+        return trFbins;
+    }
+    int get_scoFbins( void ) {
+        return scoFbins;
+    }
+    double get_trFieldSize( void ) {
+        return trFieldSize;
+    }
+    double get_scoFieldSize( void ) {
+        return scoFieldSize;
+    }
+    void put_Fvalue( double value, int i, int j ) {
+        if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < 2)))
+            F[i][j] = value;
+        else
+            cout << "Error writing fluence value!\n";
+    }
+    double get_Fvalue( int i, int j ) {
+        if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < 3)))
+            return F[i][j];
+        else {
+            cout << "Error reading fluence value!\n";
+            return 0.0;
+        }
+    }
 };
 
 class energy_spectrum
 {
 protected:
-   int type;	// Inside/outside or different radii
-   int nradii;	// Number of radii
-   int nbins;	// Number of energy bins
-   double Emin;	// Minimum kinetic energy
-   double Emax;	// Maximum kinetic energy
+    int type;	// Inside/outside or different radii
+    int nradii;	// Number of radii
+    int nbins;	// Number of energy bins
+    double Emin;	// Minimum kinetic energy
+    double Emax;	// Maximum kinetic energy
 
-   double radii[BUFSIZE];
-   double E[BUFSIZE][BUFSIZE];
+    double radii[BUFSIZE];
+    double E[BUFSIZE][BUFSIZE];
 
 public:
-   energy_spectrum(int t,int nr,int nb, double emin,double emax) {
-      type = t;
-      nradii = nr;
-      nbins = nb;
-      Emin = emin;
-      Emax = emax;
-   }
-   int get_type( void ) {
-      return type;
-   }
-   int get_bins( void ) {
-      return nbins;
-   }
-   int get_nradii( void ) {
-      return nradii;
-   }
-   double get_Emin( void ) {
-      return Emin;
-   }
-   double get_Emax( void ) {
-      return Emax;
-   }
-   double get_Evalue( int i, int j ) {
-      if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < BUFSIZE)))
-	return( E[i][j] );
-      else {
-	cout << "Error reading energy value!\n";
-	return 0.0;
-      }
-   }
-   void put_Evalue( double value, int i, int j ) {
-     if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < BUFSIZE)))
-	E[i][j] = value;
-     else
-	cout << "Error writing energy value!\n";
-   }
-   void put_radius( double value, int i ) {
-      if( i >= 0 && i < nradii )
-	radii[i] = value;
-      else
-	cout << "Error writing energy radius!\n";
-   }
-   double get_radius( int i ) {
-      if( i >= 0 && i < nradii )
-	 return( radii[i] );
-      else {
-	cout << "Error reading energy radius!\n";
-	 return 0.0;
-      }
-   }
-   double get_average(int i) {
-      int j;
-      double sum = 0.0, average = 0.0;
+    energy_spectrum(int t,int nr,int nb, double emin,double emax) {
+        type = t;
+        nradii = nr;
+        nbins = nb;
+        Emin = emin;
+        Emax = emax;
+    }
+    int get_type( void ) {
+        return type;
+    }
+    int get_bins( void ) {
+        return nbins;
+    }
+    int get_nradii( void ) {
+        return nradii;
+    }
+    double get_Emin( void ) {
+        return Emin;
+    }
+    double get_Emax( void ) {
+        return Emax;
+    }
+    double get_Evalue( int i, int j ) {
+        if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < BUFSIZE)))
+            return( E[i][j] );
+        else {
+            cout << "Error reading energy value!\n";
+            return 0.0;
+        }
+    }
+    void put_Evalue( double value, int i, int j ) {
+        if(((i >= 0) && (i < BUFSIZE)) && ((j>=0) && (j < BUFSIZE)))
+            E[i][j] = value;
+        else
+            cout << "Error writing energy value!\n";
+    }
+    void put_radius( double value, int i ) {
+        if( i >= 0 && i < nradii )
+            radii[i] = value;
+        else
+            cout << "Error writing energy radius!\n";
+    }
+    double get_radius( int i ) {
+        if( i >= 0 && i < nradii )
+            return( radii[i] );
+        else {
+            cout << "Error reading energy radius!\n";
+            return 0.0;
+        }
+    }
+    double get_average(int i) {
+        int j;
+        double sum = 0.0, average = 0.0;
 
-      for( j = 0; j < nbins; j++ ) {
-	sum += E[j][i];
-	average += (((Emax-Emin)*j)/nbins)*E[j][i];
-      }
+        for( j = 0; j < nbins; j++ ) {
+            sum += E[j][i];
+            average += (((Emax-Emin)*j)/nbins)*E[j][i];
+        }
 
-      return sum == 0.0 ? sum : average/sum;
-   }
+        return sum == 0.0 ? sum : average/sum;
+    }
 };
 
 #endif

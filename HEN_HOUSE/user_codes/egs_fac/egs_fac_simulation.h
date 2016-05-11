@@ -112,14 +112,30 @@ struct EGS_FACSimulation {
 
     ~EGS_FACSimulation();
 
-    inline bool isCavity(int ireg) const { return (properties[ireg] & 1); };
-    inline bool isAperture(int ireg) const { return (properties[ireg] & 2); };
-    inline bool isFrontBack(int ireg) const { return (properties[ireg] & 4); };
-    inline bool isSplitting(int ireg) const { return (properties[ireg] & 8); };
-    void setCavity(int ireg) { properties[ireg] |= 1; };
-    void setAperture(int ireg) { properties[ireg] |= 2; };
-    void setFrontBack(int ireg) { properties[ireg] |= 4; };
-    void setSplittingOn(int ireg) { properties[ireg] |= 8; };
+    inline bool isCavity(int ireg) const {
+        return (properties[ireg] & 1);
+    };
+    inline bool isAperture(int ireg) const {
+        return (properties[ireg] & 2);
+    };
+    inline bool isFrontBack(int ireg) const {
+        return (properties[ireg] & 4);
+    };
+    inline bool isSplitting(int ireg) const {
+        return (properties[ireg] & 8);
+    };
+    void setCavity(int ireg) {
+        properties[ireg] |= 1;
+    };
+    void setAperture(int ireg) {
+        properties[ireg] |= 2;
+    };
+    void setFrontBack(int ireg) {
+        properties[ireg] |= 4;
+    };
+    void setSplittingOn(int ireg) {
+        properties[ireg] |= 8;
+    };
     void setSplittingOff(int ireg) {
         if( isSplitting(ireg) ) properties[ireg] ^= 8;
     };
@@ -148,7 +164,9 @@ struct EGS_FACSimulation {
 
     inline void addKerma(EGS_Float E4, EGS_Float E5, EGS_Float E6) {
         had_edep = true;
-        dtmp[5] += E4; dtmp[6] += E5; dtmp[7] += E6;
+        dtmp[5] += E4;
+        dtmp[6] += E5;
+        dtmp[7] += E6;
     };
 
     /*! Computes the energy imbalance between electrons entering and leaving the CV.
@@ -168,7 +186,7 @@ struct EGS_FACSimulation {
         }
         bool is_cv_old = isCavity(ireg), is_cv_new = isCavity(inew);
         if( ( !is_cv_old && !is_cv_new ) ||
-            (  is_cv_old &&  is_cv_new ) ) return;
+                (  is_cv_old &&  is_cv_new ) ) return;
         had_edep = true;
         if( is_cv_old ) {
             // electron leaving the cavity => add its energy
@@ -209,7 +227,9 @@ struct EGS_FACSimulation {
             extra[4] += dtmp[4]*dtmp[7];
             extra[5] += dtmp[5]*dtmp[7];
             for(j=0; j<N_FAC_DOSE; ++j) {
-                dose[j] += dtmp[j]; dose2[j] += dtmp[j]*dtmp[j]; dtmp[j] = 0;
+                dose[j] += dtmp[j];
+                dose2[j] += dtmp[j]*dtmp[j];
+                dtmp[j] = 0;
             }
             had_edep = false;
         }
@@ -263,7 +283,8 @@ public:
         aux1 = s1->dtmp[2] + s1->dtmp[3];
         aux2 = s2->dtmp[2] + s2->dtmp[3];
         corr[3] += aux1*aux2;
-        aux1 += s1->dtmp[4]; aux2 += s2->dtmp[4];
+        aux1 += s1->dtmp[4];
+        aux2 += s2->dtmp[4];
         corr[4] += aux1*aux2;
         double var[6];
         var[0] = s1->dtmp[0];
@@ -274,7 +295,7 @@ public:
         var[5] = s2->dtmp[5];
         int ij=0;
         for(int i=0; i<5; ++i) for(int j=i+1; j<6; ++j)
-            extra[ij++] += var[i]*var[j];
+                extra[ij++] += var[i]*var[j];
     };
 
     void reportResults(double flu, EGS_I64 ncase);
@@ -322,7 +343,7 @@ public:
         v[7] = s2->dtmp[2] + s2->dtmp[3] + s2->dtmp[4];
         int ij=0;
         for(int i=0; i<7; ++i) for(int j=i+1; j<8; ++j)
-            cov_matrix[ij++] += v[i]*v[j];
+                cov_matrix[ij++] += v[i]*v[j];
     };
 
     bool outputData(ostream &data);

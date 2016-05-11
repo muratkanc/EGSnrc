@@ -984,22 +984,22 @@ void EGS_XYZGeometry::voxelizeGeometry(EGS_Input *input) {
         egsInformation("  bottom/right/back corner: (%g,%g,%g)\n",v2.x,v2.y,v2.z);
     }
     for(int ix=0; ix<nx; ++ix) for(int iy=0; iy<ny; iy++) for(int iz=0; iz<nz; ++iz) {
-        int ir = ix + iy*nx + iz*nxy;
-        EGS_Vector v(0.5*(xp->position(ix)+xp->position(ix+1)),
-                     0.5*(yp->position(iy)+yp->position(iy+1)),
-                     0.5*(zp->position(iz)+zp->position(iz+1)));
-        if( T ) T->transform(v);
-        int ireg = geometry->isWhere(v);
-        if( ireg >= 0 ) {
-            region_media[ir] = geometry->medium(ireg);
-            if( hrs ) rhor[ir] = geometry->getRelativeRho(ir);
-            if( hbs ) bfactor[ir] = geometry->getBScaling(ir);
-        } else {
-            region_media[ir] = -1;
-            if( hrs ) rhor[ir] = 1;
-            if( hbs ) bfactor[ir] = 1;
-        }
-    }
+                int ir = ix + iy*nx + iz*nxy;
+                EGS_Vector v(0.5*(xp->position(ix)+xp->position(ix+1)),
+                             0.5*(yp->position(iy)+yp->position(iy+1)),
+                             0.5*(zp->position(iz)+zp->position(iz+1)));
+                if( T ) T->transform(v);
+                int ireg = geometry->isWhere(v);
+                if( ireg >= 0 ) {
+                    region_media[ir] = geometry->medium(ireg);
+                    if( hrs ) rhor[ir] = geometry->getRelativeRho(ir);
+                    if( hbs ) bfactor[ir] = geometry->getBScaling(ir);
+                } else {
+                    region_media[ir] = -1;
+                    if( hrs ) rhor[ir] = 1;
+                    if( hbs ) bfactor[ir] = 1;
+                }
+            }
     vector<string> options;
     options.push_back("no");
     options.push_back("yes");

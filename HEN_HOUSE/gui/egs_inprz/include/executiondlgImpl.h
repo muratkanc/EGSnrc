@@ -49,24 +49,24 @@
 //class ExecutiondlgImpl : public MExecutionDialog
 class ExecutiondlgImpl : public QDialog, public Ui::MExecutionDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-ExecutiondlgImpl( QWidget* parent, const char* name,  bool modal, Qt::WFlags f );
+    ExecutiondlgImpl( QWidget* parent, const char* name,  bool modal, Qt::WFlags f );
 
-~ExecutiondlgImpl();
+    ~ExecutiondlgImpl();
 
 //QLabel* tipLabel;
 //MEventFilter* eFilter;
 
-ComboBoxToolTip* ctt;
+    ComboBoxToolTip* ctt;
 
 //qt3to4 -- BW
-QString the_hen_house;
-QString the_command;
-void getQueueingSystemOptions();
-void init();
+    QString the_hen_house;
+    QString the_command;
+    void getQueueingSystemOptions();
+    void init();
 
 public slots:
 
@@ -75,8 +75,8 @@ public slots:
 //void MovingMouseOnQueueBox( );
 
 //qt3to4 -- BW
-void update_batch();
-void run();
+    void update_batch();
+    void run();
 
 };
 #endif

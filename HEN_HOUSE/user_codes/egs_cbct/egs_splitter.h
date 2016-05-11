@@ -70,38 +70,52 @@ protected:
     EGS_Float *Nscore;// array of number of particles scoring from an imp. voxel
     EGS_Float Nt;
     int  Nv_score,// number of scoring imp. voxels
-        *voxel,   //array containing indices of scoring imp. voxels
-        *index;   // list linking each geom. region with an imp. region
+         *voxel,   //array containing indices of scoring imp. voxels
+         *index;   // list linking each geom. region with an imp. region
     int  latch;   // if 0, attenuated signal, else scatter
     bool warming;
 public:
 
     EGS_Splitter(EGS_Input* inp, const int& n_p,
-                           //const int& p_x,
-                           const int& v_x,
-                           const int& v_y,
-                           const int& v_z);
+                 //const int& p_x,
+                 const int& v_x,
+                 const int& v_y,
+                 const int& v_z);
     ~EGS_Splitter();
 
-    bool isWarming(){return warming;};
-    void stopWarming(){warming=false;};
+    bool isWarming() {
+        return warming;
+    };
+    void stopWarming() {
+        warming=false;
+    };
 
     void describeIt();
     EGS_Float averageSplitting();
     void printStatus();
     void printImportances(const string& fname);
-    int scoringLatch(){return latch;};
-    void setLatch(const int& _latch){latch=_latch;};
-    int getGridNx(){return Vx;};
-    int getGridNy(){return Vy;};
-    int getGridNz(){return Vz;};
-
-    EGS_Float getImportance(const int& ireg){
-       return ireg >= 0 ? C[index[ireg]] : Cmin;
+    int scoringLatch() {
+        return latch;
+    };
+    void setLatch(const int& _latch) {
+        latch=_latch;
+    };
+    int getGridNx() {
+        return Vx;
+    };
+    int getGridNy() {
+        return Vy;
+    };
+    int getGridNz() {
+        return Vz;
     };
 
-    float fetchImportance(const int& imp_reg){
-       return imp_reg >= 0 ? C[imp_reg] : Cmin;
+    EGS_Float getImportance(const int& ireg) {
+        return ireg >= 0 ? C[index[ireg]] : Cmin;
+    };
+
+    float fetchImportance(const int& imp_reg) {
+        return imp_reg >= 0 ? C[imp_reg] : Cmin;
     };
 
     /* Calculates splitting number based on geometrical
@@ -150,87 +164,99 @@ public:
     void updateSplitting()
     {
 
-      Kt = 0; Nt = 0;//reset these
+        Kt = 0;
+        Nt = 0;//reset these
 
-      /* Compute sum of averages */
-      for( int i=0; i<Nv; i++){
-         C[i] = 0;// resetting this
-         if (!Nscore[i]) continue;
-         /***************************/
-         /* C_i proportional to <K_i> */
-         /***************************/
-         C[i] = K[i]/Nscore[i];
-         Kt  += K[i]; Nt += Nscore[i];
-         /***************************/
-         /* C_i proportional to K_i */
-         /***************************/
-         //C[i] = K[i];
-         //Kt  += K[i]*Nscore[i]; Nt += Nscore[i];
-      }
-      /* compute constant quantity first*/
-      EGS_Float aux = Kt > 0 ? Nt/Kt:0;
-      for( int i=0; i<Nv; i++){
-         C[i] *= aux;
-         if (C[i]<Cmin) C[i]=Cmin;
-         if (C[i]>Cmax) C[i]=Cmax;
-      }
+        /* Compute sum of averages */
+        for( int i=0; i<Nv; i++) {
+            C[i] = 0;// resetting this
+            if (!Nscore[i]) continue;
+            /***************************/
+            /* C_i proportional to <K_i> */
+            /***************************/
+            C[i] = K[i]/Nscore[i];
+            Kt  += K[i];
+            Nt += Nscore[i];
+            /***************************/
+            /* C_i proportional to K_i */
+            /***************************/
+            //C[i] = K[i];
+            //Kt  += K[i]*Nscore[i]; Nt += Nscore[i];
+        }
+        /* compute constant quantity first*/
+        EGS_Float aux = Kt > 0 ? Nt/Kt:0;
+        for( int i=0; i<Nv; i++) {
+            C[i] *= aux;
+            if (C[i]<Cmin) C[i]=Cmin;
+            if (C[i]>Cmax) C[i]=Cmax;
+        }
     };
 
     void updateSplitting(const EGS_Float& KattAve)
     {
 
-      Kt = KattAve;
-      /* Compute sum of averages */
-      for( int i=0; i<Nv; i++){
-         C[i] = 0;// resetting this
-         if (!Nscore[i]) continue;
-         C[i] = K[i]/Nscore[i];
-      }
-      /* compute constant quantity first*/
-      EGS_Float aux = KattAve > 0 ? 1.0/KattAve:0;
-      for( int i=0; i<Nv; i++){
-         C[i] *= aux;
-         if (C[i]<Cmin) C[i]=Cmin;
-         if (C[i]>Cmax) C[i]=Cmax;
-      }
+        Kt = KattAve;
+        /* Compute sum of averages */
+        for( int i=0; i<Nv; i++) {
+            C[i] = 0;// resetting this
+            if (!Nscore[i]) continue;
+            C[i] = K[i]/Nscore[i];
+        }
+        /* compute constant quantity first*/
+        EGS_Float aux = KattAve > 0 ? 1.0/KattAve:0;
+        for( int i=0; i<Nv; i++) {
+            C[i] *= aux;
+            if (C[i]<Cmin) C[i]=Cmin;
+            if (C[i]>Cmax) C[i]=Cmax;
+        }
     };
 
-    EGS_Float minImportance(){return Cmin;};
-    EGS_Float maxImportance(){return Cmax;};
-    int minSplitting(){return Nmin;};
-    int maxSplitting(){return Nmax;};
+    EGS_Float minImportance() {
+        return Cmin;
+    };
+    EGS_Float maxImportance() {
+        return Cmax;
+    };
+    int minSplitting() {
+        return Nmin;
+    };
+    int maxSplitting() {
+        return Nmax;
+    };
 
     void score(const int& ireg, const EGS_Float& sc)
     {
-       if (ireg>=0){
-          int i = index[ireg];
-          if (!Nscore[i])
-             voxel[Nv_score++]=i; // i hasn't scored before
-          K[i] +=sc;Nscore[i]++;
-       }
+        if (ireg>=0) {
+            int i = index[ireg];
+            if (!Nscore[i])
+                voxel[Nv_score++]=i; // i hasn't scored before
+            K[i] +=sc;
+            Nscore[i]++;
+        }
     };
 
     void score(const int& ireg, const EGS_Float& sc, const EGS_Float& wt)
     {
-       if (ireg>=0){
-          int i = index[ireg];
-          if (!Nscore[i])
-             voxel[Nv_score++]=i; // i hasn't scored before
-          K[i] +=sc; Nscore[i]+=wt;
-       }
+        if (ireg>=0) {
+            int i = index[ireg];
+            if (!Nscore[i])
+                voxel[Nv_score++]=i; // i hasn't scored before
+            K[i] +=sc;
+            Nscore[i]+=wt;
+        }
     };
 
     int findVoxel(const int& ireg)
     {
-      /* voxel indices in transport geometry */
-      int iz = ireg/vxy, imod = ireg - iz*vxy,
-          iy = imod/vx,
-          ix = imod - iy*vx;
-      /* voxel indices in splitter geometry */
-      int i_x = ix/mvx,
-          i_y = iy/mvy,
-          i_z = iz/mvz;
-      return i_x+i_y*Vx+i_z*Vxy;
+        /* voxel indices in transport geometry */
+        int iz = ireg/vxy, imod = ireg - iz*vxy,
+            iy = imod/vx,
+            ix = imod - iy*vx;
+        /* voxel indices in splitter geometry */
+        int i_x = ix/mvx,
+            i_y = iy/mvy,
+            i_z = iz/mvz;
+        return i_x+i_y*Vx+i_z*Vxy;
     }
 
     //int findPixel(const int& idet)

@@ -42,18 +42,20 @@
 
 class MMCInputs : public MInputBlock
 {
-  public:
-   MMCInputs();
-  ~MMCInputs();
-   QString GetIFULL() const { return ifull; }
+public:
+    MMCInputs();
+    ~MMCInputs();
+    QString GetIFULL() const {
+        return ifull;
+    }
 
-   QString ncase;
-   v_int rnd;
-   QString maxcpu;
-   QString ifull;
-   QString stat;
-   QString kerma;
-   QString photreg;
+    QString ncase;
+    v_int rnd;
+    QString maxcpu;
+    QString ifull;
+    QString stat;
+    QString kerma;
+    QString photreg;
 };
 std::ifstream & operator >> ( std::ifstream & in, MMCInputs * rMC );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MMCInputs * rMC );

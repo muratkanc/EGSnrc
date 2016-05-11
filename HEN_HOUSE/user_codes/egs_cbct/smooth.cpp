@@ -73,7 +73,8 @@ int main(int argc, char**argv) {
     /**************************************************/
     /* projection set input */
     /**************************************************/
-    string fname(ifile); fname += ".scatonly.scan";
+    string fname(ifile);
+    fname += ".scatonly.scan";
     egsInformation("Reading data ... ");
 
     EGS_Distribution2DArray proj(fname.c_str(),Nx,Ny,Nz);
@@ -82,63 +83,71 @@ int main(int argc, char**argv) {
 
     EGS_Distribution2DArray *be = 0;
     if( bench ) {
-        fname = bench; fname += ".scatonly.scan";
+        fname = bench;
+        fname += ".scatonly.scan";
         be = new EGS_Distribution2DArray(fname.c_str(),Nx,Ny,Nz);
     }
 
     if( ofile ) fname = ofile;
     else {
-        fname = ifile; fname += "_smoothed.scatonly.scan";
+        fname = ifile;
+        fname += "_smoothed.scatonly.scan";
     }
     ofstream out(fname.c_str(),ios::binary|ios::app);
 
     egsInformation("OK\n");
 
     EGS_Smoothing smoo;
-    smoo.setNmax2d(nmax2d); smoo.setNmax(nmax);
-    smoo.setChi2Max(chi2max); smoo.setDmin(dmin);
+    smoo.setNmax2d(nmax2d);
+    smoo.setNmax(nmax);
+    smoo.setChi2Max(chi2max);
+    smoo.setDmin(dmin);
     smoo.setDimensions(Nx,Ny);
     egsInformation("Smoothing data ... ");
     smoo.describeIt();
     /* no smoothing done if any of these is zero */
-    if (nmax2d*nmax*chi2max==0){
+    if (nmax2d*nmax*chi2max==0) {
         out.close();
         egsFatal("...No smoothing done since one of the smoothing\n"
                  "   parameters is null! Smoothed scan identical\n"
                  "   to original scan!\n");
     }
-    for(int iproj=0; iproj<Nz; iproj++){
+    for(int iproj=0; iproj<Nz; iproj++) {
 
         EGS_Distribution2D* scan = proj.get_proj(iproj);
         EGS_Distribution2D* b    = 0;
-        if( be ) {b = be->get_proj(iproj);}
+        if( be ) {
+            b = be->get_proj(iproj);
+        }
 
         double sumo = 0, maxdo = 0;
         if( be ) {
-           for(int j=0; j<Nx*Ny; j++) {
-              double aux = fabs(scan->d_array[j] - b->d_array[j]);
-              sumo += aux*aux;
-              if( aux > maxdo ) maxdo = aux;
-           }
+            for(int j=0; j<Nx*Ny; j++) {
+                double aux = fabs(scan->d_array[j] - b->d_array[j]);
+                sumo += aux*aux;
+                if( aux > maxdo ) maxdo = aux;
+            }
         }
         EGS_Distribution2D *smoothed = smoo.smooth1(scan);
         if( !smoothed ) {
-          cerr << "Error while smoothing" << iproj
-               << " projection\n"; return 1;
+            cerr << "Error while smoothing" << iproj
+                 << " projection\n";
+            return 1;
         }
         if( be ) {
-          double sum = 0, maxd = 0;
-          for(int j=0; j<Nx*Ny; j++) {
-             double aux = fabs(smoothed->d_array[j] - b->d_array[j]);
-             sum += aux*aux;
-             if( aux > maxd ) maxd = aux;
-          }
-          sum /= (Nx*Ny); sumo /= (Nx*Ny);
-          egsInformation("\nMSD  smoothed=%lg original=%lg IR=%lg",sum,sumo,
-                         sumo/sum);
-          egsInformation("\nMax. difference: smoothed=%lg original=%lg"
-                         "IR=%lg\n",
-                         maxd,maxdo,maxdo/maxd);
+            double sum = 0, maxd = 0;
+            for(int j=0; j<Nx*Ny; j++) {
+                double aux = fabs(smoothed->d_array[j] - b->d_array[j]);
+                sum += aux*aux;
+                if( aux > maxd ) maxd = aux;
+            }
+            sum /= (Nx*Ny);
+            sumo /= (Nx*Ny);
+            egsInformation("\nMSD  smoothed=%lg original=%lg IR=%lg",sum,sumo,
+                           sumo/sum);
+            egsInformation("\nMax. difference: smoothed=%lg original=%lg"
+                           "IR=%lg\n",
+                           maxd,maxdo,maxdo/maxd);
         }
 
         out.write((char *) smoothed->d_array,smoothed->nreg*sizeof(float));

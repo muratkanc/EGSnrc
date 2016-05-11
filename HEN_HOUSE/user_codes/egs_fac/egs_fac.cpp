@@ -202,10 +202,10 @@
 using namespace std;
 
 EGS_FACApplication::EGS_FACApplication(int argc, char **argv) :
-        EGS_AdvancedApplication(argc,argv), ngeom(0), sim(0),
-        ncor(0), corr(0), nax(0), Ax(0),
-        rrej(0), fsplit(1), fspliti(1), gsections(0),
-        increase_scatter(false) {}
+    EGS_AdvancedApplication(argc,argv), ngeom(0), sim(0),
+    ncor(0), corr(0), nax(0), Ax(0),
+    rrej(0), fsplit(1), fspliti(1), gsections(0),
+    increase_scatter(false) {}
 
 EGS_FACApplication::~EGS_FACApplication() {
     if( ngeom > 0 ) {
@@ -223,9 +223,9 @@ void EGS_FACApplication::describeUserCode() const {
         "\n               *************************************************"
         "\n\n");
     egsInformation("This is EGS_FACApplication %s based on\n"
-            "      EGS_AdvancedApplication %s\n\n",
-            egsSimplifyCVSKey(revision).c_str(),
-            egsSimplifyCVSKey(base_revision).c_str());
+                   "      EGS_AdvancedApplication %s\n\n",
+                   egsSimplifyCVSKey(revision).c_str(),
+                   egsSimplifyCVSKey(base_revision).c_str());
 
 }
 
@@ -245,9 +245,9 @@ int EGS_FACApplication::ausgab(int iarg) {
                 //    CV. Note: addEnergyImbalance takes care of checks for
                 //    regions being CV.
                 EGS_Float dE = (the_stack->E[np]-the_epcont->edep-the_useful->rm)*
-                                the_stack->wt[np];
+                               the_stack->wt[np];
                 if( isnan(dE) || isnan(the_extra_stack->expmfp[np]) ||
-                    isinf(dE) || isinf(the_extra_stack->expmfp[np]) )
+                        isinf(dE) || isinf(the_extra_stack->expmfp[np]) )
                     egsInformation("\nAdding a NaN in imbalance: %g %g\n",dE,the_extra_stack->expmfp[np]);
                 else sim[ig]->addEnergyImbalance(ir,irnew,the_extra_stack->expmfp[np],dE);
             }
@@ -258,7 +258,7 @@ int EGS_FACApplication::ausgab(int iarg) {
                 if( ++nwarn < 20 ) {
                     egsWarning("Fat energy deposition in cavity:\n");
                     egsWarning("  iarg=%d edep=%g wt=%g q=%d latch=%d is_fat=%d\n",iarg,the_epcont->edep,
-                            the_stack->wt[np],the_stack->iq[np],the_stack->latch[np],the_extra_stack->is_fat[np]);
+                               the_stack->wt[np],the_stack->iq[np],the_stack->latch[np],the_extra_stack->is_fat[np]);
                 }
             }
             if( isnan(edep) || isinf(edep) )
@@ -268,7 +268,7 @@ int EGS_FACApplication::ausgab(int iarg) {
         return 0;
     }
     if( iarg == AfterBrems || iarg == AfterMoller || iarg == AfterBhabha ||
-        iarg == AfterAnnihFlight || iarg == AfterAnnihRest ) {
+            iarg == AfterAnnihFlight || iarg == AfterAnnihRest ) {
         //
         // if not fat, play RR with photons
         // if latch=0, set latch of photons to 1
@@ -289,7 +289,8 @@ int EGS_FACApplication::ausgab(int iarg) {
                             the_stack->v[ip] = the_stack->v[np];
                             the_stack->w[ip] = the_stack->w[np];
                         }
-                        --ip; --np;
+                        --ip;
+                        --np;
                     }
                     else { // survives
                         the_stack->wt[ip] *= fsplit;
@@ -310,8 +311,9 @@ int EGS_FACApplication::simulateSingleShower() {
     EGS_Vector x,u;
     current_case = source->getNextParticle(rndm,p.q,p.latch,p.E,p.wt,x,u);
     if( p.q ) egsFatal("Got particle with q=%d.\n"
-        "This application only works for photons\n",p.q);
-    int err = startNewShower(); if( err ) return err;
+                           "This application only works for photons\n",p.q);
+    int err = startNewShower();
+    if( err ) return err;
     EGS_BaseGeometry *save_geometry = geometry;
     EGS_RangeRejection *save_rr = rrej;
     EGS_Float save_fspliti = fspliti;
@@ -326,18 +328,22 @@ int EGS_FACApplication::simulateSingleShower() {
         fspliti = 1/fsplit;
         kerma_fac = sim[ig]->cmass/(M_PI*sim[ig]->R2_pom);
         //kerma_fac = sim[ig]->cmass;
-        p.x = x; p.u = u;
+        p.x = x;
+        p.u = u;
         if( sim[ig]->transform ) {
-            sim[ig]->transform->transform(p.x); sim[ig]->transform->rotate(p.u);
+            sim[ig]->transform->transform(p.x);
+            sim[ig]->transform->rotate(p.u);
         }
         int ireg = geometry->isWhere(p.x);
         if( ireg < 0 ) {
-            EGS_Float t = 1e30; ireg = geometry->howfar(ireg,p.x,p.u,t);
+            EGS_Float t = 1e30;
+            ireg = geometry->howfar(ireg,p.x,p.u,t);
             if( ireg >= 0 ) p.x += p.u*t;
         }
         if( ireg >= 0 ) {
             p.ir = ireg;
-            err = shower(); if( err ) break;
+            err = shower();
+            if( err ) break;
         }
     }
     if( !err ) err = finishShower();
@@ -361,7 +367,8 @@ int EGS_FACApplication::outputData() {
         if( Ax[j]->outputData(*data_out) ) return 10000+j;
     }
     data_out->flush();
-    delete data_out; data_out = 0;
+    delete data_out;
+    data_out = 0;
     return 0;
 }
 
@@ -407,18 +414,18 @@ int EGS_FACApplication::addState(istream &data) {
 
 void EGS_FACApplication::outputResults() {
     egsInformation("\n\n last case = %lld fluence = %20.5f\n\n",
-            current_case,source->getFluence());
+                   current_case,source->getFluence());
     egsInformation("The energies listed below have the following definitions:\n\n"
-"Eg  = Total energy deposited in the collecting volume (CV)\n"
-"E1  = Total energy deposited in CV excluding energy from particles that have\n"
-"    = visited an aperture region\n"
-"E2  = Energy deposited in the CV from primary electrons\n"
-"E3  = E2 corrected for energy loss/gain through the side faces of the CV\n"
-"E4  = E3 corrected for energy loss/gain through the front/back CV faces\n"
-"E4a = Same as E4 but computed from a kerma approximation for photons\n"
-"    = passing through the CV\n"
-"E5  = E4a for an ideal point source\n"
-"E6  = E5 corrected for attenuation. E6 = collision kerma at POM\n");
+                   "Eg  = Total energy deposited in the collecting volume (CV)\n"
+                   "E1  = Total energy deposited in CV excluding energy from particles that have\n"
+                   "    = visited an aperture region\n"
+                   "E2  = Energy deposited in the CV from primary electrons\n"
+                   "E3  = E2 corrected for energy loss/gain through the side faces of the CV\n"
+                   "E4  = E3 corrected for energy loss/gain through the front/back CV faces\n"
+                   "E4a = Same as E4 but computed from a kerma approximation for photons\n"
+                   "    = passing through the CV\n"
+                   "E5  = E4a for an ideal point source\n"
+                   "E6  = E5 corrected for attenuation. E6 = collision kerma at POM\n");
     int j;
     for(j=0; j<ngeom; ++j)
         sim[j]->reportResults(source->getFluence(),current_case);
@@ -430,9 +437,11 @@ void EGS_FACApplication::outputResults() {
 
 void EGS_FACApplication::getCurrentResult(double &sum, double &sum2, double &norm,
         double &count) {
-    count = current_case; double flu = source->getFluence();
+    count = current_case;
+    double flu = source->getFluence();
     norm = flu > 0 ? 1.6022e-10*count/(flu*sim[0]->cmass) : 0;
-    sum = sim[0]->dose[2]; sum2 = sim[0]->dose2[2];
+    sum = sim[0]->dose[2];
+    sum2 = sim[0]->dose2[2];
     if( isnan(sum) || isinf(sum) ) egsInformation("\nBad result? sum=%g sum2=%g\n",sum,sum2);
 }
 
@@ -456,14 +465,16 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     int nsec = geometry->computeIntersections(ireg,ngsec,x,u,gsections);
     if( nsec < 0 ) {
         egsWarning("\nSize of gsections not large enough to hold "
-           "all intersections with the geometry?\n"
-           "x=(%16.10f,%16.10f,%16.10f)\n"
-           "u=(%14.10f,%14.10f,%14.10f) ireg=%d ngsec=%d\n",
-           x.x,x.y,x.z,u.x,u.y,u.z,ireg,ngsec);
+                   "all intersections with the geometry?\n"
+                   "x=(%16.10f,%16.10f,%16.10f)\n"
+                   "u=(%14.10f,%14.10f,%14.10f) ireg=%d ngsec=%d\n",
+                   x.x,x.y,x.z,u.x,u.y,u.z,ireg,ngsec);
         egsWarning("This indicates a geometry problem -> discarding photon\n");
         if( ++nerror > 100 )
             egsFatal("\nToo many geometry errors -> quitting\n");
-        dpmfp = -1; --the_stack->np; return;
+        dpmfp = -1;
+        --the_stack->np;
+        return;
     }
     /*
     egsInformation("Got %d geometry intersections\n",nsec);
@@ -477,11 +488,11 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     //
     bool check_pom;
     if (sim[ig]->include_scatter)
-       check_pom = (latchi >= 0 && ((x.z >= sim[ig]->z_pom && u.z < 0)||
-                                    (x.z <= sim[ig]->z_pom && u.z > 0)
-       ));
+        check_pom = (latchi >= 0 && ((x.z >= sim[ig]->z_pom && u.z < 0)||
+                                     (x.z <= sim[ig]->z_pom && u.z > 0)
+                                    ));
     else
-       check_pom = (latchi == 0 && x.z <= sim[ig]->z_pom && u.z > 0);
+        check_pom = (latchi == 0 && x.z <= sim[ig]->z_pom && u.z > 0);
 
     EGS_Float d_to_pom = check_pom ? (sim[ig]->z_pom-x.z)/u.z : 1e30;
     bool hits_pom_area = false;
@@ -491,7 +502,8 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     //int ninter = 0; int keep = (int) (rndm->getUniform()*fsplit);
     int ninter = 0;
     EGS_Float keep_fac = increase_scatter && latchi == 0 ? 0.5 : 1;
-    EGS_Float akeep = keep_fac*rndm->getUniform()*fsplit; int keep = (int) akeep;
+    EGS_Float akeep = keep_fac*rndm->getUniform()*fsplit;
+    int keep = (int) akeep;
     //
     // *** CV entry
     //
@@ -509,7 +521,8 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
     bool hits_ap = latchi == -1;
     if( hits_ap ) check_pom = false;
     EGS_Float rr_range = rrej ? rrej->getRange(-1,gle) : 1e30;
-    int imed_old = -99; int j_hit_ap = 100000000;
+    int imed_old = -99;
+    int j_hit_ap = 100000000;
     EGS_Float mu_cv = -1, Lambda_tot = 0;
     for(int j=0; j<nsec; ++j) {
         int imed = gsections[j].imed;
@@ -518,7 +531,8 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
         if( !hits_ap && latchi == 0 ) {
             if( sim[ig]->isAperture(ireg) ) {
                 //egsInformation("have hit aperture!\n");
-                hits_ap = true; check_pom = false;
+                hits_ap = true;
+                check_pom = false;
                 j_hit_ap = j;
             }
         }
@@ -532,7 +546,10 @@ void EGS_FACApplication::selectPhotonMFP(EGS_Float &dpmfp) {
                 sigma = 1/gmfp;
                 //egsInformation("computed cross section: sigma=%g cohfac=%g\n",sigma,cohfac);
             }
-            else { sigma = 0; cohfac = 1; }
+            else {
+                sigma = 0;
+                cohfac = 1;
+            }
         }
         if( check_pom && gsections[j].t >= d_to_pom ) {
             check_pom = false;
@@ -567,7 +584,7 @@ retry:
             }
             if( ityp < 0 ) {
                 EGS_Float gbr1 = E > the_thresh->rmt2 ?
-                    i_gbr1[imed].interpolateFast(gle) : 0;
+                                 i_gbr1[imed].interpolateFast(gle) : 0;
                 EGS_Float eta = rndm->getUniform();
                 if( eta < gbr1 ) ityp = 1;
                 else {
@@ -578,8 +595,10 @@ retry:
             told += lambda*gmfp;
             Lambda_tot += lambda;
             //egsInformation("Interaction %d at distance=%g Ltot=%g\n",ityp,told,Lambda_tot);
-            idist[ninter] = told; ilambda[ninter] = Lambda_tot;
-            iindex[ninter] = j; itype[ninter++] = ityp;
+            idist[ninter] = told;
+            ilambda[ninter] = Lambda_tot;
+            iindex[ninter] = j;
+            itype[ninter++] = ityp;
             eta_prime -= fspliti;
             lambda = eta_prime > 0 ? -log(eta_prime) - lambda_old : 1e30;
             //egsInformation("Interacting: eta_prime=%g lambda=%g ityp=%d\n",eta_prime,lambda,ityp);
@@ -589,14 +608,18 @@ retry:
             //egsInformation("new lambda=%g lam=%g t=%g\n",lambda,lam,t);
             goto retry;
         }
-        else { lambda -= lam; Lambda_tot += lam; }
-        told = gsections[j].t; imed_old = imed;
+        else {
+            lambda -= lam;
+            Lambda_tot += lam;
+        }
+        told = gsections[j].t;
+        imed_old = imed;
     }
 
     //
     // *** score kerma
     //
-     if((latchi == 0||sim[ig]->include_scatter) && hits_pom_area && !hits_ap){
+    if((latchi == 0||sim[ig]->include_scatter) && hits_pom_area && !hits_ap) {
         EGS_Float mu_en = muen->interpolateFast(gle);
         //egsInformation("scoring kerma: mu_en=%g wt=%g\n",mu_en,the_stack->wt[np]);
         //egsInformation("Lambdas: to_pom=%g to_cv=%g in_cv=%g\n",Lambda_to_pom,Lambda_to_cv,Lambda_in_cv);
@@ -610,20 +633,21 @@ retry:
         ***********************************************/
         EGS_Float dE5 = 0, dE4 = 0;
         if( u.z > 0 ) {
-           mu_en *= exp(-Lambda_to_cv);
-           if( mu_cv < 0 ) {
-               // means the photon didn't visit the CV
-               // this is a case contributing to Ag
-               gmfp = i_gmfp[med_cv].interpolateFast(gle);
-               if( the_xoptions->iraylr ) {
-                   cohfac = i_cohe[med_cv].interpolateFast(gle);
-                   gmfp *= cohfac;
-               }
-               sigma = 1/gmfp; mu_cv = sigma;
-           }
-           EGS_Float lcv = sim[ig]->h*mu_cv/u.z;
-           dE5 = mu_en*(1-exp(-lcv))/(sim[ig]->h*mu_cv);
-           dE4 = enters_cv ? mu_en*(1-exp(-Lambda_in_cv))/(sim[ig]->h*mu_cv) : 0;
+            mu_en *= exp(-Lambda_to_cv);
+            if( mu_cv < 0 ) {
+                // means the photon didn't visit the CV
+                // this is a case contributing to Ag
+                gmfp = i_gmfp[med_cv].interpolateFast(gle);
+                if( the_xoptions->iraylr ) {
+                    cohfac = i_cohe[med_cv].interpolateFast(gle);
+                    gmfp *= cohfac;
+                }
+                sigma = 1/gmfp;
+                mu_cv = sigma;
+            }
+            EGS_Float lcv = sim[ig]->h*mu_cv/u.z;
+            dE5 = mu_en*(1-exp(-lcv))/(sim[ig]->h*mu_cv);
+            dE4 = enters_cv ? mu_en*(1-exp(-Lambda_in_cv))/(sim[ig]->h*mu_cv) : 0;
         }
         //egsInformation("scoring E4=%g E5=%g E6=%g\n",dE4,dE5,dE6);
         sim[ig]->addKerma(dE4,dE5,dE6);
@@ -633,13 +657,18 @@ retry:
     // *** do interactions
     //
     dpmfp = -1;
-    if( ninter < 1 ) { --the_stack->np; return; }
+    if( ninter < 1 ) {
+        --the_stack->np;
+        return;
+    }
 
     EGS_Float wt_o = the_stack->wt[np], wt = wt_o*fspliti;
     EGS_Float kappa = the_extra_stack->expmfp[np];
-    int last_imed = -1; EGS_Float range;
-    --np; --the_stack->np;
-/*    egsInformation("Performing %d interactions, keeping scattered from %d\n",ninter,keep);*/
+    int last_imed = -1;
+    EGS_Float range;
+    --np;
+    --the_stack->np;
+    /*    egsInformation("Performing %d interactions, keeping scattered from %d\n",ninter,keep);*/
     for(int i=0; i<ninter; ++i) {
         int j = iindex[i];
         int do_interaction = 0;
@@ -656,13 +685,15 @@ retry:
             EGS_Float tperp = 0; //EGS_Float tperp_cavity = rrej->hownear(xi);
             if( do_interaction == 1 && rrej && !sim[ig]->isCavity(gsections[j].ireg)) {
                 if( !rrej->canEnterCavity(rr_range,xi) ) {
-                //if( rr_range < tperp_cavity ) {
+                    //if( rr_range < tperp_cavity ) {
                     if( i != keep ) continue;
                     do_interaction = 2;
                 }
                 else {
                     if( gsections[j].imed != last_imed ) {
-                        int med = gsections[j].imed + 1; int q=-1; last_imed = gsections[j].imed;
+                        int med = gsections[j].imed + 1;
+                        int q=-1;
+                        last_imed = gsections[j].imed;
                         computeRange(&E,&gle,&med,&q,&range);
                         //egsInformation("E=%g imed=%d range=%g\n",E,gsections[j].imed,range);
                     }
@@ -673,17 +704,26 @@ retry:
                     }
                 }
             }
-            ++np; ++the_stack->np;
-            the_stack->u[np] = u.x; the_stack->v[np] = u.y; the_stack->w[np] = u.z;
-            the_stack->x[np] = xi.x; the_stack->y[np] = xi.y; the_stack->z[np] = xi.z;
-            the_stack->E[np] = E; the_stack->iq[np] = 0; the_stack->dnear[np] = tperp;
+            ++np;
+            ++the_stack->np;
+            the_stack->u[np] = u.x;
+            the_stack->v[np] = u.y;
+            the_stack->w[np] = u.z;
+            the_stack->x[np] = xi.x;
+            the_stack->y[np] = xi.y;
+            the_stack->z[np] = xi.z;
+            the_stack->E[np] = E;
+            the_stack->iq[np] = 0;
+            the_stack->dnear[np] = tperp;
             the_stack->ir[np] = gsections[j].ireg + 2;
             if( do_interaction == 1 ) {
-                the_stack->wt[np] = wt; the_extra_stack->is_fat[np] = 0;
+                the_stack->wt[np] = wt;
+                the_extra_stack->is_fat[np] = 0;
             }
             else {
                 //the_stack->wt[np] = wt_o; the_extra_stack->is_fat[np] = 1;
-                the_stack->wt[np] = wt_o*keep_fac; the_extra_stack->is_fat[np] = 1;
+                the_stack->wt[np] = wt_o*keep_fac;
+                the_extra_stack->is_fat[np] = 1;
             }
             //
             // *** set latch
@@ -698,17 +738,21 @@ retry:
             //         changing latch afterwards
             //       - else latch=-1
             //
-            int latch_e = latchi; int latch_p = latchi;
+            int latch_e = latchi;
+            int latch_p = latchi;
             if( latchi == 0 ) {
-                if( j >= j_hit_ap ) { latch_e = -1; latch_p = -1; }
-                 else if( xi.z > sim[ig]->z_pom )    latch_p = 1;
+                if( j >= j_hit_ap ) {
+                    latch_e = -1;
+                    latch_p = -1;
+                }
+                else if( xi.z > sim[ig]->z_pom )    latch_p = 1;
             }
             if( itype[i] == 0 ) latch_e = latch_p;
             //if( gsections[j].imed == 0 ) egsInformation("z=%g latch_e=%d latch_p=%d keep=%d i=%d\n",
             //        xi.z,latch_e,latch_p,keep,i);
             the_stack->latch[np] = latch_e;
             the_extra_stack->expmfp[np] = latch_e == 0 ?
-                kappa*exp(ilambda[i]-Lambda_to_pom) : kappa;
+                                          kappa*exp(ilambda[i]-Lambda_to_pom) : kappa;
             //int latch = latchi;
             //if( latch == 0 ) {
             //    if( j >= j_hit_ap ) latch = -1;
@@ -748,7 +792,8 @@ retry:
                                 the_stack->w[ip] = the_stack->w[np];
                                 the_stack->latch[ip] = the_stack->latch[np];
                             }
-                            --ip; --np;
+                            --ip;
+                            --np;
                         }
                     }
                 }
@@ -756,7 +801,8 @@ retry:
             }
         }
         if( i == keep ) {
-            akeep += keep_fac*fsplit; keep = (int) akeep;
+            akeep += keep_fac*fsplit;
+            keep = (int) akeep;
         }
     }
     //egsInformation("Now on stack:\n");
@@ -774,7 +820,7 @@ int EGS_FACApplication::rangeDiscard(EGS_Float tperp, EGS_Float range) const {
     bool is_cav = sim[ig]->isCavity(ir);
     EGS_RangeRejection::RejectionAction action =
         rrej->rangeDiscard(np,the_stack,tperp,range,is_cav,
-                the_epcont->elke,rndm);
+                           the_epcont->elke,rndm);
     if( action == EGS_RangeRejection::Survive ) {
         the_extra_stack->is_fat[np] = 1;
         action = EGS_RangeRejection::NoAction;
@@ -801,7 +847,8 @@ string EGS_FACApplication::revision = "$Revision: 1.8 $";
 
 int EGS_FACApplication::initScoring() {
     EGS_Input *options = input->takeInputItem("scoring options");
-    vector<EGS_FACSimulation *> sims; vector<EGS_Input *> sim_inputs;
+    vector<EGS_FACSimulation *> sims;
+    vector<EGS_Input *> sim_inputs;
     if( options ) {
         //
         // *********** photon cross section scaling
@@ -809,12 +856,16 @@ int EGS_FACApplication::initScoring() {
         EGS_Input *scaling;
         EGS_BaseGeometry::setActiveGeometryList(app_index);
         while( (scaling = options->takeInputItem("scale photon x-sections")) ) {
-            EGS_Float factor; string medname; int what;
+            EGS_Float factor;
+            string medname;
+            int what;
             int err1 = scaling->getInput("factor",factor);
             int err2 = scaling->getInput("medium",medname);
             vector<string> allowed;
-            allowed.push_back("all"); allowed.push_back("Rayleigh");
-            allowed.push_back("Compton"); allowed.push_back("Pair");
+            allowed.push_back("all");
+            allowed.push_back("Rayleigh");
+            allowed.push_back("Compton");
+            allowed.push_back("Pair");
             allowed.push_back("Photo");
             what = scaling->getInput("cross section",allowed);
             if( !err1 && !err2 ) {
@@ -823,17 +874,19 @@ int EGS_FACApplication::initScoring() {
                     imed = 0;
                 else {
                     EGS_BaseGeometry::setActiveGeometryList(app_index);
-                    imed = EGS_BaseGeometry::addMedium(medname); ++imed;
+                    imed = EGS_BaseGeometry::addMedium(medname);
+                    ++imed;
                     if( imed > the_media->nmed ) {
                         egsInformation("Scaling requested for medium %s,"
-                              " but such medium does not exist\n",medname.c_str());
+                                       " but such medium does not exist\n",medname.c_str());
                         imed = -1;
                     }
                 }
                 if( imed >= 0 )
                     egsScaleXsection(&imed,&factor,&what);
             }
-            delete scaling; scaling = 0;
+            delete scaling;
+            scaling = 0;
 
         }
 
@@ -845,7 +898,8 @@ int EGS_FACApplication::initScoring() {
             vector<EGS_Float> tmp;
             int err = scale->getInput("scale xcc",tmp);
             if( !err ) {
-                int im = (int) tmp[0]; ++im;
+                int im = (int) tmp[0];
+                ++im;
                 egsInformation("Scaling xcc of medium %d with %g\n",im,tmp[1]);
                 F77_OBJ_(egs_scale_xcc,EGS_SCALE_XCC)(&im,&tmp[1]);
             }
@@ -860,7 +914,8 @@ int EGS_FACApplication::initScoring() {
         while( (aux = options->takeInputItem("calculation geometry")) ) {
             EGS_FACSimulation *fsim = EGS_FACSimulation::getFACSimulation(aux);
             if( fsim ) {
-                sims.push_back(fsim); sim_inputs.push_back(aux);
+                sims.push_back(fsim);
+                sim_inputs.push_back(aux);
             }
             else delete aux;
         }
@@ -882,16 +937,23 @@ int EGS_FACApplication::initScoring() {
             if( err || geoms.size() != 2 ) egsWarning("wrong 'correlated geometries' input -> ignored\n");
             else {
                 EGS_BaseGeometry *g1 = EGS_BaseGeometry::getGeometry(geoms[0]),
-                                 *g2 = EGS_BaseGeometry::getGeometry(geoms[1]);
+                                  *g2 = EGS_BaseGeometry::getGeometry(geoms[1]);
                 if( !g1 ) egsWarning("no geometry with name %s available\n",geoms[0].c_str());
                 if( !g2 ) egsWarning("no geometry with name %s available\n",geoms[1].c_str());
                 if( g1 && g2 ) {
-                    EGS_FACSimulation *sim1=0, *sim2=0; int j;
+                    EGS_FACSimulation *sim1=0, *sim2=0;
+                    int j;
                     for(j=0; j<ngeom; ++j) {
-                        if( g1 == sim[j]->geometry ) { sim1 = sim[j]; break; }
+                        if( g1 == sim[j]->geometry ) {
+                            sim1 = sim[j];
+                            break;
+                        }
                     }
                     for(j=0; j<ngeom; ++j) {
-                        if( g2 == sim[j]->geometry ) { sim2 = sim[j]; break; }
+                        if( g2 == sim[j]->geometry ) {
+                            sim2 = sim[j];
+                            break;
+                        }
                     }
                     if( !sim1 ) egsWarning("no simulation for geometry %s found\n",geoms[0].c_str());
                     if( !sim2 ) egsWarning("no simulation for geometry %s found\n",geoms[1].c_str());
@@ -917,21 +979,31 @@ int EGS_FACApplication::initScoring() {
             if( err || geoms.size() != 3 ) egsWarning("wrong 'Ax calculation' input -> ignored\n");
             else {
                 EGS_BaseGeometry *g0 = EGS_BaseGeometry::getGeometry(geoms[0]),
-                                 *g1 = EGS_BaseGeometry::getGeometry(geoms[1]),
-                                 *g2 = EGS_BaseGeometry::getGeometry(geoms[2]);
+                                  *g1 = EGS_BaseGeometry::getGeometry(geoms[1]),
+                                   *g2 = EGS_BaseGeometry::getGeometry(geoms[2]);
                 if( !g0 ) egsWarning("no geometry with name %s available\n",geoms[0].c_str());
                 if( !g1 ) egsWarning("no geometry with name %s available\n",geoms[1].c_str());
                 if( !g2 ) egsWarning("no geometry with name %s available\n",geoms[2].c_str());
                 if( g0 && g1 && g2 ) {
-                    EGS_FACSimulation *sim0=0, *sim1=0, *sim2=0; int j;
+                    EGS_FACSimulation *sim0=0, *sim1=0, *sim2=0;
+                    int j;
                     for(j=0; j<ngeom; ++j) {
-                        if( g0 == sim[j]->geometry ) { sim0 = sim[j]; break; }
+                        if( g0 == sim[j]->geometry ) {
+                            sim0 = sim[j];
+                            break;
+                        }
                     }
                     for(j=0; j<ngeom; ++j) {
-                        if( g1 == sim[j]->geometry ) { sim1 = sim[j]; break; }
+                        if( g1 == sim[j]->geometry ) {
+                            sim1 = sim[j];
+                            break;
+                        }
                     }
                     for(j=0; j<ngeom; ++j) {
-                        if( g2 == sim[j]->geometry ) { sim2 = sim[j]; break; }
+                        if( g2 == sim[j]->geometry ) {
+                            sim2 = sim[j];
+                            break;
+                        }
                     }
                     if( !sim0 ) egsWarning("no simulation for geometry %s found\n",geoms[0].c_str());
                     if( !sim1 ) egsWarning("no simulation for geometry %s found\n",geoms[1].c_str());
@@ -954,21 +1026,23 @@ int EGS_FACApplication::initScoring() {
         string muen_file;
         int err3 = options->getInput("muen file",muen_file);
         if( err3 ) egsFatal("\n\n***  Wrong/missing 'muen file' input\n"
-             "     This is a fatal error\n\n");
+                                "     This is a fatal error\n\n");
         ifstream muen_data(muen_file.c_str());
         if( !muen_data ) egsFatal("\n\n***  Failed to open muen file %s\n"
-                 "     This is a fatal error\n",muen_file.c_str());
-        int ndat; muen_data >> ndat;
+                                      "     This is a fatal error\n",muen_file.c_str());
+        int ndat;
+        muen_data >> ndat;
         if( ndat < 2 || muen_data.fail() ) egsFatal(
-                   "\n\n*** Failed to read muen dfata file\n");
+                "\n\n*** Failed to read muen dfata file\n");
         EGS_Float *xmuen = new EGS_Float [ndat];
         EGS_Float *fmuen = new EGS_Float [ndat];
         for(int j=0; j<ndat; j++) muen_data >> xmuen[j] >> fmuen[j];
         if( muen_data.fail() ) egsFatal(
                 "\n\n*** Failed to read muen data file\n");
         muen = new EGS_Interpolator(ndat,log(xmuen[0]),
-                   log(xmuen[ndat-1]),fmuen);
-        delete [] xmuen; delete [] fmuen;
+                                    log(xmuen[ndat-1]),fmuen);
+        delete [] xmuen;
+        delete [] fmuen;
 
         delete options;
     }
@@ -985,11 +1059,16 @@ int EGS_FACApplication::initScoring() {
         //
         // ******** photon splitting
         //
-        EGS_Float tmp; int err = vr->getInput("photon splitting",tmp);
+        EGS_Float tmp;
+        int err = vr->getInput("photon splitting",tmp);
         if( !err && tmp > 1 ) {
-            fsplit = tmp; fspliti = 1/tmp;
+            fsplit = tmp;
+            fspliti = 1/tmp;
         }
-        else { fsplit = 200; fspliti = 1/fsplit; }
+        else {
+            fsplit = 200;
+            fspliti = 1/fsplit;
+        }
         //
         // ******* range rejection
         //
@@ -998,7 +1077,9 @@ int EGS_FACApplication::initScoring() {
         //
         // ******* increase number of transported scattered photons
         //
-        vector<string> incr; incr.push_back("no"); incr.push_back("yes");
+        vector<string> incr;
+        incr.push_back("no");
+        incr.push_back("yes");
         increase_scatter =  vr->getInput("increase scatter",incr,0);
 
         delete vr;
@@ -1067,10 +1148,10 @@ int EGS_FACApplication::initScoring() {
 
 void EGS_FACApplication::describeSimulation() {
     EGS_AdvancedApplication::describeSimulation();
-	egsInformation("=======================\n"
-                       "   Simulation details  \n"
-                       "=======================\n");
-    for(int j=0; j<ngeom; j++){
+    egsInformation("=======================\n"
+                   "   Simulation details  \n"
+                   "=======================\n");
+    for(int j=0; j<ngeom; j++) {
         sim[j]->describeSimulation();
     }
 }

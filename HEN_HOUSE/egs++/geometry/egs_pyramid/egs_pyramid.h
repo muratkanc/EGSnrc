@@ -42,22 +42,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_PYRAMID_DLL
-        #define EGS_PYRAMID_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_PYRAMID_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_PYRAMID_LOCAL
+#ifdef BUILD_PYRAMID_DLL
+#define EGS_PYRAMID_EXPORT __declspec(dllexport)
+#else
+#define EGS_PYRAMID_EXPORT __declspec(dllimport)
+#endif
+#define EGS_PYRAMID_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_PYRAMID_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_PYRAMID_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_PYRAMID_EXPORT
-        #define EGS_PYRAMID_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_PYRAMID_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_PYRAMID_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_PYRAMID_EXPORT
+#define EGS_PYRAMID_LOCAL
+#endif
 
 #endif
 

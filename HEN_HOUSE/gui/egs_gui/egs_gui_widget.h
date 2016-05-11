@@ -40,52 +40,56 @@ class EGS_ConfigReader;
 
 class EGS_GUI_Widget : public QWidget {
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  EGS_GUI_Widget(QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
-  EGS_GUI_Widget(EGS_ConfigReader *, QWidget *parent=0,
-          const char *name=0, Qt::WFlags f=0);
+    EGS_GUI_Widget(QWidget *parent=0, const char *name=0, Qt::WFlags f=0);
+    EGS_GUI_Widget(EGS_ConfigReader *, QWidget *parent=0,
+                   const char *name=0, Qt::WFlags f=0);
 
-  virtual ~EGS_GUI_Widget(){}
+    virtual ~EGS_GUI_Widget() {}
 
 public:
 
-  QString henHouse();
-  QString egsHome();
-  QString egsConfiguration();
-  QString myMachine();
-  QString canonicalSystem();
-  QString fFlags();
-  QString cFlags();
-  QString makeProgram();
-  QString name(){return the_name;};
+    QString henHouse();
+    QString egsHome();
+    QString egsConfiguration();
+    QString myMachine();
+    QString canonicalSystem();
+    QString fFlags();
+    QString cFlags();
+    QString makeProgram();
+    QString name() {
+        return the_name;
+    };
 
 public slots:
 
-  virtual void changeConfiguration(const QString &);
-  virtual void setConfigReader(EGS_ConfigReader *r) { config_reader = r; };
+    virtual void changeConfiguration(const QString &);
+    virtual void setConfigReader(EGS_ConfigReader *r) {
+        config_reader = r;
+    };
 
 signals:
 
-  void egsHomeChanged(const QString &);
-  void henHouseChanged(const QString &);
+    void egsHomeChanged(const QString &);
+    void henHouseChanged(const QString &);
 
 protected:
 
-  EGS_ConfigReader *config_reader;
+    EGS_ConfigReader *config_reader;
 
-  bool killed;
+    bool killed;
 
-  virtual void setHenHouse(const QString &);
-  virtual void setEgsHome(const QString &);
+    virtual void setHenHouse(const QString &);
+    virtual void setEgsHome(const QString &);
 
-  virtual bool checkVars();
+    virtual bool checkVars();
 
 private:
 
-  QString the_name;
+    QString the_name;
 };
 
 #endif

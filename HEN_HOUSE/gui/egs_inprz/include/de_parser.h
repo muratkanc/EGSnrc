@@ -79,7 +79,7 @@ It has been written to comply with the MORPH input format  used in the EGSnrc us
 
 class DE_Parser {
 
-  private:
+private:
     int            output;
     string         delimeter;
     std::vector<string> code_words;
@@ -87,20 +87,26 @@ class DE_Parser {
     bool           decoded;
     bool           multiple_entries;
 
-  public:
+public:
 
     DE_Parser(int out, char *delim, std::istream &stream, bool me = false);
     DE_Parser(size_t &n, string codes[], int out,
-		char *delim, std::istream &stream, bool me = false);
+              char *delim, std::istream &stream, bool me = false);
     DE_Parser(std::vector<string> &codes, int out, char *delim,
-		std::istream &stream, bool me = false);
+              std::istream &stream, bool me = false);
     DE_Parser(std::vector<string> &codes, string &section, int out,
               const char *delim, bool me = false);
     DE_Parser(size_t &n, char **codes, int out,
-		char *delim, std::istream &stream, bool me = false);
-    std::vector<string> get_data() { return results; };
-    string get_data(size_t i) { return results[i]; };
-    int out() { return output; };
+              char *delim, std::istream &stream, bool me = false);
+    std::vector<string> get_data() {
+        return results;
+    };
+    string get_data(size_t i) {
+        return results[i];
+    };
+    int out() {
+        return output;
+    };
 
     void set_up(string &section, char *delim);
 
@@ -120,8 +126,8 @@ class DE_Parser {
     string get_section(std::istream &file);
     bool   get_section(string &s, const char *delim);
 
-  private:
-	  string get_line(std::istream &file);
+private:
+    string get_line(std::istream &file);
     size_t get_index(string &section, string &code, string &c1);
     string get_tokens(string &section, string &code, bool remove = false);
 

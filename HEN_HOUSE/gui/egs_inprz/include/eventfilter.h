@@ -49,35 +49,35 @@ public:
 
     uint counter;
 signals:
-        void mouseMoving();
-        void hideEvent();
-        //qt3to4 -- BW
-        void mouseButRelease();
-        void mouseButPress();
+    void mouseMoving();
+    void hideEvent();
+    //qt3to4 -- BW
+    void mouseButRelease();
+    void mouseButPress();
 //        void mouseButtonPressed();
 
 protected:
-        bool eventFilter ( QObject * o, QEvent * e );
+    bool eventFilter ( QObject * o, QEvent * e );
 };
 
 class TableEvents : public QWidget
 {
-       Q_OBJECT
+    Q_OBJECT
 public:
-       TableEvents(QWidget *parent=0,const char *name = 0 );
+    TableEvents(QWidget *parent=0,const char *name = 0 );
 protected:
-       bool eventFilter ( QObject * o, QEvent * e );
-       std::vector<string> itemCopy;
+    bool eventFilter ( QObject * o, QEvent * e );
+    std::vector<string> itemCopy;
 };
 
 class ComboEvents : public QWidget
 {
-       Q_OBJECT
+    Q_OBJECT
 public:
-       ComboEvents( QWidget *parent = 0, const char *name = 0 );
+    ComboEvents( QWidget *parent = 0, const char *name = 0 );
 signals:
-       void keyReturn(const QString);
+    void keyReturn(const QString);
 protected:
-       bool eventFilter ( QObject * o, QEvent * e );
+    bool eventFilter ( QObject * o, QEvent * e );
 };
 #endif

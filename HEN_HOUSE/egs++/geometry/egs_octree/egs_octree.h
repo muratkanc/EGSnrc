@@ -179,22 +179,22 @@ criteria than bounding boxes?
 
 #ifdef WIN32
 
-    #ifdef BUILD_OCTREE_DLL
-        #define EGS_OCTREE_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_OCTREE_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_OCTREE_LOCAL
+#ifdef BUILD_OCTREE_DLL
+#define EGS_OCTREE_EXPORT __declspec(dllexport)
+#else
+#define EGS_OCTREE_EXPORT __declspec(dllimport)
+#endif
+#define EGS_OCTREE_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_OCTREE_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_OCTREE_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_OCTREE_EXPORT
-        #define EGS_OCTREE_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_OCTREE_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_OCTREE_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_OCTREE_EXPORT
+#define EGS_OCTREE_LOCAL
+#endif
 
 #endif
 

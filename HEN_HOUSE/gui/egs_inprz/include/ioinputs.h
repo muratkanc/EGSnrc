@@ -41,40 +41,40 @@
 
 typedef struct
 {
- int minPln;
- int maxPln;
- int minCyl;
- int maxCyl;
+    int minPln;
+    int maxPln;
+    int minCyl;
+    int maxCyl;
 } REGIONS ;
 
 typedef struct
 {
- v_int start_cyl;
- v_int stop_slab;
+    v_int start_cyl;
+    v_int stop_slab;
 } SPROUT;
 
 class MIOInputs : public MInputBlock
 {
 public:
-	MIOInputs();
-	~MIOInputs();
+    MIOInputs();
+    ~MIOInputs();
 
- 	QString iwatch;
- 	QString strnd;
- 	QString irestart;
- 	QString strdat;
- 	QString outopt;
- 	QString etransport;
- 	QString sproutopt;
- 	SPROUT  sproutreg;
- 	REGIONS dosereg;
+    QString iwatch;
+    QString strnd;
+    QString irestart;
+    QString strdat;
+    QString outopt;
+    QString etransport;
+    QString sproutopt;
+    SPROUT  sproutreg;
+    REGIONS dosereg;
 
- 	QString printFluSpec;
- 	v_int   ListFluStart;
- 	v_int   ListFluStop;
- 	QString iprimary;
- 	QString slote;
- 	v_float bintop;
+    QString printFluSpec;
+    v_int   ListFluStart;
+    v_int   ListFluStop;
+    QString iprimary;
+    QString slote;
+    v_float bintop;
 };
 std::ifstream & operator >> ( std::ifstream & in, MIOInputs * rIO );
 //Q3TextStream   & operator << ( Q3TextStream &    t, MIOInputs * rIO );

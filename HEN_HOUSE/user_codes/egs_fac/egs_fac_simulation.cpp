@@ -42,7 +42,7 @@ EGS_FACSimulation::~EGS_FACSimulation() {
 }
 
 EGS_FACSimulation::EGS_FACSimulation(EGS_BaseGeometry *g,
-    EGS_AffineTransform *t) : geometry(g), rr(0), transform(t), cmass(1),
+                                     EGS_AffineTransform *t) : geometry(g), rr(0), transform(t), cmass(1),
     z_pom(0), R_pom(0.5), R2_pom(0.25), L(0), h(0),
     fsplit(1), fspliti(1), med_cv(0), had_edep(false) {
     int nreg = geometry->regions();
@@ -53,13 +53,19 @@ EGS_FACSimulation::EGS_FACSimulation(EGS_BaseGeometry *g,
 }
 
 void EGS_FACSimulation::getRatio(double r1, double dr1, double r2, double dr2,
-                  double dcor, EGS_I64 ncase,
-                  double &A, double &dA) {
-    A = 1; dA = 100;
+                                 double dcor, EGS_I64 ncase,
+                                 double &A, double &dA) {
+    A = 1;
+    dA = 100;
     if( !r1 || !r2 ) return;
-    r1 /= ncase; dr1 /= ncase; dr1 -= r1*r1;
-    r2 /= ncase; dr2 /= ncase; dr2 -= r2*r2;
-    dr1 = dr1/(r1*r1); dr2 = dr2/(r2*r2);
+    r1 /= ncase;
+    dr1 /= ncase;
+    dr1 -= r1*r1;
+    r2 /= ncase;
+    dr2 /= ncase;
+    dr2 -= r2*r2;
+    dr1 = dr1/(r1*r1);
+    dr2 = dr2/(r2*r2);
     dcor = dcor/(r1*r2*ncase) - 1;
     A = r1/r2;
     dA = (dr1 + dr2 - 2*dcor)/(ncase - 1);
@@ -115,50 +121,68 @@ bool EGS_FACSimulation::readData(istream &data) {
 void EGS_FACSimulation::resetCounter() {
     int j;
     for(j=0; j<N_FAC_DOSE; ++j) {
-        dose[j]=0; dose2[j]=0; dosec[j]=0; dtmp[j]=0;
+        dose[j]=0;
+        dose2[j]=0;
+        dosec[j]=0;
+        dtmp[j]=0;
     }
     for(j=0; j<N_FAC_CORR; ++j) extra[j] = 0;
 }
 
 bool EGS_FACSimulation::addData(istream &data) {
-    int j; double tmp;
-    for(j=0; j<N_FAC_DOSE; ++j) { data >> tmp; dose[j] += tmp; }
-    for(j=0; j<N_FAC_DOSE; ++j) { data >> tmp; dose2[j] += tmp; }
-    for(j=0; j<N_FAC_DOSE; ++j) { data >> tmp; dosec[j] += tmp; }
-    for(j=0; j<N_FAC_CORR; ++j) { data >> tmp; extra[j] += tmp; }
+    int j;
+    double tmp;
+    for(j=0; j<N_FAC_DOSE; ++j) {
+        data >> tmp;
+        dose[j] += tmp;
+    }
+    for(j=0; j<N_FAC_DOSE; ++j) {
+        data >> tmp;
+        dose2[j] += tmp;
+    }
+    for(j=0; j<N_FAC_DOSE; ++j) {
+        data >> tmp;
+        dosec[j] += tmp;
+    }
+    for(j=0; j<N_FAC_CORR; ++j) {
+        data >> tmp;
+        extra[j] += tmp;
+    }
     return data.fail();
 }
 
-void EGS_FACSimulation::describeSimulation(){
-     egsInformation("%-40s ",geometry->getName().c_str());
-     if (include_scatter)
-      egsInformation("=> Include all non-aperture scatter\n");
-     else
-      egsInformation("=> Exclude scatter past POM\n");
+void EGS_FACSimulation::describeSimulation() {
+    egsInformation("%-40s ",geometry->getName().c_str());
+    if (include_scatter)
+        egsInformation("=> Include all non-aperture scatter\n");
+    else
+        egsInformation("=> Exclude scatter past POM\n");
 }
 
 void EGS_FACSimulation::reportResults(double flu, EGS_I64 ncase) {
     finishHistory();
     egsInformation(
-"\n===============================================================================\n"
-"  Simulation geometry: %s %s\n"
-"===============================================================================\n"
-"  POM position      : (0,0,%g)\n"
-"  POM radius        : %g\n"
-"  POM to CV distance: %g\n"
-"  CV height         : %g\n",
-    geometry->getName().c_str(),
-    include_scatter ? "(Include all scatter)":"(Exclude scatter past POM)",
-    z_pom,R_pom,L,h);
+        "\n===============================================================================\n"
+        "  Simulation geometry: %s %s\n"
+        "===============================================================================\n"
+        "  POM position      : (0,0,%g)\n"
+        "  POM radius        : %g\n"
+        "  POM to CV distance: %g\n"
+        "  CV height         : %g\n",
+        geometry->getName().c_str(),
+        include_scatter ? "(Include all scatter)":"(Exclude scatter past POM)",
+        z_pom,R_pom,L,h);
     egsInformation("  Cavity regions    :");
-    int nout=0; int j;
+    int nout=0;
+    int j;
     for(j=0; j<geometry->regions(); ++j) {
         if( isCavity(j) ) {
             if( nout == 20 ) {
                 egsInformation("\n                     ");
                 nout = 0;
             }
-            egsInformation(" %d",j); ++nout;
+            egsInformation(" %d",j);
+            ++nout;
         }
     }
     if( nout > 0 ) egsInformation("\n");
@@ -170,7 +194,8 @@ void EGS_FACSimulation::reportResults(double flu, EGS_I64 ncase) {
                 egsInformation("\n                     ");
                 nout = 0;
             }
-            egsInformation(" %d",j); ++nout;
+            egsInformation(" %d",j);
+            ++nout;
         }
     }
     if( nout > 0 ) egsInformation("\n");
@@ -182,47 +207,62 @@ void EGS_FACSimulation::reportResults(double flu, EGS_I64 ncase) {
                 egsInformation("\n                     ");
                 nout = 0;
             }
-            egsInformation(" %d",j); ++nout;
+            egsInformation(" %d",j);
+            ++nout;
         }
     }
     if( nout > 0 ) egsInformation("\n");
     egsInformation(
-"-------------------------------------------------------------------------------\n");
+        "-------------------------------------------------------------------------------\n");
     char c='%';
     for(j=0; j<N_FAC_DOSE; ++j) {
         double f = dose[j]/ncase, f2 = dose2[j]/ncase;
         if( f ) {
-            f2 -= f*f; if( f2 > 0 ) f2 = sqrt(f2/(ncase-1));
+            f2 -= f*f;
+            if( f2 > 0 ) f2 = sqrt(f2/(ncase-1));
             f2 *= 100./fabs(f);
-            f *= ncase; f *= 1.6022e-10/(flu*cmass);
+            f *= ncase;
+            f *= 1.6022e-10/(flu*cmass);
             egsInformation("%s%g +/- %g%c\n",Dnames[j],f,f2,c);
         } else egsInformation("%sZero dose\n",Dnames[j]);
     }
     egsInformation(
-"-------------------------------------------------------------------------------\n");
-    double A, dA; double Atot=1, dAtot=0;
+        "-------------------------------------------------------------------------------\n");
+    double A, dA;
+    double Atot=1, dAtot=0;
     for(j=0; j<N_FAC_DOSE-1; ++j) {
         getRatio(dose[j],dose2[j],dose[j+1],dose2[j+1],dosec[j],ncase,A,dA);
         egsInformation("%s%10.6f +/- %8.4f%c\n",Anames[j],A,dA,c);
-        if( j != 4 ) { Atot *= A; dAtot += dA*dA; };
+        if( j != 4 ) {
+            Atot *= A;
+            dAtot += dA*dA;
+        };
     }
     egsInformation(
-"-------------------------------------------------------------------------------\n");
+        "-------------------------------------------------------------------------------\n");
     getRatio(dose[0],dose2[0],dose[4],dose2[4],dosec[7],ncase,A,dA);
     egsInformation("%s%10.6f +/- %8.4f%c\n",Anames[7],A,dA,c);
     egsInformation("%s%10.6f +/- %8.4f%c\n",Anames[8],Atot,sqrt(dAtot),c);
     egsInformation(
-"===============================================================================\n");
+        "===============================================================================\n");
 }
 
 void EGS_FACSimulation::getAtotal(EGS_I64 ncase, double &A, double &dA) {
-    A = 1; dA = 100;
+    A = 1;
+    dA = 100;
     if( !dose[4] || !dose[7] ) return;
-    if( !dose[0] || !dose[5] ) { A = 0; return; }
-    double Eg = dose[0]/ncase, dEg = dose2[0]/ncase; dEg = dEg/(Eg*Eg)-1;
-    double E4 = dose[4]/ncase, dE4 = dose2[4]/ncase; dE4 = dE4/(E4*E4)-1;
-    double E5 = dose[5]/ncase, dE5 = dose2[5]/ncase; dE5 = dE5/(E5*E5)-1;
-    double E7 = dose[7]/ncase, dE7 = dose2[7]/ncase; dE7 = dE7/(E7*E7)-1;
+    if( !dose[0] || !dose[5] ) {
+        A = 0;
+        return;
+    }
+    double Eg = dose[0]/ncase, dEg = dose2[0]/ncase;
+    dEg = dEg/(Eg*Eg)-1;
+    double E4 = dose[4]/ncase, dE4 = dose2[4]/ncase;
+    dE4 = dE4/(E4*E4)-1;
+    double E5 = dose[5]/ncase, dE5 = dose2[5]/ncase;
+    dE5 = dE5/(E5*E5)-1;
+    double E7 = dose[7]/ncase, dE7 = dose2[7]/ncase;
+    dE7 = dE7/(E7*E7)-1;
     egsInformation("getAtotal: dEg=%g dE4=%g dE5=%g dE7=%g\n",dEg,dE4,dE5,dE7);
     egsInformation("cov(Eg,E4)=%g\n",extra[0]/(Eg*E4*ncase)-1);
     egsInformation("cov(Eg,E5)=%g\n",extra[1]/(Eg*E5*ncase)-1);
@@ -257,7 +297,9 @@ EGS_FACSimulation* EGS_FACSimulation::getFACSimulation(EGS_Input *aux) {
     int err5 = aux->getInput("POM",pom);
     EGS_Float fspl;
     int err7 = aux->getInput("photon splitting",fspl);
-    vector<string> scat; scat.push_back("no"); scat.push_back("yes");
+    vector<string> scat;
+    scat.push_back("no");
+    scat.push_back("yes");
     int tmp_scatter = aux->getInput("include scatter",scat,0);
     if( pom.size() != 2 ) err5 = 1;
     if( err  ) egsWarning(err_msg,func,"geometry name");
@@ -278,18 +320,23 @@ EGS_FACSimulation* EGS_FACSimulation::getFACSimulation(EGS_Input *aux) {
     aux->getInput("cavity mass",result->cmass);
     if (tmp_scatter) result->include_scatter = true;
     else             result->include_scatter = false;
-    int nreg = g->regions(); int j; bool ok = true;
+    int nreg = g->regions();
+    int j;
+    bool ok = true;
     bool found_cv = false;
     for(j=0; j<cav.size(); ++j) {
         if( cav[j] >= 0 && cav[j] < nreg ) {
             result->setCavity(cav[j]);
             int imed = result->geometry->medium(cav[j]);
-            if( !found_cv ) { result->med_cv = imed; found_cv = true; }
+            if( !found_cv ) {
+                result->med_cv = imed;
+                found_cv = true;
+            }
             else {
                 if( imed != result->med_cv ) {
                     egsWarning("\n*** CV medium %d found in region %d is different"
-                       " from the CV medium %d in another CV region?\n",
-                       imed,cav[j],result->med_cv);
+                               " from the CV medium %d in another CV region?\n",
+                               imed,cav[j],result->med_cv);
                     ok = false;
                 }
             }
@@ -308,8 +355,9 @@ EGS_FACSimulation* EGS_FACSimulation::getFACSimulation(EGS_Input *aux) {
     }
     if( !ok ) {
         egsWarning("%s errors for simulation geometry %s -> ignored\n",
-                func,gname.c_str());
-        delete result; return 0;
+                   func,gname.c_str());
+        delete result;
+        return 0;
     }
     if( !err7 && fspl > 1 ) {
         result->fsplit = fspl;
@@ -321,7 +369,8 @@ EGS_FACSimulation* EGS_FACSimulation::getFACSimulation(EGS_Input *aux) {
     }
     if( result->setPOM(pom[0],pom[1]) ) {
         egsWarning("%s failed to set POM\n",func);
-        delete result; result = 0;
+        delete result;
+        result = 0;
     }
     if( result ) {
         if( err8 && err9 ) {
@@ -345,7 +394,7 @@ EGS_FACSimulation* EGS_FACSimulation::getFACSimulation(EGS_Input *aux) {
         }
         else {
             egsFatal("You can not use splitting on and off simultaneously\n"
-                    "because this does not make any sense\n");
+                     "because this does not make any sense\n");
         }
     }
     return result;
@@ -356,7 +405,9 @@ int EGS_FACSimulation::setPOM(EGS_Float z, EGS_Float r) {
         egsWarning("EGS_FACSimulation::setPOM: negative radius %g?\n",r);
         return 1;
     }
-    z_pom = z; R_pom = r; R2_pom = r*r;
+    z_pom = z;
+    R_pom = r;
+    R2_pom = r*r;
     EGS_Vector x(0,0,z_pom+1e-6), u(0,0,1);
     int ireg = geometry->isWhere(x);
     if( ireg < 0 ) {
@@ -364,21 +415,30 @@ int EGS_FACSimulation::setPOM(EGS_Float z, EGS_Float r) {
         return 2;
     }
     bool found_CV = false, is_CV = false;
-    if( isCavity(ireg) ) { found_CV = true; is_CV = true; }
+    if( isCavity(ireg) ) {
+        found_CV = true;
+        is_CV = true;
+    }
     EGS_Float L_tot = 0, h_tot = 0;
     while(1) {
-        EGS_Float t=1e30; int inew = geometry->howfar(ireg,x,u,t);
-        if( is_CV ) h_tot += t; else if( !found_CV ) L_tot += t;
+        EGS_Float t=1e30;
+        int inew = geometry->howfar(ireg,x,u,t);
+        if( is_CV ) h_tot += t;
+        else if( !found_CV ) L_tot += t;
         if( inew < 0 ) break;
-        ireg = inew; x += u*t;
+        ireg = inew;
+        x += u*t;
         bool is_CV_next = isCavity(ireg);
         if( is_CV_next && !is_CV && found_CV ) {
             egsWarning("EGS_FACSimulation::setPOM: CV appears to consist of disjoint regions\n"
-                "  This is not supported\n"); return 3;
+                       "  This is not supported\n");
+            return 3;
         }
-        is_CV = is_CV_next; if( is_CV ) found_CV = true;
+        is_CV = is_CV_next;
+        if( is_CV ) found_CV = true;
     }
-    L = L_tot; h = h_tot;
+    L = L_tot;
+    h = h_tot;
     egsInformation("EGS_FACSimulation::setPOM:\n");
     egsInformation("  distance from POM to CV front face: %g\n",L);
     egsInformation("  CV heigh                          : %g\n",h);
@@ -386,7 +446,7 @@ int EGS_FACSimulation::setPOM(EGS_Float z, EGS_Float r) {
 }
 
 EGS_FACCorrelation::EGS_FACCorrelation(EGS_FACSimulation *sim1,
-        EGS_FACSimulation *sim2) : s1(sim1), s2(sim2) {
+                                       EGS_FACSimulation *sim2) : s1(sim1), s2(sim2) {
     resetCounter();
 }
 
@@ -414,12 +474,15 @@ bool EGS_FACCorrelation::readData(istream &data) {
 }
 
 bool EGS_FACCorrelation::addData(istream &data) {
-    double tmp; int j;
+    double tmp;
+    int j;
     for(int j=0; j<N_FAC_DOSE; ++j) {
-        data >> tmp; corr[j] += tmp;
+        data >> tmp;
+        corr[j] += tmp;
     }
     for(int j=0; j<N_RATIO_COV; ++j) {
-        data >> tmp; extra[j] += tmp;
+        data >> tmp;
+        extra[j] += tmp;
     }
     return data.fail();
 }
@@ -446,11 +509,12 @@ void EGS_FACCorrelation::reportResults(double flu, EGS_I64 ncase) {
     for(j=0; j<nskip; ++j) egsInformation(" ");
     egsInformation("geometry2: %s\n",s2->geometry->getName().c_str());
     egsInformation("------------------------------------------------------------------------------\n");
-    char c='%'; double r, dr;
+    char c='%';
+    double r, dr;
     for(j=0; j<N_FAC_DOSE; ++j) {
         if( s1->dose[j] && s2->dose[j] ) {
             s1->getRatio(s1->dose[j],s1->dose2[j],s2->dose[j],s2->dose2[j],
-                    corr[j],ncase,r,dr);
+                         corr[j],ncase,r,dr);
             egsInformation("%s%10.6f +/- %8.4f%c\n",Dnames[j],r,dr,c);
         }
         else egsInformation("%sZero dose\n",Dnames[j]);
@@ -462,15 +526,22 @@ void EGS_FACCorrelation::reportResults(double flu, EGS_I64 ncase) {
             s1->dose[0]*s1->dose[5]*s2->dose[4]/
            (s2->dose[0]*s2->dose[5]*s1->dose[4]),ncase);
     */
-    double v[6], dv[6]; double nci = 1./ncase;
+    double v[6], dv[6];
+    double nci = 1./ncase;
 
-    v[0] = s1->dose[0]*nci; dv[0] = s1->dose2[0]*nci/(v[0]*v[0])-1;
-    v[1] = s2->dose[4]*nci; dv[1] = s2->dose2[4]*nci/(v[1]*v[1])-1;
-    v[2] = s1->dose[5]*nci; dv[2] = s1->dose2[5]*nci/(v[2]*v[2])-1;
+    v[0] = s1->dose[0]*nci;
+    dv[0] = s1->dose2[0]*nci/(v[0]*v[0])-1;
+    v[1] = s2->dose[4]*nci;
+    dv[1] = s2->dose2[4]*nci/(v[1]*v[1])-1;
+    v[2] = s1->dose[5]*nci;
+    dv[2] = s1->dose2[5]*nci/(v[2]*v[2])-1;
 
-    v[3] = s2->dose[0]*nci; dv[3] = s2->dose2[0]*nci/(v[3]*v[3])-1;
-    v[4] = s1->dose[4]*nci; dv[4] = s1->dose2[4]*nci/(v[4]*v[4])-1;
-    v[5] = s2->dose[5]*nci; dv[5] = s2->dose2[5]*nci/(v[5]*v[5])-1;
+    v[3] = s2->dose[0]*nci;
+    dv[3] = s2->dose2[0]*nci/(v[3]*v[3])-1;
+    v[4] = s1->dose[4]*nci;
+    dv[4] = s1->dose2[4]*nci/(v[4]*v[4])-1;
+    v[5] = s2->dose[5]*nci;
+    dv[5] = s2->dose2[5]*nci/(v[5]*v[5])-1;
 
     double dA = dv[0] + dv[1] + dv[2] + dv[3] + dv[4] + dv[5];
     double A = v[0]*v[1]*v[2]/(v[3]*v[4]*v[5]);
@@ -489,15 +560,25 @@ void EGS_FACCorrelation::reportResults(double flu, EGS_I64 ncase) {
 }
 
 void EGS_AxCalculator::reportResults(EGS_I64 ncase) {
-    double nci = 1./ncase; double A, dA = 0; char c='%';
-    v[0] = s0->dose[6]*nci; dA += s0->dose2[6]*nci/(v[0]*v[0])-1;
-    v[1] = s2->dose[0]*nci; dA += s2->dose2[0]*nci/(v[1]*v[1])-1;
-    v[2] = s2->dose[5]*nci; dA += s2->dose2[5]*nci/(v[2]*v[2])-1;
-    v[3] = s1->dose[4]*nci; dA += s1->dose2[4]*nci/(v[3]*v[3])-1;
-    v[4] = s0->dose[7]*nci; dA += s0->dose2[7]*nci/(v[4]*v[4])-1;
-    v[5] = s1->dose[0]*nci; dA += s1->dose2[0]*nci/(v[5]*v[5])-1;
-    v[6] = s1->dose[5]*nci; dA += s1->dose2[5]*nci/(v[6]*v[6])-1;
-    v[7] = s2->dose[4]*nci; dA += s2->dose2[4]*nci/(v[7]*v[7])-1;
+    double nci = 1./ncase;
+    double A, dA = 0;
+    char c='%';
+    v[0] = s0->dose[6]*nci;
+    dA += s0->dose2[6]*nci/(v[0]*v[0])-1;
+    v[1] = s2->dose[0]*nci;
+    dA += s2->dose2[0]*nci/(v[1]*v[1])-1;
+    v[2] = s2->dose[5]*nci;
+    dA += s2->dose2[5]*nci/(v[2]*v[2])-1;
+    v[3] = s1->dose[4]*nci;
+    dA += s1->dose2[4]*nci/(v[3]*v[3])-1;
+    v[4] = s0->dose[7]*nci;
+    dA += s0->dose2[7]*nci/(v[4]*v[4])-1;
+    v[5] = s1->dose[0]*nci;
+    dA += s1->dose2[0]*nci/(v[5]*v[5])-1;
+    v[6] = s1->dose[5]*nci;
+    dA += s1->dose2[5]*nci/(v[6]*v[6])-1;
+    v[7] = s2->dose[4]*nci;
+    dA += s2->dose2[4]*nci/(v[7]*v[7])-1;
     A = v[0]*v[1]*v[2]*v[3]/(v[4]*v[5]*v[6]*v[7]);
     int ij=0;
     for(int i=0; i<7; ++i) {
@@ -513,14 +594,14 @@ void EGS_AxCalculator::reportResults(EGS_I64 ncase) {
     egsInformation("Ax computed from the following geometries:\n");
     egsInformation("   Aatt calculated in %s\n",s0->geometry->getName().c_str());
     egsInformation("   experimental Aatt from Eg ratio in %s and %s\n",
-            s1->geometry->getName().c_str(),s2->geometry->getName().c_str());
+                   s1->geometry->getName().c_str(),s2->geometry->getName().c_str());
     egsInformation("------------------------------------------------------------------------------\n");
     egsInformation("Ax = %10.6f +/- %8.4f%c\n",A,dA,c);
     egsInformation("==============================================================================\n");
 }
 
 EGS_AxCalculator::EGS_AxCalculator(EGS_FACSimulation *sim0,
-    EGS_FACSimulation *sim1, EGS_FACSimulation *sim2) :
+                                   EGS_FACSimulation *sim1, EGS_FACSimulation *sim2) :
     s0(sim0), s1(sim1), s2(sim2) {
     resetCounter();
 }
@@ -529,7 +610,8 @@ EGS_AxCalculator::~EGS_AxCalculator() {}
 
 bool EGS_AxCalculator::outputData(ostream &data) {
     for(int j=0; j<N_AX_COV; ++j) data << cov_matrix[j] << " ";
-    data << endl; return data.fail();
+    data << endl;
+    return data.fail();
 }
 
 bool EGS_AxCalculator::readData(istream &data) {
@@ -539,7 +621,9 @@ bool EGS_AxCalculator::readData(istream &data) {
 
 bool EGS_AxCalculator::addData(istream &data) {
     for(int j=0; j<N_AX_COV; ++j) {
-        double tmp; data >> tmp; cov_matrix[j] += tmp;
+        double tmp;
+        data >> tmp;
+        cov_matrix[j] += tmp;
     }
     return data.fail();
 }

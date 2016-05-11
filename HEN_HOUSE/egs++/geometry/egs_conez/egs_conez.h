@@ -39,22 +39,22 @@
 
 #ifdef WIN32
 
-    #ifdef BUILD_CONEZ_DLL
-        #define EGS_CONEZ_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_CONEZ_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_CONEZ_LOCAL
+#ifdef BUILD_CONEZ_DLL
+#define EGS_CONEZ_EXPORT __declspec(dllexport)
+#else
+#define EGS_CONEZ_EXPORT __declspec(dllimport)
+#endif
+#define EGS_CONEZ_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_CONEZ_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_CONEZ_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_CONEZ_EXPORT
-        #define EGS_CONEZ_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_CONEZ_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_CONEZ_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_CONEZ_EXPORT
+#define EGS_CONEZ_LOCAL
+#endif
 
 #endif
 

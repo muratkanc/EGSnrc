@@ -39,7 +39,7 @@
 
 MInputBlock::MInputBlock()
 {
-	usercode = cavrznrc;
+    usercode = cavrznrc;
 }
 
 
@@ -50,51 +50,60 @@ MInputBlock::~MInputBlock()
 
 void MInputBlock::SetUserCode( const UserCodeType& uc )
 {
-			usercode = uc;
+    usercode = uc;
 }
 
 //qt3to4 -- BW
 //void print_delimeter( const QString& boundary , const QString& section, Q3TextStream &t )
 void print_delimeter( const QString& boundary , const QString& section, QTextStream &t )
 {
- if ( boundary == "start" ) {
-	t << "##########################"; t << "\n";
-   	t << ":start " << section << ":"; t << "\n"; t << "\n";
- }
- else if ( boundary == "stop") {
-   	t << "\n";
-   	t << ":stop " << section <<  ":"; t << "\n";
-	t << "#########################"; t << "\n";
-	t << "\n";
- }
- else {
-	t << "*************************************"; t << "\n";
-	t << " BEWARE !!!!!  ERROR IN DELIMETER FOR " << section << ":";
-	t << "\n"; t << "\n";
-	t << "*************************************"; t << "\n";
- }
+    if ( boundary == "start" ) {
+        t << "##########################";
+        t << "\n";
+        t << ":start " << section << ":";
+        t << "\n";
+        t << "\n";
+    }
+    else if ( boundary == "stop") {
+        t << "\n";
+        t << ":stop " << section <<  ":";
+        t << "\n";
+        t << "#########################";
+        t << "\n";
+        t << "\n";
+    }
+    else {
+        t << "*************************************";
+        t << "\n";
+        t << " BEWARE !!!!!  ERROR IN DELIMETER FOR " << section << ":";
+        t << "\n";
+        t << "\n";
+        t << "*************************************";
+        t << "\n";
+    }
 }
 
 QString getIt( string &code, QString def, QString & error, DE_Parser *p )
 {
- 	std::vector<string> s;
-	QString str ="";
+    std::vector<string> s;
+    QString str ="";
 
- 	if ( !p->get_input( code, s ) ) {
-	   std::vector<string>::iterator iter(s.begin());
-	   while (iter != s.end()){
-	   	str += (*iter).c_str();
-		str += " ";
-		iter++;
-	   }
-	   str = str.simplified();
-	   return str;
-	}
-	else {
-	   error += "value sought not found for " ;
-	   error += code.c_str(); error += "<br>";
-	   return def;
-	}
+    if ( !p->get_input( code, s ) ) {
+        std::vector<string>::iterator iter(s.begin());
+        while (iter != s.end()) {
+            str += (*iter).c_str();
+            str += " ";
+            iter++;
+        }
+        str = str.simplified();
+        return str;
+    }
+    else {
+        error += "value sought not found for " ;
+        error += code.c_str();
+        error += "<br>";
+        return def;
+    }
 }
 
 //**********************************************
@@ -168,62 +177,68 @@ Q3TextStream & operator >> ( Q3TextStream & ts, string & str )
 
 QTextStream & operator << ( QTextStream & ts, v_int & v )
 {
-  std::vector<int>::iterator iter(v.begin());
-  int   j = 0;
-  int max = MAXENTRIES; //arbitrary number per line!!!
-  while ( iter != v.end()) {
-    j++;
-    ts << *iter++;
-    if ( iter != v.end() ) ts << ", ";
-    if ( j == max ) {ts << "\n"; j = 0;}//put end-of-line and
-  }                                     //reset counter
+    std::vector<int>::iterator iter(v.begin());
+    int   j = 0;
+    int max = MAXENTRIES; //arbitrary number per line!!!
+    while ( iter != v.end()) {
+        j++;
+        ts << *iter++;
+        if ( iter != v.end() ) ts << ", ";
+        if ( j == max ) {
+            ts << "\n";    //put end-of-line and
+            j = 0;
+        }
+    }                                     //reset counter
 
-  return ts;
+    return ts;
 }
 
 QTextStream & operator << ( QTextStream & ts, v_float & v )
 {
-  std::vector<float>::iterator iter(v.begin());
-  int   j = 0;
-  int max = MAXENTRIES; //arbitrary number per line!!!
-  while ( iter != v.end()) {
-    j++;
-    ts << *iter++;
-    if ( iter != v.end() ) ts << ", ";
-    if ( j == max ) {ts << "\n";j = 0;}//end-of-line, reset counter
-  }
+    std::vector<float>::iterator iter(v.begin());
+    int   j = 0;
+    int max = MAXENTRIES; //arbitrary number per line!!!
+    while ( iter != v.end()) {
+        j++;
+        ts << *iter++;
+        if ( iter != v.end() ) ts << ", ";
+        if ( j == max ) {
+            ts << "\n";    //end-of-line, reset counter
+            j = 0;
+        }
+    }
 
-  return ts;
+    return ts;
 }
 
 QTextStream & operator << ( QTextStream & ts, v_string & v )
 {
-  std::vector<string>::iterator iter(v.begin());
-  int   j = 0;
-  while ( iter != v.end()) {
-    j++;
-    ts << (*iter++).c_str();
-    if ( iter != v.end() ) {
-                ts << ",\n ";
+    std::vector<string>::iterator iter(v.begin());
+    int   j = 0;
+    while ( iter != v.end()) {
+        j++;
+        ts << (*iter++).c_str();
+        if ( iter != v.end() ) {
+            ts << ",\n ";
+        }
+        else {
+            ts << ";\n ";
+        }
     }
-    else {
-                ts << ";\n ";
-    }
-  }
 
-  return ts;
+    return ts;
 }
 
 QTextStream & operator << ( QTextStream & ts, string & str )
 {
-        ts << str.c_str();
-        return ts;
+    ts << str.c_str();
+    return ts;
 }
 
 QTextStream & operator >> ( QTextStream & ts, string & str )
 {
-        QString s;
-        ts >> s;
-        str = s.toStdString();
-        return ts;
+    QString s;
+    ts >> s;
+    str = s.toStdString();
+    return ts;
 }

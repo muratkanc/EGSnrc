@@ -40,7 +40,7 @@
 
 
 CommandManager::CommandManager(QWidget * parent, const char * name, const QStringList & args )
-	: QDialog( parent)
+    : QDialog( parent)
 {
 
     EndMessage = "\n\n EXECUTION COMPLETED ! ! ! "; // default
@@ -64,13 +64,13 @@ CommandManager::CommandManager(QWidget * parent, const char * name, const QStrin
     quitButton = new QPushButton( tr("&Close"), this );
     quitButton->move(390, 465);
     connect( quitButton, SIGNAL(clicked()),
-            this, SLOT(close()) );
+             this, SLOT(close()) );
     quitButton->setEnabled( false );
 
     killButton = new QPushButton( tr("&Kill"), this );
     killButton->move(270, 465);
     connect( killButton, SIGNAL(clicked()),
-            this, SLOT(killProcess()) );
+             this, SLOT(killProcess()) );
 
     // QProcess related code
     //qt3to4 -- BW
@@ -82,13 +82,13 @@ CommandManager::CommandManager(QWidget * parent, const char * name, const QStrin
     //qt3to4 -- BW
     //proc->setArguments ( args );
 
-   //proc->setCommunication(QProcess::Stdout | QProcess::Stderr | QProcess::DupStderr);
-   connect( proc, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(readFromStdout()) );
-   connect( proc, SIGNAL(readyReadStandardError()),
-            this, SLOT(readFromStderr()) );
+    //proc->setCommunication(QProcess::Stdout | QProcess::Stderr | QProcess::DupStderr);
+    connect( proc, SIGNAL(readyReadStandardOutput()),
+             this, SLOT(readFromStdout()) );
+    connect( proc, SIGNAL(readyReadStandardError()),
+             this, SLOT(readFromStderr()) );
     connect( proc, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(scrollToTop()) );
+             this, SLOT(scrollToTop()) );
 
 //    output->setText( (QString)"<u>EXECUTING  :</u>"+args.join( " " )  );
     //qt3to4 -- BW
@@ -96,7 +96,7 @@ CommandManager::CommandManager(QWidget * parent, const char * name, const QStrin
     //		       (uint)Q3TextEdit::CheckNewLines | Q3TextEdit::RemoveSelected  );
     output->insertPlainText( (QString)"EXECUTING  : "+args.join( " " ) +(QString)"\n");
 
-   //qt3to4 -- BW
+    //qt3to4 -- BW
     QString prog = args.first();
     QStringList args2 = args.mid(1);
     proc->start(prog,args2);
@@ -108,15 +108,15 @@ CommandManager::CommandManager(QWidget * parent, const char * name, const QStrin
         //QString errorM = "Could not start the command: \n" +args.join( "\n" );
         QString errorM = args.join( "\n" );
         QMessageBox::critical( 0,
-                tr("Fatal error"),
-	  tr("Could not start the command: \ni %1").arg(errorM),
-                tr("Quit") );
+                               tr("Fatal error"),
+                               tr("Could not start the command: \ni %1").arg(errorM),
+                               tr("Quit") );
         //exit( -1 );
     }
 }
 
 CommandManager::CommandManager(QWidget * parent, const char * name, int width, int height, const QStringList & args )
-	: QDialog( parent )
+    : QDialog( parent )
 {
     EndMessage = "\n\n EXECUTION COMPLETED ! ! ! "; // default
     // Layout
@@ -131,7 +131,7 @@ CommandManager::CommandManager(QWidget * parent, const char * name, int width, i
     quitButton = new QPushButton( tr("Hide"), this );
     quitButton->move(width - 160, height - 75);
     connect( quitButton, SIGNAL(clicked()),
-            this, SLOT(close()) );
+             this, SLOT(close()) );
 
     // QProcess related code
     //qt3to4 -- BW
@@ -142,10 +142,10 @@ CommandManager::CommandManager(QWidget * parent, const char * name, int width, i
     //qt3to4 -- BW
     //proc->setArguments ( args );
 
-   connect( proc, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(readFromStdout()) );
-   connect( proc, SIGNAL(finished(int,QProcess::ExitStatus)),
-            this, SLOT(scrollToTop()) );
+    connect( proc, SIGNAL(readyReadStandardOutput()),
+             this, SLOT(readFromStdout()) );
+    connect( proc, SIGNAL(finished(int,QProcess::ExitStatus)),
+             this, SLOT(scrollToTop()) );
 
     //qt3to4 -- BW
     QString prog = args.first();
@@ -158,15 +158,15 @@ CommandManager::CommandManager(QWidget * parent, const char * name, int width, i
         // error handling
         QString errorM = args.join( "\n" );
         QMessageBox::critical( 0,
-                tr("Fatal error"),
-	  tr("Could not start the command: \n %1").arg(errorM),
-                tr("Quit") );
+                               tr("Fatal error"),
+                               tr("Could not start the command: \n %1").arg(errorM),
+                               tr("Quit") );
         //exit( -1 );
     }
 }
 
 CommandManager::CommandManager(QWidget * parent, const char * name, const QString & arg )
-	: QDialog( parent )
+    : QDialog( parent )
 {
     EndMessage = "\n\n EXECUTION COMPLETED ! ! ! "; // default
     // Layout
@@ -182,7 +182,7 @@ CommandManager::CommandManager(QWidget * parent, const char * name, const QStrin
     quitButton = new QPushButton( tr("&Close"), this );
     quitButton->move(390, 465);
     connect( quitButton, SIGNAL(clicked()),
-            this, SLOT(close()) );
+             this, SLOT(close()) );
 
 }
 
@@ -191,23 +191,23 @@ void CommandManager::readFromStdout()
 {
     // Read and process the data.
     // Bear in mind that the data might be output in chunks.
-       //qt3to4 -- BW
-       //output->insert( proc->readStdout(), false, true, true );
-       output->insertPlainText( proc->readAllStandardOutput() );
+    //qt3to4 -- BW
+    //output->insert( proc->readStdout(), false, true, true );
+    output->insertPlainText( proc->readAllStandardOutput() );
 }
 
 void CommandManager::readFromStderr()
 {
     // Read and process the data.
     // Bear in mind that the data might be output in chunks.
-       //qt3to4 -- BW
-       //output->insert( proc->readStderr(), false, true, true );
-       output->insertPlainText( proc->readAllStandardError() );
+    //qt3to4 -- BW
+    //output->insert( proc->readStderr(), false, true, true );
+    output->insertPlainText( proc->readAllStandardError() );
 }
 
 void CommandManager::scrollToTop()
 {
-   //output->setContentsPos( 0, 0 );
+    //output->setContentsPos( 0, 0 );
     quitButton->setEnabled( true );
     killButton->setEnabled( false );
     //qt3to4 -- BW
@@ -227,7 +227,7 @@ void CommandManager::killProcess()
     quitButton->setEnabled( true );
 }
 
-void CommandManager::setEndMessage(const QString& message ){
+void CommandManager::setEndMessage(const QString& message ) {
     EndMessage = message;
 }
 

@@ -84,11 +84,12 @@ public:
 
     /*! Get the current simulation result.  */
     void getCurrentResult(double &sum, double &sum2, double &norm,
-            double &count);
+                          double &count);
 
     /*! simulate a shower */
     int shower() {
-        expmfp[0] = 1; is_fat[0] = 0;
+        expmfp[0] = 1;
+        is_fat[0] = 0;
         return EGS_AdvancedApplication::shower();
     };
 
@@ -105,7 +106,7 @@ protected:
 private:
 
     int              ngeom;     // number of simulation cases to calculate
-                                // quantities of interest
+    // quantities of interest
     int              ig;        // current geometry index
 
     EGS_FACSimulation **sim;    // simulation cases

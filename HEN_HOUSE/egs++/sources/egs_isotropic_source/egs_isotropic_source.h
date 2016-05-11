@@ -158,9 +158,13 @@ public:
                 if( gc == IncludeAll ) ok = geom->isInside(x);
                 else if( gc == ExcludeAll ) ok = !geom->isInside(x);
                 else if( gc == IncludeSelected ) {
-                    ok = false; int ireg = geom->isWhere(x);
+                    ok = false;
+                    int ireg = geom->isWhere(x);
                     for(int j=0; j<nrs; ++j) {
-                        if( ireg == regions[j] ) { ok = true; break; }
+                        if( ireg == regions[j] ) {
+                            ok = true;
+                            break;
+                        }
                     }
                     else if (gc == ExcludeAll) {
                         ok = !geom->isInside(x);
@@ -188,18 +192,22 @@ public:
                 }
             }
         } while ( !ok );
-        
+
         u.z = rndm->getUniform()*(buf_1 - buf_2) - buf_1;
-        
+
         EGS_Float sinz = 1-u.z*u.z;
         if( sinz > 1e-15 ) {
-          sinz = sqrt(sinz); EGS_Float cphi, sphi;
-          EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
-          cphi = cos(phi); sphi = sin(phi);
-          u.x = sinz*cphi; u.y = sinz*sphi;
+            sinz = sqrt(sinz);
+            EGS_Float cphi, sphi;
+            EGS_Float phi = min_phi +(max_phi - min_phi)*rndm->getUniform();
+            cphi = cos(phi);
+            sphi = sin(phi);
+            u.x = sinz*cphi;
+            u.y = sinz*sphi;
         } else
         {
-          u.x = 0; u.y = 0;
+            u.x = 0;
+            u.y = 0;
         }
         wt = 1;
     };
@@ -229,11 +237,11 @@ protected:
     void setUp();
 
     EGS_Float min_theta, max_theta;
-<<<<<<< HEAD
+    <<<<<<< HEAD
     EGS_Float buf_1, buf_2; //! avoid multi-calculating cos(min_theta) and cos(max_theta)
-=======
-    EGS_Float buf_1, buf_2;//! avoid multi-calculating cos(min_theta) and cos(max_theta)
->>>>>>> Revert to source without Fano source option.
+    =======
+        EGS_Float buf_1, buf_2;//! avoid multi-calculating cos(min_theta) and cos(max_theta)
+    >>>>>>> Revert to source without Fano source option.
     EGS_Float min_phi, max_phi;
 
     int                 nrs;

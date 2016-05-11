@@ -46,22 +46,22 @@ using namespace std;
 
 #ifdef WIN32
 
-    #ifdef BUILD_CONES_DLL
-        #define EGS_CONES_EXPORT __declspec(dllexport)
-    #else
-        #define EGS_CONES_EXPORT __declspec(dllimport)
-    #endif
-    #define EGS_CONES_LOCAL
+#ifdef BUILD_CONES_DLL
+#define EGS_CONES_EXPORT __declspec(dllexport)
+#else
+#define EGS_CONES_EXPORT __declspec(dllimport)
+#endif
+#define EGS_CONES_LOCAL
 
 #else
 
-    #ifdef HAVE_VISIBILITY
-        #define EGS_CONES_EXPORT __attribute__ ((visibility ("default")))
-        #define EGS_CONES_LOCAL  __attribute__ ((visibility ("hidden")))
-    #else
-        #define EGS_CONES_EXPORT
-        #define EGS_CONES_LOCAL
-    #endif
+#ifdef HAVE_VISIBILITY
+#define EGS_CONES_EXPORT __attribute__ ((visibility ("default")))
+#define EGS_CONES_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define EGS_CONES_EXPORT
+#define EGS_CONES_LOCAL
+#endif
 
 #endif
 

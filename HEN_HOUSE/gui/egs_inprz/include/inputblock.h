@@ -37,13 +37,15 @@
 class MInputBlock
 {
 public:
-	MInputBlock();
-	~MInputBlock();
-	void SetUserCode( const UserCodeType& uc );
-	QString      errors;
-	UserCodeType gusercode(){return usercode;};
+    MInputBlock();
+    ~MInputBlock();
+    void SetUserCode( const UserCodeType& uc );
+    QString      errors;
+    UserCodeType gusercode() {
+        return usercode;
+    };
 protected:
-	UserCodeType usercode;
+    UserCodeType usercode;
 };
 
 #endif
