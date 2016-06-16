@@ -224,9 +224,6 @@ public:
 
     void setRelativeRho(EGS_Input *);
 
-    <<<<<<< HEAD
-    virtual void getLabelRegions(const string &str, vector<int> &regs);
-    =======
     EGS_Float getBScaling(int ireg) const {
         return g->getBScaling(ireg);
     }
@@ -235,7 +232,6 @@ public:
     void setBScaling(EGS_Input *);
 
     virtual void getLabelRegions (const string &str, vector<int> &regs);
-    >>>>>>> B field scaling and Fano source implementation
 
 protected:
 
