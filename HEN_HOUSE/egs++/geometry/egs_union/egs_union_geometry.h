@@ -98,7 +98,6 @@ class EGS_UNIONG_EXPORT EGS_UnionGeometry : public EGS_BaseGeometry {
 
 public:
 
-    <<<<<<< HEAD
     /*! \brief Construct a geometry union from the vector of geometries
     \a geom.
     */

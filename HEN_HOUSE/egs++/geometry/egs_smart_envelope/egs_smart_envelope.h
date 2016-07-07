@@ -138,7 +138,6 @@ class EGS_SMART_ENVELOPE_EXPORT EGS_SmartEnvelope : public EGS_BaseGeometry {
 
 public:
 
-    <<<<<<< HEAD
     EGS_SmartEnvelope(EGS_BaseGeometry *G,
                       const vector<SmartEnvelopeAux *> &fgeoms, const string &Name = "");
 
