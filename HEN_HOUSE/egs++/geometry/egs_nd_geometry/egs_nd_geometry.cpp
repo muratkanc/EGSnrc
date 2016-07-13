@@ -1131,6 +1131,7 @@ extern "C" {
                 EGS_XYZGeometry *result =
                     EGS_XYZGeometry::constructGeometry(dens_file.c_str(),ramp_file.c_str(),dens_or_egsphant_or_interfile);
                 result->setName(input);
+                result->setBScaling(input);
                 return result;
             }
             vector<EGS_Float> xpos, ypos, zpos, xslab, yslab, zslab;

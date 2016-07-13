@@ -471,10 +471,10 @@ public:
      **********************************************************/
     virtual EGS_Float getBScaling(int ireg) const {
         if (has_Ref_rho && has_B_scaling) {
-            return bfactor && ireg >= 0 && ireg < nreg ? getMediumRho(ireg)/rhoRef*bfactor[ireg] : 1.0;
+            return bfactor && ireg >= 0 && ireg < nreg ? getMediumRho(medium(ireg))/rhoRef*bfactor[ireg] : 1.0;
         }
         else if (has_Ref_rho && ! has_B_scaling) {
-            return ireg >= 0 && ireg < nreg ? getMediumRho(ireg)/rhoRef : 1.0;
+            return ireg >= 0 && ireg < nreg ? getMediumRho(medium(ireg))/rhoRef : 1.0;
         }
         else if (!has_Ref_rho && has_B_scaling) {
             return bfactor && ireg >= 0 && ireg < nreg ? bfactor[ireg] : 1.0;
