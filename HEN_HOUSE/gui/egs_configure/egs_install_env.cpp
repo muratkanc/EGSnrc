@@ -128,12 +128,10 @@ void QInstallPage::SaveAppSetting()
     updateProgress();
 
     // Update the user path variable with the dso/win2k-cl directory
-    // NOT NEEDED anymore !!! Since egs_view is now built together with
-    // the other GUIs, it is treated in the same manner. Thanks to @mstoeckl!
     printProgress("\nSetting win-static DSO directory in your path ....");
     update_path( henHouse() + QDir::separator() + "egs++" +
-                 QDir::separator() + "dso"   +
-                 QDir::separator() + "win-static");
+                              QDir::separator() + "dso"   +
+                              QDir::separator() + "win-static");
     updateProgress();
 
     // Update the user path variable with the dso/$my_machine directory
@@ -278,44 +276,43 @@ void QInstallPage::createEGSFolders() {
             desk_exists = false;
         }
     }
-    else {
-        //if ( desk_exists ) {
-        for ( QStringList::Iterator it = gui.begin(); it != gui.end(); ++it ) {
-            /* Temporarily needed until egs_view is ported to qt4 */
-            QString desc, return_message, icon;
-            if( *it == "egs_inprz" )
-                desc = "EGSnrc GUI for the RZ user codes";
-            else if( *it == "egs_gui" )
-                desc = "EGSnrc GUI for all user codes";
-            else desc = "EGSnrc GUI for egs++ geometries";
-            lnk       = DESKTOP + *it + (QString)".lnk";
-            if( *it != "egs_view" )
-                target =  QDir::convertSeparators( egsBinDir  + s + *it + ".exe" );
-            else {
-                target =  QDir::convertSeparators( henHouse() + "egs++" + s + "dso" + s + "win-static" + s + *it + ".exe");
-                //target =  QDir::convertSeparators( dsoDir + *it + ".exe");
-                icon   = henHouse() + "egs++" + s + "view" + s + *it + ".ico";
-            }
-            if ( ! fileExists( target ) ) {
-                printProgress( target + " not found !" );
-                continue;
-            }
-            if( *it != "egs_view" )
-                res = createShortcut( target.toLatin1().data() , lnk.toLatin1().data(),
-                                      desc.toLatin1().data(), return_message );
-            else
-                res = createShortcut( target.toLatin1() , lnk.toLatin1(),
-                                      desc.toLatin1(),icon.toLatin1(),0, return_message );
+    else{
+    //if ( desk_exists ) {
+      for ( QStringList::Iterator it = gui.begin(); it != gui.end(); ++it ) {
+          /* Temporarily needed until egs_view is ported to qt4 */
+          QString desc, return_message, icon;
+          if( *it == "egs_inprz" )
+            desc = "EGSnrc GUI for the RZ user codes";
+          else if( *it == "egs_gui" )
+            desc = "EGSnrc GUI for all user codes";
+          else desc = "EGSnrc GUI for egs++ geometries";
+          lnk       = DESKTOP + *it + (QString)".lnk";
+          if( *it != "egs_view" )
+            target =  QDir::convertSeparators( egsBinDir  + s + *it + ".exe" );
+          else{
+            target =  QDir::convertSeparators( henHouse() + "egs++" + s + "dso" + s + "win-static" + s + *it + ".exe");
+            icon   = henHouse() + "egs++" + s + "view" + s + *it + ".ico";
+          }
+          if ( ! fileExists( target ) ) {
+             printProgress( target + " not found !" );
+             continue;
+          }
+          if( *it != "egs_view" )
+             res = createShortcut( target.toLatin1().data() , lnk.toLatin1().data(),
+                                     desc.toLatin1().data(), return_message );
+          else
+             res = createShortcut( target.toLatin1() , lnk.toLatin1(),
+                                    desc.toLatin1(),icon.toLatin1(),0, return_message );
 
-            if ( res == 0 ) {
-                printProgress( *it + " shortcut added to Desktop !" );
-            }
-            else {
-                printProgress( "Errors updating EGSnrc folder on Desktop !" );
-                printProgress( QString("Exit status = %1").arg( res ) );
-                printProgress( return_message);
-            }
-        }
+          if ( res == 0 ) {
+             printProgress( *it + " shortcut added to Desktop !" );
+          }
+          else {
+             printProgress( "Errors updating EGSnrc folder on Desktop !" );
+             printProgress( QString("Exit status = %1").arg( res ) );
+             printProgress( return_message);
+          }
+      }
     }
 #else
     // User requests the folder on the desktop

@@ -1115,28 +1115,30 @@ void inputRZImpl::update_MCInputs( const MMCInputs* EGSmc )
         statEdit->setText(EGSmc->stat);
     }
 
-    if (usercode == dosrznrc) {// SCORE KERMA
-        if ( EGSmc->kerma.toLower() == "yes" ) {
-            kermaCheckBox->setChecked( true );
-        }
-        else if (EGSmc->kerma.toLower() == "no") {
-            kermaCheckBox->setChecked( false );
-        }
-        else {
-            openErrors += QString(WARNING_KERMA) + "\n";
-        }
-    }
-    else if ( usercode != flurznrc ) {// PHOTON REGENERATION
-        if ( EGSmc->photreg.toLower() == "yes" ) {
-            photregCheckBox->setChecked( true );
-        }
-        else if (EGSmc->photreg.toLower() == "no") {
-            photregCheckBox->setChecked( false );
-        }
-        else {
-            openErrors += QString(WARNING_PHOTREG) + "\n";
-        }
-    }
+   if (usercode == dosrznrc) {// SCORE KERMA
+      if ( EGSmc->kerma.toLower() == "yes" ){
+         kermaCheckBox->setChecked( true );
+      }
+      else if (EGSmc->kerma.toLower() == "no") {
+         kermaCheckBox->setChecked( false );
+      }
+      else {
+         openErrors += QString(WARNING_KERMA) + "\n";
+      }
+      if ( (ifullComboBox->currentText()).toLower() == "pulse height distribution")
+               phdGroupBox->setEnabled( true );
+   }
+   else if ( usercode != flurznrc ) {// PHOTON REGENERATION
+      if ( EGSmc->photreg.toLower() == "yes" ){
+         photregCheckBox->setChecked( true );
+      }
+      else if (EGSmc->photreg.toLower() == "no") {
+         photregCheckBox->setChecked( false );
+      }
+      else {
+         openErrors += QString(WARNING_PHOTREG) + "\n";
+      }
+   }
 
     // INITIAL RANDOM NO. SEEDS
     rand1SpinBox->setValue( EGSmc->rnd[0] );
@@ -1360,23 +1362,79 @@ void inputRZImpl::update_SRCInputs( const MSRCInputs* EGSsrc )
 void inputRZImpl::update_PEGSLESSParam( const PEGSLESSInputs* EGSpgls)
 {
 
-    QStringList medlst;
+ QStringList medlst;
 
-    AEEdit->setText(EGSpgls->AE);
-    UEEdit->setText(EGSpgls->UE);
-    APEdit->setText(EGSpgls->AP);
-    UPEdit->setText(EGSpgls->UP);
+ AEEdit->setText(EGSpgls->AE);
+ UEEdit->setText(EGSpgls->UE);
+ APEdit->setText(EGSpgls->AP);
+ UPEdit->setText(EGSpgls->UP);
 
-    MDFEdit->setText(EGSpgls->matdatafile);
+ MDFEdit->setText(EGSpgls->matdatafile);
 
-//set some defaults in the input window for material specified in .egsinp file
-    pzRadioButton->setChecked(true);
-//qt3to4 -- BW
-//pz_or_rhozTable->horizontalHeader()->setLabel(1,"no. of atoms");
-    pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("no. of atoms"));
-    validate_combo("restricted total","ERROR in stopping power ratio specs",spComboBox);
-    validate_combo("KM","ERROR in bremsstrahlung correction specs",bcComboBox);
-    isGasCheckBox->setChecked(false);
+ //set some defaults in the input window for material specified in .egsinp file
+ pzRadioButton->setChecked(true);
+ df_egs_homeRadioButton->setChecked(true);
+ //qt3to4 -- BW
+ //pz_or_rhozTable->horizontalHeader()->setLabel(1,"no. of atoms");
+ pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("no. of atoms"));
+ validate_combo("restricted total","ERROR in stopping power ratio specs",spComboBox);
+ validate_combo("KM","ERROR in bremsstrahlung correction specs",bcComboBox);
+ isGasCheckBox->setChecked(false);
+ enable_gaspEdit();
+
+ //set public (adjustable) values equal to values passed
+ Ppgls = new PEGSLESSInputs;
+
+ Ppgls->matdatafile = EGSpgls->matdatafile;
+ Ppgls->ninpmedia = EGSpgls->ninpmedia;
+ for(int i=0; i<Ppgls->ninpmedia; i++) {
+   medlst += EGSpgls->inpmedium[i];
+   Ppgls->inpmedium[i]=EGSpgls->inpmedium[i];
+   Ppgls->nelements[i]=EGSpgls->nelements[i];
+   Ppgls->spec_by_pz[i]=EGSpgls->spec_by_pz[i];
+   for(int j=0; j<Ppgls->nelements[i];j++) {
+     Ppgls->elements[i].push_back(EGSpgls->elements[i][j]);
+     Ppgls->pz_or_rhoz[i].push_back(EGSpgls->pz_or_rhoz[i][j]);
+   }
+   Ppgls->rho[i]=EGSpgls->rho[i];
+   Ppgls->spr[i]=EGSpgls->spr[i];
+   Ppgls->bc[i]=EGSpgls->bc[i];
+   Ppgls->gasp[i]=EGSpgls->gasp[i];
+   Ppgls->isgas[i]=EGSpgls->isgas[i];
+   Ppgls->dffile[i]=EGSpgls->dffile[i];
+   Ppgls->sterncid[i]=EGSpgls->sterncid[i];
+ }
+
+ if(EGSpgls->ninpmedia>0) {
+    Ppgls->inpmedind=0; //set input medium index
+    inpmediumComboBox->setEditText(EGSpgls->inpmedium[0]);
+    if(!EGSpgls->spec_by_pz[0]) {
+      rhozRadioButton->setChecked(true);
+      //qt3to4 -- BW
+      //pz_or_rhozTable->horizontalHeader()->setLabel(1,"mass fractions");
+      pz_or_rhozTable->setHorizontalHeaderItem(1,new QTableWidgetItem("mass fractions"));
+    }
+
+    //now populate the table
+    for (int i=0; i<EGSpgls->nelements[0]; i++) {
+      //QString item1 = EGSpgls->elements[0][i];
+      //QString item2 =  EGSpgls->pz_or_rhoz[0][i];
+      //qt3to4 -- BW
+      QString item1 = QString::fromStdString(EGSpgls->elements[0][i]);
+      QString item2 =  QString::fromStdString(EGSpgls->pz_or_rhoz[0][i]);
+      //qt3to4 -- BW
+      //pz_or_rhozTable->setItem(i,0,new Q3TableItem(pz_or_rhozTable,Q3TableItem::OnTyping,item1));
+      //pz_or_rhozTable->setItem(i,1,new Q3TableItem(pz_or_rhozTable,Q3TableItem::OnTyping,item2));
+      pz_or_rhozTable->setItem(i,0,new QTableWidgetItem(item1));
+      pz_or_rhozTable->setItem(i,1,new QTableWidgetItem(item2));
+    }
+
+    //get the other values
+    rhoEdit->setText(EGSpgls->rho[0]);
+    validate_combo(EGSpgls->spr[0].toLatin1().data(),"ERROR in stopping power ratio specs",spComboBox);
+    validate_combo(EGSpgls->bc[0].toLatin1().data(),"ERROR in bremsstrahlung correction specs",bcComboBox);
+    gaspEdit->setText(EGSpgls->gasp[0]);
+    isGasCheckBox->setChecked(EGSpgls->isgas[0]);
     enable_gaspEdit();
 
 //set public (adjustable) values equal to values passed
@@ -1451,56 +1509,57 @@ void inputRZImpl::update_PEGSLESSParam( const PEGSLESSInputs* EGSpgls)
 void inputRZImpl::inpmediumSave( const QString& str)
 {
 
-    int ind=inpmediumComboBox->currentIndex();
-    if(inpmediumComboBox->currentText()!="define new medium") {
-        //note: above allows blanks in medium name...probably not a good idea
-        if(ind==Ppgls->ninpmedia) {
-            //a new medium has been added
-            Ppgls->ninpmedia++;
-            //add option to define new medium to end of combobox list
-            inpmediumComboBox->addItem("define new medium");
-        }
-        //save data for current medium
-        Ppgls->inpmedium[ind]=inpmediumComboBox->currentText();
-        Ppgls->spec_by_pz[ind]=true;
-        if(rhozRadioButton->isChecked()) Ppgls->spec_by_pz[ind]=false;
-        //see if any elements are present in the table
-        int nrow=0;
-        int nelements=0;
-        while(pz_or_rhozTable->item(nrow,0)!=0 && nrow < pz_or_rhozTable->rowCount()) {
-            if(nrow==0) {
-                //clear existing list of elements
-                Ppgls->elements[ind].clear();
-                Ppgls->pz_or_rhoz[ind].clear();
-            }
-            //qt3to4 -- BW
-            //Ppgls->elements[ind].push_back(pz_or_rhozTable->text(nrow,0));
-            //Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->text(nrow,1));
-            //qt3to4 -- BW
-            if(pz_or_rhozTable->item(nrow,0))
-                Ppgls->elements[ind].push_back(pz_or_rhozTable->item(nrow,0)->text().toStdString());
-            if(pz_or_rhozTable->item(nrow,1))
-                Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->item(nrow,1)->text().toStdString());
-            //Ppgls->elements[ind].push_back(pz_or_rhozTable->text(nrow,0).toStdString());
-            //Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->text(nrow,1).toStdString());
-            nelements++;
-            nrow++;
-        }
-        Ppgls->nelements[ind]=nelements;
-        //now save other data
-        Ppgls->rho[ind]=rhoEdit->text();
-        Ppgls->spr[ind]=spComboBox->currentText();
-        Ppgls->bc[ind]=bcComboBox->currentText();
-        Ppgls->isgas[ind]=isGasCheckBox->isChecked();
-        Ppgls->gasp[ind]=gaspEdit->text();
-        if(Ppgls->isgas[ind] && (Ppgls->gasp[ind]=="" || Ppgls->gasp[ind].toFloat()<=0.0)) Ppgls->gasp[ind]="1.0";
-        gaspEdit->setText(Ppgls->gasp[ind]);
-        Ppgls->dffile[ind]=DFEdit->text();
-        Ppgls->sterncid[ind]=sterncidEdit->text();
+  int ind=inpmediumComboBox->currentIndex();
+  Ppgls->inpmedind=ind;
+  if(inpmediumComboBox->currentText()!="define new medium"){
+    //note: above allows blanks in medium name...probably not a good idea
+    if(ind==Ppgls->ninpmedia) {
+      //a new medium has been added
+      Ppgls->ninpmedia++;
+      //add option to define new medium to end of combobox list
+      inpmediumComboBox->addItem("define new medium");
     }
-    //update list of available media
-    listMedia = getPEGSLESSMedia();
-    updateMediaLists();
+    //save data for current medium
+    Ppgls->inpmedium[ind]=inpmediumComboBox->currentText();
+    Ppgls->spec_by_pz[ind]=true;
+    if(rhozRadioButton->isChecked()) Ppgls->spec_by_pz[ind]=false;
+    //see if any elements are present in the table
+    int nrow=0;
+    int nelements=0;
+    while(pz_or_rhozTable->item(nrow,0)!=0 && nrow < pz_or_rhozTable->rowCount()) {
+       if(nrow==0) {
+         //clear existing list of elements
+         Ppgls->elements[ind].clear();
+         Ppgls->pz_or_rhoz[ind].clear();
+       }
+       //qt3to4 -- BW
+       //Ppgls->elements[ind].push_back(pz_or_rhozTable->text(nrow,0));
+       //Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->text(nrow,1));
+       //qt3to4 -- BW
+       if(pz_or_rhozTable->item(nrow,0))
+            Ppgls->elements[ind].push_back(pz_or_rhozTable->item(nrow,0)->text().toStdString());
+       if(pz_or_rhozTable->item(nrow,1))
+            Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->item(nrow,1)->text().toStdString());
+       //Ppgls->elements[ind].push_back(pz_or_rhozTable->text(nrow,0).toStdString());
+       //Ppgls->pz_or_rhoz[ind].push_back(pz_or_rhozTable->text(nrow,1).toStdString());
+       nelements++;
+       nrow++;
+    }
+    Ppgls->nelements[ind]=nelements;
+    //now save other data
+    Ppgls->rho[ind]=rhoEdit->text();
+    Ppgls->spr[ind]=spComboBox->currentText();
+    Ppgls->bc[ind]=bcComboBox->currentText();
+    Ppgls->isgas[ind]=isGasCheckBox->isChecked();
+    Ppgls->gasp[ind]=gaspEdit->text();
+    if(Ppgls->isgas[ind] && (Ppgls->gasp[ind]=="" || Ppgls->gasp[ind].toFloat()<=0.0)) Ppgls->gasp[ind]="1.0";
+    gaspEdit->setText(Ppgls->gasp[ind]);
+    Ppgls->dffile[ind]=DFEdit->text();
+    Ppgls->sterncid[ind]=sterncidEdit->text();
+  }
+  //update list of available media
+  listMedia = getPEGSLESSMedia();
+  updateMediaLists();
 }
 
 void inputRZImpl::inpmediumChanged( const QString& str)
@@ -2694,12 +2753,9 @@ void inputRZImpl::update_usercode()
 
         outputTip->setTips( out_dos, sizeof out_dos / sizeof(char *));
 
-        if ( (ifullComboBox->currentText()).toLower() == "pulse height distribution")
-            phdGroupBox->setEnabled( true );
-
-        //Q3WhatsThis::add( CSEnhancementGroupBox, CS_ENHANCEMENT_DOSRZNRC  );
-        CSEnhancementGroupBox->setWhatsThis(CS_ENHANCEMENT_DOSRZNRC  );
-        CSEnhancementGroupBox->setToolTip(CS_ENHANCEMENT_DOSRZNRC  );
+       //Q3WhatsThis::add( CSEnhancementGroupBox, CS_ENHANCEMENT_DOSRZNRC  );
+       CSEnhancementGroupBox->setWhatsThis(CS_ENHANCEMENT_DOSRZNRC  );
+       CSEnhancementGroupBox->setToolTip(CS_ENHANCEMENT_DOSRZNRC  );
 
         CSEnhancementTable->setEnabled( true );
         CSEnhancement_RegionsLabel1->setEnabled( true );

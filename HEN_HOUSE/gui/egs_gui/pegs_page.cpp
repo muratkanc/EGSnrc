@@ -48,8 +48,9 @@
 #include "egs_gui_widget.h"
 #include "egs_config_reader.h"
 #include "pegs_runoutput.h"
+#include <iostream>
 
-// #define PP_DEBUG
+//#define PP_DEBUG
 
 QStringList *elements = 0;
 
@@ -170,23 +171,23 @@ void EGS_PegsPage::init()
     qDebug("In EGS_PegsPage::init()");
 #endif
 
-    config_reader = 0;
-    connect(new_data_file,SIGNAL(toggled(bool)),this,
-            SLOT(newDataFileChecked(bool)));
-    connect(append_to_datafile,SIGNAL(toggled(bool)),this,
-            SLOT(appendDataFileChecked(bool)));
-    connect(ofile_b,SIGNAL(clicked()),this,
-            SLOT(setOfile()));
-    connect(go_button,SIGNAL(clicked()),this,SLOT(startPegs()));
-    connect(cancel_button,SIGNAL(clicked()),this,SLOT(stopPegs()));
+  config_reader = 0;
+  connect(new_data_file,SIGNAL(toggled(bool)),this,
+                        SLOT(newDataFileChecked(bool)));
+  connect(append_to_datafile,SIGNAL(toggled(bool)),this,
+                             SLOT(appendDataFileChecked(bool)));
+  connect(ofile_b,SIGNAL(clicked()),this,
+                  SLOT(setOfile()));
+  connect(go_button,SIGNAL(clicked()),this,SLOT(startPegs()));
+  connect(cancel_button,SIGNAL(clicked()),this,SLOT(stopPegs()));
 
-    new_data_file->setChecked(true);
-    cancel_button->setEnabled(false);
-
-    pegs_process = new QProcess;
-    connect(pegs_process,SIGNAL(readyReadStandardOutput()),this,SLOT(readPegsStdout()));
-    connect(pegs_process,SIGNAL(readyReadStandardError()),this,SLOT(readPegsStderr()));
-    connect(pegs_process,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(pegsFinished()));
+  new_data_file->setChecked(true); cancel_button->setEnabled(false);
+  frt_err=false;
+  gasp_err=false;
+  pegs_process = new QProcess;
+  connect(pegs_process,SIGNAL(readyReadStandardOutput()),this,SLOT(readPegsStdout()));
+  connect(pegs_process,SIGNAL(readyReadStandardError()),this,SLOT(readPegsStderr()));
+  connect(pegs_process,SIGNAL(finished(int, QProcess::ExitStatus)),this,SLOT(pegsFinished()));
 
     run_output = new PEGS_RunOutput(0);
     connect(run_output,SIGNAL(windowClosed()),this, SLOT(outputClosed()));
@@ -287,6 +288,7 @@ void EGS_PegsPage::getDensityFile() {
 #ifdef PP_DEBUG
         qDebug("==> Changing medium type to mixture since nelem = %d!",nelem);
 #endif
+<<<<<<< HEAD
         medtype_cbox->setCurrentIndex(Mixt);
         medtypeChanged("Mixture");
     }
@@ -307,6 +309,26 @@ void EGS_PegsPage::getDensityFile() {
         composition_table->setItem(j,1,new QTableWidgetItem(QString("%1").arg(frac)));
     }
     dc_file->setText(fi.completeBaseName());// same as baseName(true) in Qt3 -- EMH
+=======
+    medtype_cbox->setCurrentIndex(Mixt);
+    medtypeChanged("Mixture");
+  }
+  //composition_table->horizontalHeader()->setLabel(1," Fraction by weight ");
+  rho_le->setText(QString("%1").arg(rho));
+  int j;
+  for(j=0; j < composition_table->rowCount(); j++) {
+    composition_table->setItem(j,0,0); composition_table->setItem(j,1,0);
+    //composition_table->setText(j,0,"");
+    //composition_table->setText(j,1,"");
+  }
+  for(j=0; j<nelem; j++) {
+    int iz; double frac; data >> iz >> frac;
+    composition_table->setItem(j,0,new QTableWidgetItem(QString::fromStdString(element_data[iz-1].symbol)));
+    composition_table->setItem(j,1,new QTableWidgetItem(QString("%1").arg(frac)));
+  }
+  //dc_file->setText(fi.completeBaseName());// same as baseName(true) in Qt3 -- EMH
+   dc_file->setText(fi.absoluteFilePath());
+>>>>>>> develop
 }
 
 void EGS_PegsPage::newDataFileChecked(bool b) {
@@ -346,6 +368,7 @@ void EGS_PegsPage::startPegs() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::startPegs()");
 #endif
+<<<<<<< HEAD
     if( !checkFields() ) return;
     if( !config_reader ) config_reader = new EGS_ConfigReader;
     QString executable = config_reader->getVariable("HEN_HOUSE",true);
@@ -384,6 +407,54 @@ void EGS_PegsPage::startPegs() {
         args << dc_file->text();//pegs_process->addArgument();
     }
     //QStringList list = pegs_process->arguments();
+=======
+  if( !checkFields() ) return;
+  if( !config_reader ) config_reader = new EGS_ConfigReader;
+  QString executable = config_reader->getVariable("HEN_HOUSE",true);
+  executable += "bin"; executable += QDir::separator();
+  executable += config_reader->getVariable("my_machine");
+  executable += QDir::separator();
+  executable += "pegs4.exe";
+  QFileInfo fi(executable);
+  if( !fi.exists() ) {
+      QMessageBox::critical(this,"Error",
+              QString("%1 does not exist ?").arg(executable),QMessageBox::Ok,0);
+      return;
+  }
+  if( !fi.isExecutable() ) {
+    QMessageBox::critical(this,"Error",
+     QString("%1 is not executable ?").arg(executable),QMessageBox::Ok,0);
+    return;
+  }
+
+  // process arguments
+  QStringList args;
+  //pegs_process->clearArguments();
+  //pegs_process->addArgument(executable);
+  args << "-e";//pegs_process->addArgument("-e");
+  args << config_reader->getVariable("EGS_HOME",true);//pegs_process->addArgument();
+  args << "-h";//pegs_process->addArgument("-h");
+  args << config_reader->getVariable("HEN_HOUSE",true);//pegs_process->addArgument();
+  args << "-o";//pegs_process->addArgument("-o");
+  args << ofile_le->text();//pegs_process->addArgument();
+  run_output->setOutputFile(ofile_le->text());
+  if( append_to_datafile->isChecked() )
+    args << "-a";//pegs_process->addArgument("-a");
+  if( dc_icru_check->isChecked() ) {
+    QFileInfo dfi(dc_file->text());
+    if( !dfi.exists() ) {
+      QMessageBox::critical(this,"Error",
+              QString("Density correction file %1 does not exist ?").arg(dc_file->text()),QMessageBox::Ok,0);
+      return;
+    }
+    args << "-d";//pegs_process->addArgument("-d");
+    if(dc_file->text().endsWith(".density"))
+    args << dc_file->text().remove(dc_file->text().lastIndexOf(".density"),8);//pegs_process->addArgument();
+    else
+    args << dc_file->text();
+  }
+  //QStringList list = pegs_process->arguments();
+>>>>>>> develop
 #ifdef PP_DEBUG
     qDebug("Executing: <%s>",args.join(" ").toLatin1().data());
 #endif
@@ -471,22 +542,35 @@ void EGS_PegsPage::readPegsStdout() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::readPegsStdout()");
 #endif
+<<<<<<< HEAD
     QString tmp = pegs_process->readAllStandardOutput();
     run_output->insertText(tmp);
+=======
+  QString tmp = pegs_process->readAllStandardOutput();
+  gasp_err=tmp.contains(QString("YOU MUST DEFINE GASP"));
+  run_output->insertText(tmp);
+>>>>>>> develop
 }
 
 void EGS_PegsPage::readPegsStderr() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::readPegsStderr()");
 #endif
+<<<<<<< HEAD
     QString tmp = pegs_process->readAllStandardError();
     run_output->insertText(tmp);
+=======
+  QString tmp = pegs_process->readAllStandardError();
+  frt_err=tmp.contains(QString("Fortran runtime error"));
+  run_output->insertText(tmp);
+>>>>>>> develop
 }
 
 void EGS_PegsPage::pegsFinished() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::pegsFinished()");
 #endif
+<<<<<<< HEAD
     if( pegs_process->exitStatus() == 0 ) // QProcess::NormalExit = 0
         QMessageBox::information(this,"PEGS finished","PEGS finished successfuly",
                                  QMessageBox::Ok);
@@ -496,6 +580,25 @@ void EGS_PegsPage::pegsFinished() {
                               QMessageBox::Ok,0);
     go_button->setEnabled(true);
     cancel_button->setEnabled(false);
+=======
+  if(frt_err)
+    QMessageBox::critical(this,"Error",
+     QString("PEGS failed with runtime error."),
+      QMessageBox::Ok,0);
+  else if(gasp_err)
+    QMessageBox::critical(this,"Error",
+     QString("PEGS failed: Define medium as gas."),
+      QMessageBox::Ok,0);
+  else if( pegs_process->exitStatus() == 0 ) // QProcess::NormalExit = 0
+    QMessageBox::information(this,"PEGS finished","PEGS finished successfuly",
+       QMessageBox::Ok);
+  else                                  // QProcess::CrashExit = 1
+    QMessageBox::critical(this,"Error",
+     QString("PEGS failed, exit status was %1").arg(pegs_process->exitStatus()),
+      QMessageBox::Ok,0);
+  go_button->setEnabled(true);
+  cancel_button->setEnabled(false);
+>>>>>>> develop
 }
 
 bool EGS_PegsPage::checkFields() {
@@ -506,12 +609,22 @@ bool EGS_PegsPage::checkFields() {
                               "You must give the medium a name",QMessageBox::Ok,0);
         res = false;
     }
+<<<<<<< HEAD
     if( dc_icru_check->isChecked() ) {
         if( dc_file->text().isEmpty() ) {
             QMessageBox::critical(this,"Error",
                                   "You must define the density correction file",QMessageBox::Ok,0);
             res = false;
         }
+=======
+    nelem=0;
+    for(int j=0; j<20; j++) {
+      if( !composition_table->item(j,0) ||
+          !composition_table->item(j,1) ) break;
+      if( composition_table->item(j,0)->text().isEmpty() ||
+          composition_table->item(j,1)->text().isEmpty() ) break;
+      nelem = j+1;
+>>>>>>> develop
     }
     else {
         if( rho_le->text().isEmpty() ) {

@@ -28,19 +28,12 @@ rem #
 rem ###############################################################################
 
 
-echo Checking if object files need to be deleted
-echo Argument %1
-echo .
-echo Deleting objects
-     del *.obj
-echo .
-echo .
 echo Checking if GUIs need to be cleaned
 echo .
 cd ..\..\egs++\view
 echo Working in egs++\view...
      if exist Makefile_win-static (
-         echo Running mingw32-make clean
+         echo Running make clean
          mingw32-make -f Makefile_win-static clean
      )
      echo Deleting Makefile_win-static
@@ -73,13 +66,5 @@ echo Working in egs_inprz...
     echo Deleting Makefile_win-static
     del Makefile_win-static*
 
-cd ..\egs_configure
-echo Working in egs_configure ...
-    if exist Makefile_win-static (
-        echo Running mingw32-make clean
-        mingw32-make -f Makefile_win-static clean
-    )
-    echo Deleting Makefile_win-static
-    del Makefile_win-static*
-
 cd ..\..\pieces\windows
+del *.exe

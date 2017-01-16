@@ -129,5 +129,7 @@ private:
     int nelem;
     EGS_ConfigReader *config_reader;
     bool checkFields();
+    bool frt_err;
+    bool gasp_err;
 };
 #endif // PEGS_PAGE_H
