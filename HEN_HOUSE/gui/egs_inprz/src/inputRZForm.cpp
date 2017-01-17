@@ -1504,6 +1504,7 @@ void inputRZImpl::update_PEGSLESSParam( const PEGSLESSInputs* EGSpgls)
     medlst+="define new medium";
     inpmediumComboBox->clear();
     inpmediumComboBox->addItems(medlst);
+ }
 }
 
 void inputRZImpl::inpmediumSave( const QString& str)
