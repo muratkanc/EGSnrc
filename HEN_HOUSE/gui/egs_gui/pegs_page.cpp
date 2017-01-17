@@ -288,28 +288,6 @@ void EGS_PegsPage::getDensityFile() {
 #ifdef PP_DEBUG
         qDebug("==> Changing medium type to mixture since nelem = %d!",nelem);
 #endif
-<<<<<<< HEAD
-        medtype_cbox->setCurrentIndex(Mixt);
-        medtypeChanged("Mixture");
-    }
-    //composition_table->horizontalHeader()->setLabel(1," Fraction by weight ");
-    rho_le->setText(QString("%1").arg(rho));
-    int j;
-    for(j=0; j < composition_table->rowCount(); j++) {
-        composition_table->setItem(j,0,0);
-        composition_table->setItem(j,1,0);
-        //composition_table->setText(j,0,"");
-        //composition_table->setText(j,1,"");
-    }
-    for(j=0; j<nelem; j++) {
-        int iz;
-        double frac;
-        data >> iz >> frac;
-        composition_table->setItem(j,0,new QTableWidgetItem(QString::fromStdString(element_data[iz-1].symbol)));
-        composition_table->setItem(j,1,new QTableWidgetItem(QString("%1").arg(frac)));
-    }
-    dc_file->setText(fi.completeBaseName());// same as baseName(true) in Qt3 -- EMH
-=======
     medtype_cbox->setCurrentIndex(Mixt);
     medtypeChanged("Mixture");
   }
@@ -328,7 +306,6 @@ void EGS_PegsPage::getDensityFile() {
   }
   //dc_file->setText(fi.completeBaseName());// same as baseName(true) in Qt3 -- EMH
    dc_file->setText(fi.absoluteFilePath());
->>>>>>> develop
 }
 
 void EGS_PegsPage::newDataFileChecked(bool b) {
@@ -368,46 +345,6 @@ void EGS_PegsPage::startPegs() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::startPegs()");
 #endif
-<<<<<<< HEAD
-    if( !checkFields() ) return;
-    if( !config_reader ) config_reader = new EGS_ConfigReader;
-    QString executable = config_reader->getVariable("HEN_HOUSE",true);
-    executable += "bin";
-    executable += QDir::separator();
-    executable += config_reader->getVariable("my_machine");
-    executable += QDir::separator();
-    executable += "pegs4.exe";
-    QFileInfo fi(executable);
-    if( !fi.exists() ) {
-        QMessageBox::critical(this,"Error",
-                              QString("%1 does not exist ?").arg(executable),QMessageBox::Ok,0);
-        return;
-    }
-    if( !fi.isExecutable() ) {
-        QMessageBox::critical(this,"Error",
-                              QString("%1 is not executable ?").arg(executable),QMessageBox::Ok,0);
-        return;
-    }
-
-    // process arguments
-    QStringList args;
-    //pegs_process->clearArguments();
-    //pegs_process->addArgument(executable);
-    args << "-e";//pegs_process->addArgument("-e");
-    args << config_reader->getVariable("EGS_HOME",true);//pegs_process->addArgument();
-    args << "-h";//pegs_process->addArgument("-h");
-    args << config_reader->getVariable("HEN_HOUSE",true);//pegs_process->addArgument();
-    args << "-o";//pegs_process->addArgument("-o");
-    args << ofile_le->text();//pegs_process->addArgument();
-    run_output->setOutputFile(ofile_le->text());
-    if( append_to_datafile->isChecked() )
-        args << "-a";//pegs_process->addArgument("-a");
-    if( dc_icru_check->isChecked() ) {
-        args << "-d";//pegs_process->addArgument("-d");
-        args << dc_file->text();//pegs_process->addArgument();
-    }
-    //QStringList list = pegs_process->arguments();
-=======
   if( !checkFields() ) return;
   if( !config_reader ) config_reader = new EGS_ConfigReader;
   QString executable = config_reader->getVariable("HEN_HOUSE",true);
@@ -454,7 +391,6 @@ void EGS_PegsPage::startPegs() {
     args << dc_file->text();
   }
   //QStringList list = pegs_process->arguments();
->>>>>>> develop
 #ifdef PP_DEBUG
     qDebug("Executing: <%s>",args.join(" ").toLatin1().data());
 #endif
@@ -542,45 +478,24 @@ void EGS_PegsPage::readPegsStdout() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::readPegsStdout()");
 #endif
-<<<<<<< HEAD
-    QString tmp = pegs_process->readAllStandardOutput();
-    run_output->insertText(tmp);
-=======
   QString tmp = pegs_process->readAllStandardOutput();
   gasp_err=tmp.contains(QString("YOU MUST DEFINE GASP"));
   run_output->insertText(tmp);
->>>>>>> develop
 }
 
 void EGS_PegsPage::readPegsStderr() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::readPegsStderr()");
 #endif
-<<<<<<< HEAD
-    QString tmp = pegs_process->readAllStandardError();
-    run_output->insertText(tmp);
-=======
   QString tmp = pegs_process->readAllStandardError();
   frt_err=tmp.contains(QString("Fortran runtime error"));
   run_output->insertText(tmp);
->>>>>>> develop
 }
 
 void EGS_PegsPage::pegsFinished() {
 #ifdef PP_DEBUG
     qDebug("In EGS_PegsPage::pegsFinished()");
 #endif
-<<<<<<< HEAD
-    if( pegs_process->exitStatus() == 0 ) // QProcess::NormalExit = 0
-        QMessageBox::information(this,"PEGS finished","PEGS finished successfuly",
-                                 QMessageBox::Ok);
-    else                                  // QProcess::CrashExit = 1
-        QMessageBox::critical(this,"Error",
-                              QString("PEGS failed, exit status was %1").arg(pegs_process->exitStatus()),
-                              QMessageBox::Ok,0);
-    go_button->setEnabled(true);
-    cancel_button->setEnabled(false);
-=======
   if(frt_err)
     QMessageBox::critical(this,"Error",
      QString("PEGS failed with runtime error."),
@@ -598,7 +513,6 @@ void EGS_PegsPage::pegsFinished() {
       QMessageBox::Ok,0);
   go_button->setEnabled(true);
   cancel_button->setEnabled(false);
->>>>>>> develop
 }
 
 bool EGS_PegsPage::checkFields() {
@@ -609,35 +523,27 @@ bool EGS_PegsPage::checkFields() {
                               "You must give the medium a name",QMessageBox::Ok,0);
         res = false;
     }
-<<<<<<< HEAD
     if( dc_icru_check->isChecked() ) {
-        if( dc_file->text().isEmpty() ) {
-            QMessageBox::critical(this,"Error",
-                                  "You must define the density correction file",QMessageBox::Ok,0);
-            res = false;
-        }
-=======
-    nelem=0;
-    for(int j=0; j<20; j++) {
-      if( !composition_table->item(j,0) ||
-          !composition_table->item(j,1) ) break;
-      if( composition_table->item(j,0)->text().isEmpty() ||
-          composition_table->item(j,1)->text().isEmpty() ) break;
-      nelem = j+1;
->>>>>>> develop
+      if( dc_file->text().isEmpty() ) {
+          QMessageBox::critical(this,"Error",
+          "You must define the density correction file",QMessageBox::Ok,0);
+          res = false;
+      }
     }
     else {
-        if( rho_le->text().isEmpty() ) {
-            QMessageBox::critical(this,"Error",
-                                  "You must define the mass density",QMessageBox::Ok,0);
-            res = false;
-        }
-        nelem=0;
-        for(int j=0; j<20; j++) {
-            if( composition_table->item(j,0)->text().isEmpty() ||
-                    composition_table->item(j,1)->text().isEmpty() ) break;
-            nelem = j+1;
-        }
+      if( rho_le->text().isEmpty() ) {
+          QMessageBox::critical(this,"Error",
+          "You must define the mass density",QMessageBox::Ok,0);
+           res = false;
+      }
+      nelem=0;
+      for(int j=0; j<20; j++) {
+         if( !composition_table->item(j,0) ||
+             !composition_table->item(j,1) ) break;
+         if( composition_table->item(j,0)->text().isEmpty() ||
+             composition_table->item(j,1)->text().isEmpty() ) break;
+         nelem = j+1;
+      }
 #ifdef PP_DEBUG
         qDebug("nelem = %d type = %s",nelem,medtype_cbox->currentText().toLatin1().data());
 #endif
